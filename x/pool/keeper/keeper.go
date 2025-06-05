@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"time"
 
 	"cosmossdk.io/core/store"
@@ -25,6 +23,7 @@ type (
 		stakingKeeper    types.StakingKeeper
 		accountKeeper    types.AccountKeeper
 		bankKeeper       types.BankKeeper
+		mintKeeper       types.MintKeeper
 		feeCollectorName string
 	}
 )
@@ -36,6 +35,7 @@ func NewKeeper(
 	stakingKeeper types.StakingKeeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	mintKeeper types.MintKeeper,
 	feeCollectorName string,
 ) Keeper {
 	// ensure mint module account is set
@@ -52,26 +52,17 @@ func NewKeeper(
 		stakingKeeper:    stakingKeeper,
 		accountKeeper:    accountKeeper,
 		bankKeeper:       bankKeeper,
+		mintKeeper:       mintKeeper,
 		feeCollectorName: feeCollectorName,
 	}
 }
 
 // GetLogger returns a logger instance with optional log printing based on the PrintLogs environment variable.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	printLogs, err := strconv.ParseBool(os.Getenv("PrintLogs"))
-	if err != nil {
-		fmt.Println("[Keeper][GetLogger] Error parsing PrintLogs environment variable:", err)
-	}
-
-	if !printLogs {
-		return log.NewNopLogger()
-	}
-
 	logger := ctx.Logger().With(
 		"timestamp", time.Now().UTC().Format(time.RFC3339),
 		"module", fmt.Sprintf("x/%s", types.ModuleName),
 		"height", ctx.BlockHeight(),
 	)
-
 	return logger
 }

@@ -6,24 +6,6 @@ import (
 	"fmt"
 )
 
-// func (k Keeper) GenerateTributeID(ctx context.Context, tribute types.Tribute) (string, error) {
-// 	// Combine tribute fields into a unique string
-// 	data := fmt.Sprintf("%s:%s:%s:%d",
-// 		tribute.Creator,
-// 		tribute.ContractAddress,
-// 		tribute.RecipientAddress,
-// 		tribute.Amount,
-// 	)
-
-// 	// Generate a SHA-256 hash of the data
-// 	hash := sha256.Sum256([]byte(data))
-
-// 	// Convert to hexadecimal string and take first 20 characters for brevity
-// 	id := hex.EncodeToString(hash[:])[:20]
-
-// 	return fmt.Sprintf("tribute-%s", id), nil
-// }
-
 func (k Keeper) GenerateTributeID(ctx context.Context) (string, error) {
 	store := k.storeService.OpenKVStore(ctx)
 	key := []byte("TributeIDCounter")

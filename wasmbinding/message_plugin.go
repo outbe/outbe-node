@@ -44,7 +44,7 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 
 	// only handle the happy path where this is really minting ...
 	// leave everything else for the wrapped version
-	var redumptionMsg bindings.QcoreMsg
+	var redumptionMsg bindings.OutbeMsg
 	if err := json.Unmarshal(msg.Custom, &redumptionMsg); err != nil {
 		return nil, nil, nil, errorsmod.Wrap(err, "[DispatchMsg][Unmarshal failed to unmarshal the message")
 	}

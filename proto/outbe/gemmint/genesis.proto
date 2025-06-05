@@ -1,0 +1,19 @@
+syntax = "proto3";
+package outbe.gemmint;
+
+import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+
+import "outbe/gemmint/minter.proto";
+import "outbe/gemmint/params.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/gemmint/types";
+
+// GenesisState defines the mint module's genesis state.
+message GenesisState {
+  // minter is a space for holding current inflation information.
+  Minter minter = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+
+  // params defines all the parameters of the module.
+  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}

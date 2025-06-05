@@ -109,7 +109,6 @@ func calculateFixedBlockEmission(totalSupply string) (string, error) {
 
 	return emissionPerBlock.String(), nil
 }
-
 func (suite *KeeperTestHelper) TestGetEmission() {
 
 	suite.SetupTest()

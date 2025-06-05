@@ -1,4 +1,5 @@
 # OutBe Core
+
 _Documentation for OutBe Core users and developers._
 
 ## What is OutBe Core?

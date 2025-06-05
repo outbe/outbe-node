@@ -1,7 +1,7 @@
 package bindings
 
-// QCorechainQuery contains QCorechain custom queries.
-type QcoreQuery struct {
+// OutbeQuery contains Outbe chain custom queries.
+type OutbeQuery struct {
 	QueryBlockEmissionRequest *QueryBlockEmissionRequest `json:"query_block_emission_request,omitempty"`
 }
 type QueryBlockEmissionRequest struct {

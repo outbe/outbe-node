@@ -18,7 +18,7 @@ import (
 
 func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
-		var contractQuery bindings.QcoreQuery
+		var contractQuery bindings.OutbeQuery
 		if err := json.Unmarshal(request, &contractQuery); err != nil {
 			return nil, sdkerrors.Wrapf(errortypes.ErrInvalidType, "[CustomQuerier][Unmarshal Contract Query Result] failed. Contract query is not valid, couldn't be parsed.")
 		}
@@ -41,7 +41,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			return bz, nil
 
 		default:
-			return nil, sdkerrors.Wrapf(errortypes.ErrInvalidType, "[CustomQuerier][GetBlockEmission] failed. unknown qcore query variante.")
+			return nil, sdkerrors.Wrapf(errortypes.ErrInvalidType, "[CustomQuerier][GetBlockEmission] failed. unknown outbe query variante.")
 		}
 	}
 }

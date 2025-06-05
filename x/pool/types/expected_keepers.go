@@ -5,6 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gemminttypes "github.com/outbe/outbe-node/x/gemmint/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
@@ -30,4 +31,11 @@ type BankKeeper interface {
 type StakingKeeper interface {
 	StakingTokenSupply(ctx context.Context) (math.Int, error)
 	BondedRatio(ctx context.Context) (math.LegacyDec, error)
+}
+
+type MintKeeper interface {
+	GetWhitelist(ctx context.Context) (list []gemminttypes.Whitelist)
+	IsEligibleSmartContract(ctx context.Context, contractAddress string) bool
+	SetTotalMinted(ctx context.Context, totalMinted gemminttypes.Minted) error
+	GetTotalMinted(ctx context.Context) (totalMinted gemminttypes.Minted, found bool)
 }
