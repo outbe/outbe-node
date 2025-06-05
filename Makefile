@@ -327,7 +327,7 @@ explorer:
 
 .PHONY: generate-webapp
 generate-webapp:
-	sudo npm install --global create-cosmos-app
+	npm install --global create-cosmos-app
 	cca --name web -e spawn
 
 help:

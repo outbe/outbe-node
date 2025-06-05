@@ -17,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	anteinterfaces "github.com/cosmos/evm/ante/interfaces"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 )
 
@@ -55,12 +54,9 @@ type HandlerOptions struct {
 	WasmKeeper            *wasmkeeper.Keeper
 	TXCounterStoreService corestoretypes.KVStoreService
 
-	MaxTxGasWanted  uint64
-	FeeMarketKeeper anteinterfaces.FeeMarketKeeper
-	EvmKeeper       anteinterfaces.EVMKeeper
-
-	IBCKeeper     *ibckeeper.Keeper
-	CircuitKeeper *circuitkeeper.Keeper
+	MaxTxGasWanted uint64
+	IBCKeeper      *ibckeeper.Keeper
+	CircuitKeeper  *circuitkeeper.Keeper
 }
 
 // Validate checks if the keepers are defined
@@ -96,12 +92,6 @@ func (options HandlerOptions) Validate() error {
 
 	if options.TxFeeChecker == nil {
 		return errorsmod.Wrap(errortypes.ErrLogic, "tx fee checker is required for AnteHandler")
-	}
-	if options.FeeMarketKeeper == nil {
-		return errorsmod.Wrap(errortypes.ErrLogic, "fee market keeper is required for AnteHandler")
-	}
-	if options.EvmKeeper == nil {
-		return errorsmod.Wrap(errortypes.ErrLogic, "evm keeper is required for AnteHandler")
 	}
 
 	return nil

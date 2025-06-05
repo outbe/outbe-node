@@ -83,7 +83,6 @@ func setup(
 		true,
 		appOptions,
 		wasmOpts,
-		EVMAppOptions,
 		bam.SetChainID(chainID),
 		bam.SetSnapshot(snapshotStore, snapshottypes.SnapshotOptions{KeepRecent: 2}),
 	)
@@ -117,8 +116,7 @@ func NewChainAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOpt
 		options.DB,
 		nil, true,
 		options.AppOpts,
-		options.WasmOpts,
-		EVMAppOptions,
+		options.WasmOpts
 	)
 	genesisState := app.DefaultGenesis()
 	genesisState, err = GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
