@@ -29,8 +29,8 @@ import (
 	ibcfeekeeper "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/keeper"
 	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
 
-	transfer "github.com/cosmos/evm/x/ibc/transfer"
-	ibctransferkeeper "github.com/cosmos/evm/x/ibc/transfer/keeper"
+	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
@@ -154,7 +154,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	chainante "github.com/outbe/outbe/app/ante"
+	chainante "github.com/outbe/outbe-node/app/ante"
 )
 
 const (
@@ -306,7 +306,6 @@ func NewChainApp(
 	loadLatest bool,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
-	evmosAppOptions EVMOptionsFn,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *ChainApp {
 
@@ -358,11 +357,6 @@ func NewChainApp(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	bApp.SetTxEncoder(txConfig.TxEncoder())
-
-	if err := evmosAppOptions(bApp.ChainID()); err != nil {
-		// initialize the EVM application configuration
-		panic(fmt.Errorf("failed to initialize EVM app configuration: %w", err))
-	}
 
 	keys := storetypes.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey,

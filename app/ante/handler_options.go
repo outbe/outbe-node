@@ -90,9 +90,5 @@ func (options HandlerOptions) Validate() error {
 		return errorsmod.Wrap(errortypes.ErrLogic, "wasm keeper is required for ante builder")
 	}
 
-	if options.TxFeeChecker == nil {
-		return errorsmod.Wrap(errortypes.ErrLogic, "tx fee checker is required for AnteHandler")
-	}
-
 	return nil
 }

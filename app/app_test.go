@@ -40,7 +40,6 @@ func TestAppExport(t *testing.T) {
 	newGapp := NewChainApp(
 		logger, db, nil, true, simtestutil.NewAppOptionsWithFlagHome(t.TempDir()),
 		wasmOpts,
-		EVMAppOptions,
 	)
 	_, err = newGapp.ExportAppStateAndValidators(false, []string{}, nil)
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")

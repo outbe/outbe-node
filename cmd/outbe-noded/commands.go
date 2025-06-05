@@ -96,12 +96,12 @@ func initRootCmd(
 	rootCmd *cobra.Command,
 	chainApp *app.ChainApp,
 ) {
+
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(chainApp.BasicModuleManager, app.DefaultNodeHome),
-		genutilcli.Commands(chainApp.TxConfig(), chainApp.BasicModuleManager, app.DefaultNodeHome),
 		cmtcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
@@ -109,6 +109,7 @@ func initRootCmd(
 		snapshot.Cmd(newApp),
 	)
 
+	sdkserver.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, addModuleInitFlags)
 	wasmcli.ExtendUnsafeResetAllCmd(rootCmd)
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
@@ -119,6 +120,27 @@ func initRootCmd(
 		queryCommand(),
 		txCommand(),
 	)
+
+	// rootCmd.AddCommand(
+	// 	genutilcli.InitCmd(chainApp.BasicModuleManager, app.DefaultNodeHome),
+	// 	genutilcli.Commands(chainApp.TxConfig(), chainApp.BasicModuleManager, app.DefaultNodeHome),
+	// 	cmtcli.NewCompletionCmd(rootCmd, true),
+	// 	debug.Cmd(),
+	// 	confixcmd.ConfigCommand(),
+	// 	pruning.Cmd(newApp, app.DefaultNodeHome),
+	// 	snapshot.Cmd(newApp),
+	// )
+
+	// wasmcli.ExtendUnsafeResetAllCmd(rootCmd)
+
+	// // add keybase, auxiliary RPC, query, genesis, and tx child commands
+	// rootCmd.AddCommand(
+	// 	server.StatusCommand(),
+	// 	genesisCommand(chainApp.TxConfig(), chainApp.BasicModuleManager),
+	// 	keys.Commands(),
+	// 	queryCommand(),
+	// 	txCommand(),
+	// )
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -204,7 +226,6 @@ func newApp(
 		logger, db, traceStore, true,
 		appOpts,
 		wasmOpts,
-		app.EVMAppOptions,
 		baseappOptions...,
 	)
 }

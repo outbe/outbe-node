@@ -6,16 +6,16 @@
       "description": "The native token of outbe-node",
       "denom_units": [
         {
-          "denom": "outbe",
+          "denom": "coen",
           "exponent": 0
         },
         {
-          "denom": "OUTBE",
+          "denom": "unit",
           "exponent": 18
         }
       ],
-      "base": "outbe",
-      "name": "OUTBE",
+      "base": "unit",
+      "name": "UNIT",
       "display": "outbe",
       "symbol": "OUTBE",
       "logo_URIs": {

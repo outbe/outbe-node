@@ -28,10 +28,10 @@ var (
 	VotingPeriod     = "15s"
 	MaxDepositPeriod = "10s"
 
-	Denom = "outbe"
+	Denom = "unit"
 	Name  = "outbe-node"
 
-	ChainID = "localchain_90001-1"
+	ChainID = "localchain-1"
 	Binary  = "outbe-noded"
 	Bech32  = "outbe"
 	ibcPath = "ibc-path"
