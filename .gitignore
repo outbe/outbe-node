@@ -5,3 +5,5 @@ dist/
 # Create cosmos app
 web/
 build
+node_modules/.bin/yarn
+/node_modules
