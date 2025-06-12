@@ -1,0 +1,14 @@
+syntax = "proto3";
+package qcore.pool;
+
+option go_package = "github.com/outbe/outbe-node/x/pool/types";
+
+
+// Message to set the minting for tribute
+message Tribute{
+  string id = 1;
+  string creator = 2; // creator address
+  string contract_address = 3; // contract address
+  string recipient_address = 4; // receipt address
+  uint64 amount = 5;
+}

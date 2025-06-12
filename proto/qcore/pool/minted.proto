@@ -1,0 +1,15 @@
+syntax = "proto3";
+package qcore.pool;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/outbe/outbe-node/x/pool/types";
+
+message Minted {
+  string total_minted = 1;
+}

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package qcore.pool;
+
+option go_package = "github.com/outbe/outbe-node/x/pool/types";
+
+message Emission{
+  string block_number = 2;
+  string total_emission = 3;
+  string emission_timestamp = 4;
+}
