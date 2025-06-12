@@ -75,14 +75,14 @@
   "apis": {
     "rpc": [
       {
-        "address": "http://127.0.0.1:26657",
-        "provider": "localhost"
+        "address": "http://rpc.dev.outbe.net:26657",
+        "provider": "Outbe DevNet"
       }
     ],
     "rest": [
       {
-        "address": "http://127.0.0.1:1317",
-        "provider": "localhost"
+        "address": "http://rpc.dev.outbe.net:1317",
+        "provider": "Outbe DevNet"
       }
     ]
   },
@@ -95,7 +95,6 @@
     }
   ],
   "keywords": [
-    "cosmos",
-    "spawn"
+    "cosmos"
   ]
 }
