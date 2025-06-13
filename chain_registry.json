@@ -10,7 +10,7 @@
   "bech32_prefix": "outbe",
   "daemon_name": "outbe-noded",
   "node_home": "$HOME/.outbe-node",
-  "slip44": 60,
+  "slip44": 118,
   "fees": {
     "fee_tokens": [
       {
