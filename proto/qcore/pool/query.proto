@@ -1,0 +1,79 @@
+syntax = "proto3";
+package qcore.pool;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+import "qcore/pool/emission.proto";
+import "qcore/pool/minted.proto";
+import "qcore/pool/supply.proto";
+import "qcore/pool/tribute.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/outbe/outbe-node/x/pool/types";
+
+// Query defines the gRPC querier service.
+service Query {
+
+  rpc GetBlockEmission(QueryBlockEmissionRequest) returns (QueryBlockEmissionResponse) {
+    option (google.api.http).get               = "/qcore/pool/emission/{block_number}";
+  }
+
+  rpc GetEmission(QueryEmissionRequest) returns (QueryEmissionResponse) {
+    option (google.api.http).get               = "/qcore/pool/emission";
+  }
+
+  rpc GetTotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get               = "/qcore/pool/totalsupply";
+  }
+
+  rpc GetTotalMinted(QueryTotalMintedRequest) returns (QueryTotalMintedResponse) {
+    option (google.api.http).get               = "/qcore/pool/minted";
+  }
+
+  rpc GetTribute(QueryTributeRequest) returns (QueryTributeResponse) {
+    option (google.api.http).get               = "/qcore/pool/tribute";
+  }
+
+}
+
+message QueryBlockEmissionRequest {
+  int64 block_number = 1;
+}
+
+message QueryBlockEmissionResponse {
+  string block_emission = 1;
+}
+
+message QueryEmissionRequest {
+}
+
+message QueryEmissionResponse {
+  Emission emission = 1;
+}
+
+message QueryTotalSupplyRequest {
+}
+
+message QueryTotalSupplyResponse {
+  Supply total_supply = 1;
+}
+
+message QueryTotalMintedRequest {
+}
+
+message QueryTotalMintedResponse {
+  Minted total_minted = 1;
+}
+
+message QueryTributeRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryTributeResponse {
+	repeated Tribute tribute = 1  [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

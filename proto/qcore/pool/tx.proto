@@ -1,0 +1,32 @@
+syntax = "proto3";
+package qcore.pool;
+
+option go_package = "github.com/outbe/outbe-node/x/pool/types";
+
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+
+// Msg defines the Msg service.
+service Msg {
+
+  option (cosmos.msg.v1.service) = true;
+
+     // Msg defines the Msg service.
+   rpc MintTribute(MsgMintTribute) returns (MsgMintTributeResponse);
+
+}
+
+// Msg defines the Msg service.
+message MsgMintTribute {
+  option (amino.name) = "pool/MsgMintTribute";
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1;
+  string contract_address = 2;
+  uint64 mint_amount = 3;
+  string receipt_address = 4;
+}
+
+// Msg defines the Msg service.
+message MsgMintTributeResponse {}
+

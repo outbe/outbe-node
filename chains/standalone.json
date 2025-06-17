@@ -8,7 +8,7 @@
                 "version": "local",
                 "uid-gid": ""
             },
-            "gas_prices": "0.0qnt",
+            "gas_prices": "0.0outbe",
             "gas_adjustment": 2,
             "genesis": {
                 "modify": [
