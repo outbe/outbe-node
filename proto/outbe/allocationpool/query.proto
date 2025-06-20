@@ -1,0 +1,82 @@
+syntax = "proto3";
+package outbe.allocationpool;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "amino/amino.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+import "outbe/allocationpool/emission.proto";
+import "outbe/allocationpool/supply.proto";
+import "outbe/allocationpool/tribute.proto";
+import "outbe/allocationpool/params.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/outbe/outbe-node/x/allocationpool/types";
+
+// Query defines the gRPC querier service.
+service Query {
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/outbe/allocationpool/params";
+  }
+
+  rpc GetBlockEmission(QueryBlockEmissionRequest) returns (QueryBlockEmissionResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/emission/{block_number}";
+  }
+
+  rpc GetEmission(QueryEmissionRequest) returns (QueryEmissionResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/emission";
+  }
+
+  rpc GetTotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/totalsupply";
+  }
+
+  rpc GetTribute(QueryTributeRequest) returns (QueryTributeResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/tribute";
+  }
+
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params defines the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+message QueryBlockEmissionRequest {
+  int64 block_number = 1;
+}
+
+message QueryBlockEmissionResponse {
+  string block_emission = 1;
+}
+
+message QueryEmissionRequest {
+}
+
+message QueryEmissionResponse {
+  Emission emission = 1;
+}
+
+message QueryTotalSupplyRequest {
+}
+
+message QueryTotalSupplyResponse {
+  Supply total_supply = 1;
+}
+
+message QueryTributeRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryTributeResponse {
+	repeated Tribute tribute = 1  [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
