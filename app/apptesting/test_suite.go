@@ -3,7 +3,7 @@ package apptesting
 import (
 	"github.com/outbe/outbe-node/app"
 	"github.com/outbe/outbe-node/app/params"
-	"github.com/outbe/outbe-node/x/pool/types"
+	"github.com/outbe/outbe-node/x/allocationpool/types"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
