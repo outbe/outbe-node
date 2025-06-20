@@ -1,7 +1,7 @@
 package wasmbinding
 
 import (
-	keeper "github.com/outbe/outbe-node/x/pool/keeper"
+	keeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
 )
 
 type QueryPlugin struct {

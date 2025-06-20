@@ -14,8 +14,8 @@ import (
 
 	"github.com/outbe/outbe-node/wasmbinding/bindings"
 
-	poolkeeper "github.com/outbe/outbe-node/x/pool/keeper"
-	pooltypes "github.com/outbe/outbe-node/x/pool/types"
+	poolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
+	pooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 
 	errortypes "github.com/outbe/outbe-node/errors"
 )

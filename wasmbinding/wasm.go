@@ -3,7 +3,7 @@ package wasmbinding
 import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	poolkeeper "github.com/outbe/outbe-node/x/pool/keeper"
+	poolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
 )
 
 func RegisterCustomPlugins(

@@ -12,8 +12,8 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/outbe/outbe-node/x/pool/constants"
-	Poolkeeper "github.com/outbe/outbe-node/x/pool/keeper"
+	"github.com/outbe/outbe-node/x/allocationpool/constants"
+	Poolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
 )
 
 func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
@@ -64,7 +64,7 @@ func GetBlockEmission(ctx sdk.Context, blockNumber string, poolKeeper Poolkeeper
 			return bindings.QueryBlockEmissionResponse{}, errors.New("blocknumber is 0")
 		}
 
-		blockEmission, err := poolKeeper.CalculateExponentialBlockEmission(num)
+		blockEmission, err := poolKeeper.CalculateExponentialBlockEmission(ctx, num)
 		if err != nil {
 			return bindings.QueryBlockEmissionResponse{}, errors.New("[Binding][GetBlockEmission][CalculateExponentialBlockEmission] failed.CalculateExponentialTokens failed")
 		}
