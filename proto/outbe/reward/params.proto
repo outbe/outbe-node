@@ -1,0 +1,21 @@
+syntax = "proto3";
+package outbe.reward;
+
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/reward/types";
+
+
+// Params defines the parameters for the x/mint module.
+message Params {
+  option (amino.name) = "cosmos-sdk/x/reward/Params";
+
+  string apr = 1;
+  string block_per_year = 2;
+  string max_self_bond_token = 3;
+}

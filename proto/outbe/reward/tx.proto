@@ -1,0 +1,14 @@
+syntax = "proto3";
+package outbe.reward;
+
+option go_package = "github.com/outbe/outbe-node/x/reward/types";
+
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "outbe/reward/params.proto";
+
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
