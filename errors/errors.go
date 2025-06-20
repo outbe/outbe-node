@@ -34,7 +34,9 @@ var (
 )
 
 var (
-	ErrCalculation  = sdkerrors.Register(ModuleName, 8, "failed to calculate ")
-	ErrUnauthorized = sdkerrors.Register(ModuleName, 9, "unauthorized operation")
-	ErrConflict     = sdkerrors.Register(ModuleName, 10, "conflict: entry already exists")
+	ErrCalculation           = sdkerrors.Register(ModuleName, 8, "failed to calculate ")
+	ErrUnauthorized          = sdkerrors.Register(ModuleName, 9, "unauthorized operation")
+	ErrConflict              = sdkerrors.Register(ModuleName, 10, "conflict: entry already exists")
+	ErrNoValidatorForAddress = sdkerrors.Register(ModuleName, 11, "address is not associated with any known validator")
+	ErrInsufficientFunds     = sdkerrors.Register(ModuleName, 12, "no insufficient funds")
 )
