@@ -4,8 +4,10 @@ import (
 	"context"
 
 	"cosmossdk.io/core/address"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
 
 // AccountKeeper defines the account contract that must be fulfilled when
@@ -61,4 +63,10 @@ type BankKeeper interface {
 type DistributionKeeper interface {
 	GetValidatorDelegations(ctx context.Context, valAddr sdk.ValAddress) (delegations []stakingtypes.Delegation, err error)
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
+}
+
+type RewardKeeper interface {
+	GetParams(ctx sdk.Context) (params rewardtypes.Params)
+	CalculateValidatorFeeShare(transactionFees, selfBondedTokens, totalSelfBondedTokens sdkmath.LegacyDec) (sdkmath.LegacyDec, error)
+	CalculateMinimumAPRReward(selfBondedTokens, apr sdkmath.LegacyDec, blocksPerYear int64) (sdkmath.LegacyDec, error)
 }

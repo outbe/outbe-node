@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"cosmossdk.io/core/address"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
 
 type AccountKeeper interface {
@@ -59,12 +61,19 @@ type StakingKeeper interface {
 	GetAllDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress) ([]stakingtypes.Delegation, error)
 }
 
+type RewardKeeper interface {
+	GetParams(ctx sdk.Context) (params rewardtypes.Params)
+	CalculateValidatorFeeShare(transactionFees, selfBondedTokens, totalSelfBondedTokens sdkmath.LegacyDec) (sdkmath.LegacyDec, error)
+	CalculateMinimumAPRReward(selfBondedTokens, apr sdkmath.LegacyDec, blocksPerYear int64) (sdkmath.LegacyDec, error)
+}
+
 type WrappedBaseKeeper struct {
 	distributionkeeper.Keeper
 
 	ak AccountKeeper
 	bk BankKeeper
 	sk StakingKeeper
+	rk RewardKeeper
 }
 
 func NewWrappedBaseKeeper(
@@ -73,6 +82,7 @@ func NewWrappedBaseKeeper(
 	ak AccountKeeper,
 	bk BankKeeper,
 	stakingKeeper StakingKeeper,
+	rewardKeeper RewardKeeper,
 ) WrappedBaseKeeper {
 	return WrappedBaseKeeper{
 		Keeper: sk,
@@ -80,13 +90,10 @@ func NewWrappedBaseKeeper(
 		ak: ak,
 		bk: bk,
 		sk: stakingKeeper,
+		rk: rewardKeeper,
 	}
 }
 
 func (k WrappedBaseKeeper) UnwrapKeeper() distributionkeeper.Keeper {
 	return k.Keeper
 }
-
-// func (k WrappedBaseKeeper) UnwrapBaseKeeper() stakingkeeper.Keeper {
-// 	return k.Keeper.(stakingkeeper.BaseKeeper)
-// }

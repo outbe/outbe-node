@@ -12,6 +12,7 @@ import (
 	stakingKeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	gemdistributionkeeper "github.com/outbe/outbe-node/x/distribution/keeper"
 	gemdistributiontypes "github.com/outbe/outbe-node/x/distribution/types"
+	rewardKeeper "github.com/outbe/outbe-node/x/reward/keeper"
 )
 
 var (
@@ -27,8 +28,8 @@ type AppModule struct {
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(module distribution.AppModule, keeper distributionkeeper.Keeper, accountKeeper gemdistributiontypes.AccountKeeper, bankKeeper gemdistributiontypes.BankKeeper, ss exported.Subspace, distributionkeeper distributionkeeper.Keeper, stakingKeeper stakingKeeper.Keeper) AppModule {
-	wrappedBankKeeper := gemdistributionkeeper.NewWrappedBaseKeeper(keeper, accountKeeper, bankKeeper, stakingKeeper)
+func NewAppModule(module distribution.AppModule, keeper distributionkeeper.Keeper, accountKeeper gemdistributiontypes.AccountKeeper, bankKeeper gemdistributiontypes.BankKeeper, ss exported.Subspace, distributionkeeper distributionkeeper.Keeper, stakingKeeper stakingKeeper.Keeper, rewardKeeper rewardKeeper.Keeper) AppModule {
+	wrappedBankKeeper := gemdistributionkeeper.NewWrappedBaseKeeper(keeper, accountKeeper, bankKeeper, stakingKeeper, rewardKeeper)
 
 	return AppModule{
 		AppModule: module,

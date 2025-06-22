@@ -1,11 +1,8 @@
 package constants
 
 const (
-	Apr              = "0.04"
-	BlockPerYear     = "6307200"
-	MaxSelfbondToken = "1000000"
 	Denom            = "outbe"
+	FeeCollectorName = "fee_collector"
+	ModuleName       = "distribution"
+	LegacyPrecision  = 18
 )
-
-const FeeCollectorName = "fee_collector"
-const ModuleName = "distribution"
