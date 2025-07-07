@@ -244,7 +244,7 @@ var (
 
 // module account permissions
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
+	authtypes.FeeCollectorName:     {authtypes.Minter},
 	distrtypes.ModuleName:          {authtypes.Minter},
 	minttypes.ModuleName:           {authtypes.Minter},
 	allocationpooltypes.ModuleName: {authtypes.Minter, authtypes.Burner},
@@ -535,12 +535,14 @@ func NewChainApp(
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
+
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[minttypes.StoreKey]),
 		app.StakingKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.RewardKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -689,7 +691,6 @@ func NewChainApp(
 		app.StakingKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.AllocationPoolKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -965,7 +966,7 @@ func NewChainApp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		gemmint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
+		gemmint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.RewardKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(
 			appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper,
 			app.StakingKeeper,
@@ -973,8 +974,7 @@ func NewChainApp(
 
 		distributionmodule.NewAppModule(
 			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-			*&app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *&app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper),
-
+			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper),
 		// distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
