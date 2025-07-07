@@ -66,7 +66,7 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 
 			decEmissionPerBlock, err := sdkmath.LegacyNewDecFromStr(emissionToken)
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker[ failed. failed to convert string to sdk.Dec")
+				return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker] failed. failed to convert string to sdk.Dec")
 			}
 
 			emission.BlockNumber = strBlockNumber
