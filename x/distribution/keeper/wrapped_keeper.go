@@ -5,16 +5,18 @@ import (
 
 	"cosmossdk.io/core/address"
 	sdkmath "cosmossdk.io/math"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
 
 type AccountKeeper interface {
 	AddressCodec() address.Codec
 
-	IterateAccounts(ctx context.Context, process func(sdk.AccountI) (stop bool))
+	//IterateAccounts(ctx context.Context, process func(sdk.AccountI) (stop bool))
 	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI // only used for simulation
 
 	GetModuleAddress(name string) sdk.AccAddress
@@ -27,16 +29,16 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
-	LockedCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	//LockedCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 
 	GetSupply(ctx context.Context, denom string) sdk.Coin
 	MintCoins(ctx context.Context, moduleName string, amt sdk.Coins) error
 	SendCoinsFromModuleToModule(ctx context.Context, senderPool, recipientPool string, amt sdk.Coins) error
-	UndelegateCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
-	DelegateCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	//UndelegateCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	//DelegateCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 
-	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
+	//BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
 }
 
 type StakingKeeper interface {
@@ -63,17 +65,25 @@ type StakingKeeper interface {
 
 type RewardKeeper interface {
 	GetParams(ctx sdk.Context) (params rewardtypes.Params)
-	CalculateValidatorFeeShare(transactionFees, selfBondedTokens, totalSelfBondedTokens sdkmath.LegacyDec) (sdkmath.LegacyDec, error)
-	CalculateMinimumAPRReward(selfBondedTokens, apr sdkmath.LegacyDec, blocksPerYear int64) (sdkmath.LegacyDec, error)
+	GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (sdkmath.LegacyDec, error)
+	CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error)
+	CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec
+	CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) sdkmath.LegacyDec
+}
+
+type AllocationPoolKeeper interface {
+	GetTotalEmission(ctx context.Context) (val allocationpooltypes.Emission, found bool)
+	SetEmission(ctx context.Context, emission allocationpooltypes.Emission) error
 }
 
 type WrappedBaseKeeper struct {
 	distributionkeeper.Keeper
 
-	ak AccountKeeper
-	bk BankKeeper
-	sk StakingKeeper
-	rk RewardKeeper
+	ak  AccountKeeper
+	bk  BankKeeper
+	sk  StakingKeeper
+	rk  RewardKeeper
+	apk AllocationPoolKeeper
 }
 
 func NewWrappedBaseKeeper(
@@ -83,14 +93,16 @@ func NewWrappedBaseKeeper(
 	bk BankKeeper,
 	stakingKeeper StakingKeeper,
 	rewardKeeper RewardKeeper,
+	allocationpool AllocationPoolKeeper,
 ) WrappedBaseKeeper {
 	return WrappedBaseKeeper{
 		Keeper: sk,
 
-		ak: ak,
-		bk: bk,
-		sk: stakingKeeper,
-		rk: rewardKeeper,
+		ak:  ak,
+		bk:  bk,
+		sk:  stakingKeeper,
+		rk:  rewardKeeper,
+		apk: allocationpool,
 	}
 }
 

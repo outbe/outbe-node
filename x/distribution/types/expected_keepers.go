@@ -5,8 +5,10 @@ import (
 
 	"cosmossdk.io/core/address"
 	sdkmath "cosmossdk.io/math"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
 
@@ -19,7 +21,7 @@ type AccountKeeper interface {
 	GetModuleAccount(ctx context.Context, name string) sdk.ModuleAccountI
 	// TODO remove with genesis 2-phases refactor https://github.com/cosmos/cosmos-sdk/issues/2862
 	SetModuleAccount(context.Context, sdk.ModuleAccountI)
-	IterateAccounts(ctx context.Context, process func(sdk.AccountI) bool)
+	//IterateAccounts(ctx context.Context, process func(sdk.AccountI) bool)
 }
 
 type StakingKeeper interface {
@@ -47,7 +49,7 @@ type StakingKeeper interface {
 type BankKeeper interface {
 	MintCoins(ctx context.Context, moduleName string, amt sdk.Coins) error
 	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
-	LockedCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	//LockedCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	GetSupply(ctx context.Context, denom string) sdk.Coin
 	SendCoinsFromModuleToModule(ctx context.Context, senderModule, recipientModule string, amt sdk.Coins) error
@@ -55,9 +57,9 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	BlockedAddr(addr sdk.AccAddress) bool
-	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
-	UndelegateCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
-	DelegateCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	//BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
+	//UndelegateCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	//DelegateCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 }
 
 type DistributionKeeper interface {
@@ -67,6 +69,13 @@ type DistributionKeeper interface {
 
 type RewardKeeper interface {
 	GetParams(ctx sdk.Context) (params rewardtypes.Params)
-	CalculateValidatorFeeShare(transactionFees, selfBondedTokens, totalSelfBondedTokens sdkmath.LegacyDec) (sdkmath.LegacyDec, error)
-	CalculateMinimumAPRReward(selfBondedTokens, apr sdkmath.LegacyDec, blocksPerYear int64) (sdkmath.LegacyDec, error)
+	GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (sdkmath.LegacyDec, error)
+	CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error)
+	CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec
+	CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) sdkmath.LegacyDec
+}
+
+type AllocationPoolKeeper interface {
+	GetTotalEmission(ctx context.Context) (val allocationpooltypes.Emission, found bool)
+	SetEmission(ctx context.Context, emission allocationpooltypes.Emission) error
 }
