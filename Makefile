@@ -204,8 +204,6 @@ proto-gen:
 	@go install cosmossdk.io/orm/cmd/protoc-gen-go-cosmos-orm@v1.0.0-beta.3
 	@echo "Generating Protobuf files"
 	@$(protoImage) sh ./scripts/protocgen.sh
-# generate the stubs for the proto files from the proto directory
-	@spawn stub-gen
 	@go mod tidy
 
 proto-format:

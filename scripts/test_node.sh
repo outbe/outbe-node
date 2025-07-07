@@ -114,6 +114,21 @@ from_scratch () {
   #update_test_genesis '.app_state["tokenfactory"]["params"]["denom_creation_fee"]=[]'
   #update_test_genesis '.app_state["tokenfactory"]["params"]["denom_creation_gas_consume"]=100000'
 
+  # === REWARDS MODULE ===
+  # update_test_genesis '.app_state["reward"] = {
+  #   "params": {
+  #     "apr": "0.04",
+  #     "block_per_year": "6307200",
+  #     "max_self_bond_token": "1000000"
+  #   }
+  # }'
+
+  update_test_genesis '.app_state["reward"]["params"]["apr"]="0.04"'
+  update_test_genesis '.app_state["reward"]["params"]["block_per_year"]="6307200"'
+  update_test_genesis '.app_state["reward"]["params"]["max_self_bond_token"]="1000000"'
+
+  update_test_genesis '.app_state["allocationpool"]["params"]["initial_rate"]="65536"'
+  update_test_genesis '.app_state["allocationpool"]["params"]["decay"]="0.00000006"'
 
   BASE_GENESIS_ALLOCATIONS="100000000000000000000000000$DENOM,100000000test"
 
