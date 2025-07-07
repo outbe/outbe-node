@@ -3,11 +3,10 @@ package types
 import (
 	context "context"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
-	gemminttypes "github.com/outbe/outbe-node/x/gemmint/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
@@ -38,15 +37,6 @@ type StakingKeeper interface {
 	IterateValidators(ctx context.Context, fn func(index int64, validator stakingtypes.ValidatorI) (stop bool)) error
 	Delegation(context.Context, sdk.AccAddress, sdk.ValAddress) (stakingtypes.DelegationI, error)
 	Validator(context.Context, sdk.ValAddress) (stakingtypes.ValidatorI, error)
-}
-
-type MintKeeper interface {
-	GetWhitelist(ctx context.Context) (list []gemminttypes.Whitelist)
-	IsEligibleSmartContract(ctx context.Context, contractAddress string) bool
-	SetTotalMinted(ctx context.Context, totalMinted gemminttypes.Minted) error
-	GetTotalMinted(ctx context.Context) (totalMinted gemminttypes.Minted, found bool)
-}
-
-type AllocatioPoolKeeper interface {
-	GetTotalEmission(ctx context.Context) (val allocationpooltypes.Emission, found bool)
+	ValidatorByConsAddr(context.Context, sdk.ConsAddress) (stakingtypes.ValidatorI, error)
+	ValidatorAddressCodec() address.Codec
 }
