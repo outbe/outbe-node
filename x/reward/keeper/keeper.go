@@ -3,30 +3,30 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"cosmossdk.io/collections"
 	storetypes "cosmossdk.io/core/store"
 	customLog "cosmossdk.io/log"
 
 	sdkerrors "cosmossdk.io/errors"
-	errortypes "github.com/outbe/outbe-node/errors"
-
 	sdkmath "cosmossdk.io/math"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/reward/types"
 )
 
 // Keeper of the mint store
 type Keeper struct {
-	cdc                  codec.BinaryCodec
-	storeService         storetypes.KVStoreService
-	stakingKeeper        types.StakingKeeper
-	bankKeeper           types.BankKeeper
-	allocationPoolKeeper types.AllocatioPoolKeeper
-	feeCollectorName     string
+	cdc              codec.BinaryCodec
+	storeService     storetypes.KVStoreService
+	stakingKeeper    types.StakingKeeper
+	bankKeeper       types.BankKeeper
+	feeCollectorName string
 
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
@@ -42,7 +42,6 @@ func NewKeeper(
 	sk types.StakingKeeper,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
-	alp types.AllocatioPoolKeeper,
 	feeCollectorName string,
 	authority string,
 ) Keeper {
@@ -53,14 +52,13 @@ func NewKeeper(
 
 	sb := collections.NewSchemaBuilder(storeService)
 	k := Keeper{
-		cdc:                  cdc,
-		storeService:         storeService,
-		stakingKeeper:        sk,
-		bankKeeper:           bk,
-		allocationPoolKeeper: alp,
-		feeCollectorName:     feeCollectorName,
-		authority:            authority,
-		Params:               collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		cdc:              cdc,
+		storeService:     storeService,
+		stakingKeeper:    sk,
+		bankKeeper:       bk,
+		feeCollectorName: feeCollectorName,
+		authority:        authority,
+		Params:           collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 	}
 
 	schema, err := sb.Build()
@@ -115,68 +113,56 @@ func (k Keeper) GetTotalSelfBondedTokens(ctx sdk.Context, validatorAddr sdk.ValA
 	return total
 }
 
-func (k Keeper) CalculateValidatorFeeShare(transactionFees, selfBondedTokens, totalSelfBondedTokens sdkmath.LegacyDec) (sdkmath.LegacyDec, error) {
-	// Check for zero or negative totalSelfBondedTokens to prevent division by zero
-	if totalSelfBondedTokens.IsZero() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "total self-bonded tokens cannot be zero")
+// calculateTotalSelfBondedTokens sums the self-bonded tokens of all validators in bondedVotes.
+func (k Keeper) CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error) {
+	total := sdkmath.ZeroInt()
+	for _, vote := range bondedVotes {
+		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
+		if err != nil {
+			return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrNoValidatorForAddress, "invalid validatir cons adddress")
+		}
+		selfBonded, err := k.GetValidatorSelfBondedTokens(ctx, validator)
+		if err != nil {
+			return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "couldn't fetch validator self bond token")
+		}
+		total = total.Add(selfBonded.TruncateInt())
 	}
-	if totalSelfBondedTokens.IsNegative() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "total self-bonded tokens cannot be negative")
-	}
-
-	// Check for negative transactionFees or selfBondedTokens
-	if transactionFees.IsNegative() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "transaction fees cannot be negative")
-	}
-	if selfBondedTokens.IsNegative() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "self-bonded tokens cannot be negative")
-	}
-
-	// validator_fee_share = transactionFees × (selfBondedTokens / totalSelfBondedTokens)
-	shareRatio, err := sdkmath.LegacyNewDecFromStr((selfBondedTokens.Quo(totalSelfBondedTokens)).String())
-	if err != nil {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to calculate share ratio: %v", err)
-	}
-
-	validatorFeeShare, err := sdkmath.LegacyNewDecFromStr((transactionFees.Mul(shareRatio)).String())
-	if err != nil {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to calculate validator fee share: %v", err)
-	}
-
-	return validatorFeeShare, nil
+	return total, nil
 }
 
-// CalculateMinimumAPRReward calculates the minimum APR reward based on the self-bonded tokens
-// and the annual percentage rate (APR).
-func (k Keeper) CalculateMinimumAPRReward(selfBondedTokens, apr sdkmath.LegacyDec, blocksPerYear int64) (sdkmath.LegacyDec, error) {
-	if selfBondedTokens.IsNegative() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "self-bonded tokens cannot be negative")
-	}
-	if selfBondedTokens.IsZero() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "self-bonded tokens cannot be zero")
-	}
-
-	if apr.IsNegative() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "APR cannot be negative")
-	}
-	if apr.IsZero() {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "APR cannot be zero")
-	}
-
-	if blocksPerYear <= 0 {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrap(errortypes.ErrInvalidRequest, "blocks per year must be positive")
-	}
-
-	blocksPerYearDec := sdkmath.LegacyNewDec(blocksPerYear)
-	aprPerBlock, err := sdkmath.LegacyNewDecFromStr((apr.Quo(blocksPerYearDec)).String())
+// getValidatorSelfBondedTokens retrieves the self-bonded tokens for a validator.
+func (k Keeper) GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (sdkmath.LegacyDec, error) {
+	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
 	if err != nil {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to calculate APR per block: %v", err)
+		return sdkmath.LegacyDec{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to convert validator address to bytes: %s", err.Error())
 	}
 
-	result, err := sdkmath.LegacyNewDecFromStr((selfBondedTokens.Mul(aprPerBlock)).String())
+	valAddr := sdk.ValAddress(valBz)
+	delAddr := sdk.AccAddress(valBz)
+
+	selfDel, err := k.stakingKeeper.Delegation(ctx, delAddr, valAddr)
 	if err != nil {
-		return sdkmath.LegacyZeroDec(), sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to calculate minimum APR reward: %v", err)
+		return sdkmath.LegacyDec{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to query delegation for delegator %s and validator %s: %s", delAddr.String(), valAddr.String(), err.Error())
 	}
 
-	return result, nil
+	tokens := val.TokensFromShares(selfDel.GetShares())
+	return tokens, nil
+}
+
+func (k Keeper) CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec {
+	return amount.Mul(selfBonded).QuoInt(totalSelfBonded)
+}
+
+func (k Keeper) CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) sdkmath.LegacyDec {
+	sdkctx := sdk.UnwrapSDKContext(ctx)
+	params := k.GetParams(sdkctx)
+
+	num, err := strconv.ParseInt(params.BlockPerYear, 10, 64)
+	if err != nil {
+		fmt.Printf("Error converting string to int64: %v\n", err)
+		return sdkmath.LegacyDec{}
+	}
+
+	minAprFactor := sdkmath.LegacyMustNewDecFromStr(params.Apr).QuoInt64(num)
+	return selfBonded.Mul(minAprFactor)
 }
