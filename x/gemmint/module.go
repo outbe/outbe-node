@@ -98,8 +98,9 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *g
 type AppModule struct {
 	AppModuleBasic
 
-	keeper     keeper.Keeper
-	authKeeper types.AccountKeeper
+	keeper       keeper.Keeper
+	authKeeper   types.AccountKeeper
+	rewardKeeper types.RewardKeeper
 
 	// legacySubspace is used solely for migration of x/params managed parameters
 	legacySubspace exported.Subspace
@@ -115,6 +116,7 @@ func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
 	ak types.AccountKeeper,
+	rk types.RewardKeeper,
 	ic types.InflationCalculationFn,
 	ss exported.Subspace,
 ) AppModule {
@@ -126,6 +128,7 @@ func NewAppModule(
 		AppModuleBasic:      AppModuleBasic{cdc: cdc},
 		keeper:              keeper,
 		authKeeper:          ak,
+		rewardKeeper:        rk,
 		inflationCalculator: ic,
 		legacySubspace:      ss,
 	}
@@ -208,6 +211,7 @@ type ModuleInputs struct {
 	LegacySubspace exported.Subspace `optional:"true"`
 
 	AccountKeeper types.AccountKeeper
+	RewardKeeper  types.RewardKeeper
 	BankKeeper    types.BankKeeper
 	StakingKeeper types.StakingKeeper
 }
@@ -237,12 +241,13 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.StakingKeeper,
 		in.AccountKeeper,
 		in.BankKeeper,
+		in.RewardKeeper,
 		feeCollectorName,
 		authority.String(),
 	)
 
 	// when no inflation calculation function is provided it will use the default types.DefaultInflationCalculationFn
-	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.InflationCalculationFn, in.LegacySubspace)
+	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.RewardKeeper, in.InflationCalculationFn, in.LegacySubspace)
 
 	return ModuleOutputs{MintKeeper: k, Module: m}
 }

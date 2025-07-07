@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -24,9 +23,6 @@ func CmdAddContractToWhitelist() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			fmt.Println("000000000000000000000000000000000")
-			fmt.Println("000000000000000000000000000000000", args[0])
 
 			// Create MsgAddContractToWhitelist
 			msg := &types.MsgAddContractToWhitelist{
