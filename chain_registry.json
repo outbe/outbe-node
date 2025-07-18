@@ -81,7 +81,7 @@
     ],
     "rest": [
       {
-        "address": "http://lcp.dev.outbe.net",
+        "address": "http://lcd.dev.outbe.net",
         "provider": "Outbe DevNet"
       }
     ]
