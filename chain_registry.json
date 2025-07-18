@@ -75,13 +75,13 @@
   "apis": {
     "rpc": [
       {
-        "address": "http://rpc.dev.outbe.net:26657",
+        "address": "http://rpc.dev.outbe.net",
         "provider": "Outbe DevNet"
       }
     ],
     "rest": [
       {
-        "address": "http://rpc.dev.outbe.net:1317",
+        "address": "http://lcp.dev.outbe.net",
         "provider": "Outbe DevNet"
       }
     ]
