@@ -109,6 +109,16 @@ from_scratch () {
   ## abci
   update_test_genesis '.consensus["params"]["abci"]["vote_extensions_enable_height"]="1"'
 
+  update_test_genesis '.app_state["rand"]["params"]["commit_period"]="8"'
+  update_test_genesis '.app_state["rand"]["params"]["reveal_period"]="8"'
+  update_test_genesis '.app_state["rand"]["params"]["minimum_deposit"]={"denom":"outbe","amount":"1230000"}'
+  update_test_genesis '.app_state["rand"]["params"]["penalty_amount"]={"denom":"outbe","amount":"54000"}'
+
+  #   update_test_genesis '.app_state["rand"]["params"]["commit_period"]="8"'
+  # update_test_genesis '.app_state["rand"]["params"]["reveal_period"]="8"'
+  # update_test_genesis '.app_state["rand"]["params"]["minimum_deposit"]="123000"'
+  # update_test_genesis '.app_state["rand"]["params"]["penalty_mount"]="45000"'
+
   # === CUSTOM MODULES ===
   # tokenfactory
   #update_test_genesis '.app_state["tokenfactory"]["params"]["denom_creation_fee"]=[]'
