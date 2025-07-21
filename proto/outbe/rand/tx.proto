@@ -1,0 +1,41 @@
+syntax = "proto3";
+package outbe.rand;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/rand/types";
+
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc Commit(MsgCommit) returns (MsgCommitResponse);
+  rpc Reveal(MsgReveal) returns (MsgRevealResponse);
+
+}
+
+message MsgCommit {
+  option (amino.name) = "outbe/MsgCommit";
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1;
+  string validator = 2;
+  string commitment_hash = 3;
+  cosmos.base.v1beta1.Coin deposit = 4;
+}
+
+message MsgCommitResponse {}
+
+message MsgReveal {
+  option (amino.name) = "outbe/MsgReveal";
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1;
+  string validator = 2;
+  string reveal_value = 3;
+  string period = 4;
+}
+
+message MsgRevealResponse {}
