@@ -171,6 +171,10 @@ import (
 	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
 	chainante "github.com/outbe/outbe-node/app/ante"
+
+	randmodule "github.com/outbe/outbe-node/x/rand"
+	randkeeper "github.com/outbe/outbe-node/x/rand/keeper"
+	randtypes "github.com/outbe/outbe-node/x/rand/types"
 )
 
 const (
@@ -246,6 +250,7 @@ var maccPerms = map[string][]string{
 	evmtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 	feemarkettypes.ModuleName:   nil,
 	erc20types.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	randtypes.ModuleName:        {authtypes.Minter},
 }
 
 var (
@@ -300,6 +305,8 @@ type ChainApp struct {
 	FeeMarketKeeper     feemarketkeeper.Keeper
 	EVMKeeper           *evmkeeper.Keeper
 	Erc20Keeper         erc20keeper.Keeper
+
+	RandKeeper randkeeper.Keeper
 
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
@@ -416,6 +423,7 @@ func NewChainApp(
 		evmtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		erc20types.StoreKey,
+		randtypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(
@@ -855,6 +863,16 @@ func NewChainApp(
 		wasmlckeeper.WithQueryPlugins(&wasmLightClientQuerier),
 	)
 
+	app.RandKeeper = randkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[randtypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+	)
+
 	// Create Transfer Stack
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -936,7 +954,7 @@ func NewChainApp(
 			app.StakingKeeper,
 			app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName),
 		),
-
+		randmodule.NewAppModule(appCodec, app.RandKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -995,6 +1013,7 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		randtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1015,6 +1034,7 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		randtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1062,6 +1082,7 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		randtypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1504,6 +1525,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	paramsKeeper.Subspace(erc20types.ModuleName)
+
+	paramsKeeper.Subspace(randtypes.ModuleName)
 
 	return paramsKeeper
 }
