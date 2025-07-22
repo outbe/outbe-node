@@ -535,9 +535,12 @@ func (k Keeper) Reveal(goCtx context.Context, validator string, revealPeriod uin
 	}
 
 	if !commitment.Revealed {
-		// Generate and verify random value
-		r := k.GenerateRandomValue(sdk.ValAddress(validator), revealPeriod)
-		computedHash := k.ComputeHash(r)
+		randomBytes, err := k.LoadByteSliceFromFile("./begin_blocker_log.txt")
+		if err != nil {
+			panic(err)
+		}
+
+		computedHash := k.ComputeHash(randomBytes)
 
 		if !bytes.Equal(computedHash, commitment.CommitmentHash) {
 			logger.Error("reveal does not match commitment",
@@ -550,21 +553,11 @@ func (k Keeper) Reveal(goCtx context.Context, validator string, revealPeriod uin
 		commitment.Revealed = true
 		k.SetCommitment(ctx, commitment)
 
-		// Convert random value to bytes
-		revealValue, err := k.ConvertRandomValueToBytes(r)
-		if err != nil {
-			logger.Error("failed to convert random value to bytes",
-				"validator", validator,
-				"period", revealPeriod,
-				"error", err)
-			return sdkerrors.Wrap(errortypes.ErrInvalidReveal, "failed to convert random value")
-		}
-
 		// Store reveal
 		reveal := types.Reveal{
 			Period:      state.CurrentPeriod,
 			Validator:   validator,
-			RevealValue: revealValue,
+			RevealValue: randomBytes,
 			BlockHeight: ctx.BlockHeight(),
 		}
 		k.SetReveal(ctx, reveal)

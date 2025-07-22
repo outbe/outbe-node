@@ -15,7 +15,6 @@ import (
 // BeginBlocker handles the logic at the beginning of each block
 func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-
 	logger := k.Logger(ctx)
 
 	// Get period state with error handling
@@ -179,14 +178,16 @@ func (k Keeper) EndBlocker(ctx sdk.Context) error {
 				)
 
 				if len(commitments) == 0 {
-					r := k.GenerateRandomValue(sdk.ValAddress(validatorAddr), state.CurrentPeriod)
-					if r == "" {
+					r := k.GenerateRandomValueBinary(ctx, sdk.ValAddress(validatorAddr), state.CurrentPeriod)
+					if r == nil {
 						logger.Error("Failed to generate random value",
 							"validator", validatorAddr,
 							"period", state.CurrentPeriod,
 						)
 						continue // Skip to next validator instead of failing entire block
 					}
+
+					k.WriteByteToTheFile(ctx, r)
 
 					computedHash := k.ComputeHash(r)
 					if computedHash == nil {
@@ -261,5 +262,6 @@ func (k Keeper) EndBlocker(ctx sdk.Context) error {
 			}
 		}
 	}
+
 	return nil
 }
