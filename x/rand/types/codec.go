@@ -18,22 +18,9 @@ func init() {
 	Amino.Seal()
 }
 
-func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCommit{}, "rand/MsgCommit", nil)
-	cdc.RegisterConcrete(&MsgReveal{}, "rand/MsgReveal", nil)
-
-}
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCommit{},
-	)
-
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgReveal{},
-	)
-	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 

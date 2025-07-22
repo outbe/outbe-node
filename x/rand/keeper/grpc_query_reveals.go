@@ -11,7 +11,7 @@ import (
 
 func (k Keeper) Reveals(c context.Context, req *types.QueryRevealsRequest) (*types.QueryRevealsResponse, error) {
 	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
+		return nil, status.Error(codes.NotFound, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 

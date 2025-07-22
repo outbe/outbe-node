@@ -2,10 +2,11 @@ package cli
 
 import (
 	"context"
-	"fmt"
 
+	sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/rand/types"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +36,7 @@ func CmdQueryCommitment() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.Commitment(cmd.Context(), req)
 			if err != nil {
-				return fmt.Errorf("failed to query commitments: %w", err)
+				return sdkerrors.Wrap(errortypes.ErrNoCommitment, "failed to query commitments")
 			}
 
 			// Output the response

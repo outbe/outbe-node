@@ -1,11 +1,11 @@
 package types
 
 import (
-	"fmt"
-
+	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/app/params"
+	errortypes "github.com/outbe/outbe-node/errors"
 )
 
 // DefaultGenesisState returns the default genesis state
@@ -39,16 +39,16 @@ func DefaultParams() Params {
 // Validate validates the genesis state
 func (gs GenesisState) Validate() error {
 	if gs.Params.CommitPeriod == 0 {
-		return fmt.Errorf("commit period cannot be zero")
+		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "commit period cannot be zero")
 	}
 	if gs.Params.RevealPeriod == 0 {
-		return fmt.Errorf("reveal period cannot be zero")
+		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "reveal period cannot be zero")
 	}
 	if !gs.Params.MinimumDeposit.IsValid() {
-		return fmt.Errorf("invalid minimum deposit: %s", gs.Params.MinimumDeposit)
+		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "invalid minimum deposit")
 	}
 	if !gs.Params.PenaltyAmount.IsValid() {
-		return fmt.Errorf("invalid penalty amount: %s", gs.Params.PenaltyAmount)
+		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "invalid penalty amount")
 	}
 	return nil
 }
