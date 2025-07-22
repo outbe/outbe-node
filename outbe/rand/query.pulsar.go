@@ -5080,13 +5080,11 @@ func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
 	return file_outbe_rand_query_proto_rawDescGZIP(), []int{0}
 }
 
-// QueryParamsResponse is response type for the Query/Params RPC method.
 type QueryParamsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// params holds all the parameters of this module.
 	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
 }
 
@@ -5378,7 +5376,6 @@ func (x *QueryRevealsResponse) GetReveals() []*Reveal {
 	return nil
 }
 
-// QueryCurrentRandomnessRequest is the request type for the Query/CurrentRandomness RPC method.
 type QueryCurrentRandomnessRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5405,7 +5402,6 @@ func (*QueryCurrentRandomnessRequest) Descriptor() ([]byte, []int) {
 	return file_outbe_rand_query_proto_rawDescGZIP(), []int{10}
 }
 
-// QueryCurrentRandomnessResponse is the response type for the Query/CurrentRandomness RPC method.
 type QueryCurrentRandomnessResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
