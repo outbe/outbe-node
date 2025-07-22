@@ -286,34 +286,34 @@ func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
 		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to get validators: %s", err)
 	}
 
-	fmt.Println("validator----------------->", len(validators))
-
 	if len(validators) == 1 {
 		return nil
 	}
 
 	commitments := k.GetCommitmentsByPeriod(ctx, period)
 	for _, commitment := range commitments {
-		valAddress, _ := sdk.ValAddressFromBech32(commitment.Validator)
-		validator, _ := k.stakingKeeper.Validator(ctx, valAddress)
+		if !commitment.Revealed {
+			valAddress, _ := sdk.ValAddressFromBech32(commitment.Validator)
+			validator, _ := k.stakingKeeper.Validator(ctx, valAddress)
 
-		if validator != nil && validator.IsBonded() {
-			params := k.GetParams(ctx)
-			conAddress, _ := validator.GetConsAddr()
-			k.stakingKeeper.Slash(
-				ctx,
-				conAddress,
-				ctx.BlockHeight(),
-				validator.GetConsensusPower(sdk.DefaultPowerReduction),
-				math.LegacyNewDec(params.PenaltyAmount.Amount.Int64()),
-			)
-			ctx.EventManager().EmitEvent(
-				sdk.NewEvent(
-					types.EventTypePenalty,
-					sdk.NewAttribute(types.AttributeKeyValidator, commitment.Validator),
-					sdk.NewAttribute(types.AttributeKeyPeriodNumber, fmt.Sprintf("%d", period)),
-				),
-			)
+			if validator != nil && validator.IsBonded() {
+				params := k.GetParams(ctx)
+				conAddress, _ := validator.GetConsAddr()
+				k.stakingKeeper.Slash(
+					ctx,
+					conAddress,
+					ctx.BlockHeight(),
+					validator.GetConsensusPower(sdk.DefaultPowerReduction),
+					math.LegacyNewDec(params.PenaltyAmount.Amount.Int64()),
+				)
+				ctx.EventManager().EmitEvent(
+					sdk.NewEvent(
+						types.EventTypePenalty,
+						sdk.NewAttribute(types.AttributeKeyValidator, commitment.Validator),
+						sdk.NewAttribute(types.AttributeKeyPeriodNumber, fmt.Sprintf("%d", period)),
+					),
+				)
+			}
 		}
 	}
 	return nil
