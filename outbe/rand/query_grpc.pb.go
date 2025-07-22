@@ -36,7 +36,6 @@ type QueryClient interface {
 	Commitment(ctx context.Context, in *QueryCommitmentRequest, opts ...grpc.CallOption) (*QueryCommitmentResponse, error)
 	Commitments(ctx context.Context, in *QueryCommitmentsRequest, opts ...grpc.CallOption) (*QueryCommitmentsResponse, error)
 	Reveals(ctx context.Context, in *QueryRevealsRequest, opts ...grpc.CallOption) (*QueryRevealsResponse, error)
-	// CurrentRandomness queries the current random seed of the period.
 	CurrentRandomness(ctx context.Context, in *QueryCurrentRandomnessRequest, opts ...grpc.CallOption) (*QueryCurrentRandomnessResponse, error)
 }
 
@@ -111,7 +110,6 @@ type QueryServer interface {
 	Commitment(context.Context, *QueryCommitmentRequest) (*QueryCommitmentResponse, error)
 	Commitments(context.Context, *QueryCommitmentsRequest) (*QueryCommitmentsResponse, error)
 	Reveals(context.Context, *QueryRevealsRequest) (*QueryRevealsResponse, error)
-	// CurrentRandomness queries the current random seed of the period.
 	CurrentRandomness(context.Context, *QueryCurrentRandomnessRequest) (*QueryCurrentRandomnessResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

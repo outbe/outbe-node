@@ -22,7 +22,7 @@ message MsgCommit {
 
   string creator = 1;
   string validator = 2;
-  string commitment_hash = 3;
+  bytes commitment_hash = 3;
   cosmos.base.v1beta1.Coin deposit = 4;
 }
 
@@ -34,8 +34,8 @@ message MsgReveal {
 
   string creator = 1;
   string validator = 2;
-  string reveal_value = 3;
-  string period = 4;
+  bytes reveal_value = 3;
+  uint64 period = 4;
 }
 
 message MsgRevealResponse {}

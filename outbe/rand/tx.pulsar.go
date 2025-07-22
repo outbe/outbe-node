@@ -110,8 +110,8 @@ func (x *fastReflection_MsgCommit) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.CommitmentHash != "" {
-		value := protoreflect.ValueOfString(x.CommitmentHash)
+	if len(x.CommitmentHash) != 0 {
+		value := protoreflect.ValueOfBytes(x.CommitmentHash)
 		if !f(fd_MsgCommit_commitment_hash, value) {
 			return
 		}
@@ -142,7 +142,7 @@ func (x *fastReflection_MsgCommit) Has(fd protoreflect.FieldDescriptor) bool {
 	case "outbe.rand.MsgCommit.validator":
 		return x.Validator != ""
 	case "outbe.rand.MsgCommit.commitment_hash":
-		return x.CommitmentHash != ""
+		return len(x.CommitmentHash) != 0
 	case "outbe.rand.MsgCommit.deposit":
 		return x.Deposit != nil
 	default:
@@ -166,7 +166,7 @@ func (x *fastReflection_MsgCommit) Clear(fd protoreflect.FieldDescriptor) {
 	case "outbe.rand.MsgCommit.validator":
 		x.Validator = ""
 	case "outbe.rand.MsgCommit.commitment_hash":
-		x.CommitmentHash = ""
+		x.CommitmentHash = nil
 	case "outbe.rand.MsgCommit.deposit":
 		x.Deposit = nil
 	default:
@@ -193,7 +193,7 @@ func (x *fastReflection_MsgCommit) Get(descriptor protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfString(value)
 	case "outbe.rand.MsgCommit.commitment_hash":
 		value := x.CommitmentHash
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfBytes(value)
 	case "outbe.rand.MsgCommit.deposit":
 		value := x.Deposit
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -222,7 +222,7 @@ func (x *fastReflection_MsgCommit) Set(fd protoreflect.FieldDescriptor, value pr
 	case "outbe.rand.MsgCommit.validator":
 		x.Validator = value.Interface().(string)
 	case "outbe.rand.MsgCommit.commitment_hash":
-		x.CommitmentHash = value.Interface().(string)
+		x.CommitmentHash = value.Bytes()
 	case "outbe.rand.MsgCommit.deposit":
 		x.Deposit = value.Message().Interface().(*v1beta1.Coin)
 	default:
@@ -274,7 +274,7 @@ func (x *fastReflection_MsgCommit) NewField(fd protoreflect.FieldDescriptor) pro
 	case "outbe.rand.MsgCommit.validator":
 		return protoreflect.ValueOfString("")
 	case "outbe.rand.MsgCommit.commitment_hash":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfBytes(nil)
 	case "outbe.rand.MsgCommit.deposit":
 		m := new(v1beta1.Coin)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -544,7 +544,7 @@ func (x *fastReflection_MsgCommit) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CommitmentHash", wireType)
 				}
-				var stringLen uint64
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -554,23 +554,25 @@ func (x *fastReflection_MsgCommit) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if byteLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + byteLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.CommitmentHash = string(dAtA[iNdEx:postIndex])
+				x.CommitmentHash = append(x.CommitmentHash[:0], dAtA[iNdEx:postIndex]...)
+				if x.CommitmentHash == nil {
+					x.CommitmentHash = []byte{}
+				}
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -1093,14 +1095,14 @@ func (x *fastReflection_MsgReveal) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.RevealValue != "" {
-		value := protoreflect.ValueOfString(x.RevealValue)
+	if len(x.RevealValue) != 0 {
+		value := protoreflect.ValueOfBytes(x.RevealValue)
 		if !f(fd_MsgReveal_reveal_value, value) {
 			return
 		}
 	}
-	if x.Period != "" {
-		value := protoreflect.ValueOfString(x.Period)
+	if x.Period != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Period)
 		if !f(fd_MsgReveal_period, value) {
 			return
 		}
@@ -1125,9 +1127,9 @@ func (x *fastReflection_MsgReveal) Has(fd protoreflect.FieldDescriptor) bool {
 	case "outbe.rand.MsgReveal.validator":
 		return x.Validator != ""
 	case "outbe.rand.MsgReveal.reveal_value":
-		return x.RevealValue != ""
+		return len(x.RevealValue) != 0
 	case "outbe.rand.MsgReveal.period":
-		return x.Period != ""
+		return x.Period != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.MsgReveal"))
@@ -1149,9 +1151,9 @@ func (x *fastReflection_MsgReveal) Clear(fd protoreflect.FieldDescriptor) {
 	case "outbe.rand.MsgReveal.validator":
 		x.Validator = ""
 	case "outbe.rand.MsgReveal.reveal_value":
-		x.RevealValue = ""
+		x.RevealValue = nil
 	case "outbe.rand.MsgReveal.period":
-		x.Period = ""
+		x.Period = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.MsgReveal"))
@@ -1176,10 +1178,10 @@ func (x *fastReflection_MsgReveal) Get(descriptor protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfString(value)
 	case "outbe.rand.MsgReveal.reveal_value":
 		value := x.RevealValue
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfBytes(value)
 	case "outbe.rand.MsgReveal.period":
 		value := x.Period
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.MsgReveal"))
@@ -1205,9 +1207,9 @@ func (x *fastReflection_MsgReveal) Set(fd protoreflect.FieldDescriptor, value pr
 	case "outbe.rand.MsgReveal.validator":
 		x.Validator = value.Interface().(string)
 	case "outbe.rand.MsgReveal.reveal_value":
-		x.RevealValue = value.Interface().(string)
+		x.RevealValue = value.Bytes()
 	case "outbe.rand.MsgReveal.period":
-		x.Period = value.Interface().(string)
+		x.Period = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.MsgReveal"))
@@ -1254,9 +1256,9 @@ func (x *fastReflection_MsgReveal) NewField(fd protoreflect.FieldDescriptor) pro
 	case "outbe.rand.MsgReveal.validator":
 		return protoreflect.ValueOfString("")
 	case "outbe.rand.MsgReveal.reveal_value":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfBytes(nil)
 	case "outbe.rand.MsgReveal.period":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.MsgReveal"))
@@ -1338,9 +1340,8 @@ func (x *fastReflection_MsgReveal) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Period)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.Period != 0 {
+			n += 1 + runtime.Sov(uint64(x.Period))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -1371,12 +1372,10 @@ func (x *fastReflection_MsgReveal) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Period) > 0 {
-			i -= len(x.Period)
-			copy(dAtA[i:], x.Period)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Period)))
+		if x.Period != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Period))
 			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x20
 		}
 		if len(x.RevealValue) > 0 {
 			i -= len(x.RevealValue)
@@ -1516,7 +1515,7 @@ func (x *fastReflection_MsgReveal) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RevealValue", wireType)
 				}
-				var stringLen uint64
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1526,29 +1525,31 @@ func (x *fastReflection_MsgReveal) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if byteLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + byteLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.RevealValue = string(dAtA[iNdEx:postIndex])
+				x.RevealValue = append(x.RevealValue[:0], dAtA[iNdEx:postIndex]...)
+				if x.RevealValue == nil {
+					x.RevealValue = []byte{}
+				}
 				iNdEx = postIndex
 			case 4:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Period", wireType)
 				}
-				var stringLen uint64
+				x.Period = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1558,24 +1559,11 @@ func (x *fastReflection_MsgReveal) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.Period |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Period = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1987,7 +1975,7 @@ type MsgCommit struct {
 
 	Creator        string        `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Validator      string        `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
-	CommitmentHash string        `protobuf:"bytes,3,opt,name=commitment_hash,json=commitmentHash,proto3" json:"commitment_hash,omitempty"`
+	CommitmentHash []byte        `protobuf:"bytes,3,opt,name=commitment_hash,json=commitmentHash,proto3" json:"commitment_hash,omitempty"`
 	Deposit        *v1beta1.Coin `protobuf:"bytes,4,opt,name=deposit,proto3" json:"deposit,omitempty"`
 }
 
@@ -2025,11 +2013,11 @@ func (x *MsgCommit) GetValidator() string {
 	return ""
 }
 
-func (x *MsgCommit) GetCommitmentHash() string {
+func (x *MsgCommit) GetCommitmentHash() []byte {
 	if x != nil {
 		return x.CommitmentHash
 	}
-	return ""
+	return nil
 }
 
 func (x *MsgCommit) GetDeposit() *v1beta1.Coin {
@@ -2072,8 +2060,8 @@ type MsgReveal struct {
 
 	Creator     string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Validator   string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
-	RevealValue string `protobuf:"bytes,3,opt,name=reveal_value,json=revealValue,proto3" json:"reveal_value,omitempty"`
-	Period      string `protobuf:"bytes,4,opt,name=period,proto3" json:"period,omitempty"`
+	RevealValue []byte `protobuf:"bytes,3,opt,name=reveal_value,json=revealValue,proto3" json:"reveal_value,omitempty"`
+	Period      uint64 `protobuf:"varint,4,opt,name=period,proto3" json:"period,omitempty"`
 }
 
 func (x *MsgReveal) Reset() {
@@ -2110,18 +2098,18 @@ func (x *MsgReveal) GetValidator() string {
 	return ""
 }
 
-func (x *MsgReveal) GetRevealValue() string {
+func (x *MsgReveal) GetRevealValue() []byte {
 	if x != nil {
 		return x.RevealValue
 	}
-	return ""
+	return nil
 }
 
-func (x *MsgReveal) GetPeriod() string {
+func (x *MsgReveal) GetPeriod() uint64 {
 	if x != nil {
 		return x.Period
 	}
-	return ""
+	return 0
 }
 
 type MsgRevealResponse struct {
@@ -2167,7 +2155,7 @@ var file_outbe_rand_tx_proto_rawDesc = []byte{
 	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
 	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x27, 0x0a, 0x0f, 0x63, 0x6f, 0x6d,
 	0x6d, 0x69, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0e, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x48, 0x61,
+	0x28, 0x0c, 0x52, 0x0e, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x48, 0x61,
 	0x73, 0x68, 0x12, 0x33, 0x0a, 0x07, 0x64, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
 	0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x07,
@@ -2180,9 +2168,9 @@ var file_outbe_rand_tx_proto_rawDesc = []byte{
 	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61,
 	0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x76, 0x61, 0x6c, 0x69, 0x64,
 	0x61, 0x74, 0x6f, 0x72, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x76, 0x65, 0x61, 0x6c, 0x5f, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x65, 0x76, 0x65,
+	0x61, 0x6c, 0x75, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x0b, 0x72, 0x65, 0x76, 0x65,
 	0x61, 0x6c, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f,
-	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a,
+	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a,
 	0x20, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0,
 	0x2a, 0x0f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x65, 0x61,
 	0x6c, 0x22, 0x13, 0x0a, 0x11, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x65, 0x61, 0x6c, 0x52, 0x65,
