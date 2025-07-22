@@ -34,4 +34,5 @@ type StakingKeeper interface {
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
 	Validator(context.Context, sdk.ValAddress) (stakingtypes.ValidatorI, error)
 	Slash(context.Context, sdk.ConsAddress, int64, int64, math.LegacyDec) (math.Int, error)
+	GetValidatorDelegations(ctx context.Context, valAddr sdk.ValAddress) (delegations []stakingtypes.Delegation, err error)
 }
