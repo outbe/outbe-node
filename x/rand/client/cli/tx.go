@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -28,12 +30,38 @@ func GetTxCmd() *cobra.Command {
 	return txCmd
 }
 
+func ParseByteSlice(input string) ([]byte, error) {
+	// Trim brackets
+	clean := strings.Trim(input, "[]")
+
+	// Split by whitespace
+	parts := strings.Fields(clean)
+
+	// Convert to []byte
+	result := make([]byte, 0, len(parts))
+	for _, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			return nil, fmt.Errorf("invalid byte value %q: %w", part, err)
+		}
+		result = append(result, byte(num))
+	}
+
+	return result, nil
+}
+
 func NewCommitCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "commit [validator] [commitment-hash] [deposit]",
 		Short: "Submit a commitment",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			bytes, err := ParseByteSlice(args[1])
+			if err != nil {
+				panic(err)
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -49,7 +77,7 @@ func NewCommitCmd() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCommit(clientCtx.GetFromAddress().String(), validator, args[1], deposit)
+			msg := types.NewMsgCommit(clientCtx.GetFromAddress().String(), validator, bytes, deposit)
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -65,16 +93,22 @@ func NewRevealCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			fmt.Println("here---------------------")
-
-			fmt.Println("NewRevealCmd ----------args------- >", args[0], args[1], args[2])
+			bytes, err := ParseByteSlice(args[2])
+			if err != nil {
+				panic(err)
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgReveal(clientCtx.GetFromAddress().String(), args[0], args[1], args[2])
+			period, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgReveal(clientCtx.GetFromAddress().String(), period, args[1], bytes)
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
