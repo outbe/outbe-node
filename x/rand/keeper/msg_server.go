@@ -3,9 +3,7 @@ package keeper
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"fmt"
-	"strconv"
 
 	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -31,6 +29,8 @@ func (k msgServer) Commit(goCtx context.Context, msg *types.MsgCommit) (*types.M
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	state, _ := k.GetPeriod(ctx)
 
+	logger := k.Logger(ctx)
+
 	// Verify commit phase
 	if !state.InCommitPhase {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidPhase, "not in commit phase")
@@ -42,8 +42,11 @@ func (k msgServer) Commit(goCtx context.Context, msg *types.MsgCommit) (*types.M
 	valAddress, _ := sdk.ValAddressFromBech32(msg.Validator)
 
 	// Verify validator
-	validator, _ := k.stakingKeeper.Validator(ctx, valAddress)
-	if validator == nil || !validator.IsBonded() {
+	validator, err := k.stakingKeeper.Validator(ctx, valAddress)
+	if err != nil || validator == nil || validator.IsJailed() || validator.IsUnbonded() || validator.IsUnbonding() {
+		logger.Error("invalid or inactive validator",
+			"validator", msg.Validator,
+			"error", err)
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidValidator, "invalid or inactive validator")
 	}
 
@@ -63,18 +66,16 @@ func (k msgServer) Commit(goCtx context.Context, msg *types.MsgCommit) (*types.M
 
 	senderAddress, _ := sdk.AccAddressFromBech32(msg.Creator)
 
-	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddress, types.ModuleName, sdk.NewCoins(token...))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddress, types.ModuleName, sdk.NewCoins(token...))
 	if err != nil {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidCoins, "deposit did not transfered")
 	}
-
-	commitBytes, _ := base64.StdEncoding.DecodeString(msg.CommitmentHash)
 
 	// Store commitment
 	commitment := types.Commitment{
 		Period:         state.CurrentPeriod,
 		Validator:      msg.Validator,
-		CommitmentHash: commitBytes,
+		CommitmentHash: msg.CommitmentHash,
 		BlockHeight:    ctx.BlockHeight(),
 		Revealed:       false,
 		Deposit:        msg.Deposit,
@@ -98,17 +99,18 @@ func (k msgServer) Reveal(goCtx context.Context, msg *types.MsgReveal) (*types.M
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	state, _ := k.GetPeriod(ctx)
 
+	logger := k.Logger(ctx)
+
 	// Verify reveal phase
 	if state.InCommitPhase {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidPhase, "not in reveal phase")
 	}
+
 	if ctx.BlockHeight() >= state.RevealEndHeight {
 		return nil, sdkerrors.Wrap(errortypes.ErrRevealPhaseClosed, "reveal phase closed")
 	}
 
-	period, _ := strconv.ParseUint(msg.Period, 10, 64)
-
-	commitment, found := k.GetCommitment(ctx, period, msg.Validator)
+	commitment, found := k.GetCommitment(ctx, msg.Period, msg.Validator)
 	if !found {
 		return nil, sdkerrors.Wrap(errortypes.ErrNoCommitment, "no commitment found")
 	}
@@ -116,10 +118,12 @@ func (k msgServer) Reveal(goCtx context.Context, msg *types.MsgReveal) (*types.M
 	if commitment.Revealed {
 		return nil, sdkerrors.Wrap(errortypes.ErrAlreadyRevealed, "already revealed")
 	}
-	revealBytes, _ := base64.StdEncoding.DecodeString(msg.RevealValue)
 
-	// Verify reveal matches commitment
-	if !bytes.Equal(revealBytes, commitment.CommitmentHash) {
+	computedHash := ComputeHash(msg.RevealValue)
+	if !bytes.Equal(computedHash, commitment.CommitmentHash) {
+		logger.Error("reveal does not match commitment",
+			"validator", msg.Validator,
+			"period", msg.RevealValue)
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidReveal, "reveal does not match commitment")
 	}
 
@@ -131,7 +135,7 @@ func (k msgServer) Reveal(goCtx context.Context, msg *types.MsgReveal) (*types.M
 	reveal := types.Reveal{
 		Period:      state.CurrentPeriod,
 		Validator:   msg.Validator,
-		RevealValue: revealBytes,
+		RevealValue: msg.RevealValue,
 		BlockHeight: ctx.BlockHeight(),
 	}
 	k.SetReveal(ctx, reveal)

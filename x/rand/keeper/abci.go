@@ -5,15 +5,24 @@ import (
 	"fmt"
 	"time"
 
+	sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/rand/types"
 )
 
 func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+	logger := k.Logger(ctx)
 
-	state, _ := k.GetPeriod(ctx)
+	state, found := k.GetPeriod(ctx)
+	if !found {
+		logger.Error("[GetPeriod] Failed to get period state",
+			"found", found,
+		)
+		return sdkerrors.Wrap(errortypes.ErrInvalidPhase, "failed to get period state")
+	}
 	currentHeight := ctx.BlockHeight()
 
 	if state.InCommitPhase && currentHeight >= state.CommitEndHeight {
@@ -28,15 +37,40 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 		)
 	}
 
+	logger.Info("Transitioned to reveal phase",
+		"period", state.CurrentPeriod,
+		"reveal_end_height", state.RevealEndHeight,
+	)
+
 	return nil
 }
 
 func (k Keeper) EndBlocker(ctx sdk.Context) error {
-	state, _ := k.GetPeriod(ctx)
+	logger := k.Logger(ctx)
+
+	state, found := k.GetPeriod(ctx)
+	if !found {
+		logger.Error("Failed to get period state",
+			"error", found,
+		)
+		return sdkerrors.Wrap(errortypes.ErrInvalidPhase, "failed to get period state")
+	}
 	currentHeight := ctx.BlockHeight()
 
+	logger.Info("EndBlocker started",
+		"height", currentHeight,
+		"period", state.CurrentPeriod,
+		"in_commit_phase", state.InCommitPhase,
+	)
+
 	if !state.InCommitPhase && currentHeight >= state.RevealEndHeight {
-		newRandomness := k.GenerateRandomness(ctx, state.CurrentPeriod)
+		newRandomness, err := k.GenerateRandomness(ctx, state.CurrentPeriod)
+		if newRandomness == nil || err != nil {
+			logger.Error("Failed to generate randomness",
+				"period", state.CurrentPeriod,
+			)
+			return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to generate randomness for period %d", state.CurrentPeriod)
+		}
 
 		params := k.GetParams(ctx)
 		state.CurrentPeriod++
@@ -66,10 +100,9 @@ func (k Keeper) EndBlocker(ctx sdk.Context) error {
 		})
 	}
 
-	validators, _ := k.stakingKeeper.GetAllValidators(ctx)
-	fmt.Println("validators------------------->", validators)
-
-	// k.UpdateRandParticipants(ctx, validators, state.CurrentPeriod)
+	logger.Info("New period started",
+		"period", state.CurrentPeriod,
+	)
 
 	return nil
 }

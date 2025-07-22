@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"sort"
 	"time"
 
 	"cosmossdk.io/core/store"
+	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/rand/types"
 )
 
@@ -196,39 +197,85 @@ func (k Keeper) GetCommitmentsForPeriod(ctx sdk.Context, period uint64) []*types
 	return commitments
 }
 
-func (k Keeper) GenerateRandomness(ctx sdk.Context, period uint64) []byte {
+func (k Keeper) GenerateRandomness(ctx sdk.Context, period uint64) ([]byte, error) {
+	logger := k.Logger(ctx)
+
+	// Get reveals for the period
 	reveals := k.GetRevealsForPeriod(ctx, period)
 	if len(reveals) == 0 {
-		bytes, _ := hex.DecodeString("BBE0836D9AB45CF1CCBA958D4C89E12B834AF0FC1A322D1DA242C65DF356FF5F")
-		return bytes //ctx.BlockHeader().LastBlockId.Hash
+		logger.Info("no reveals found, using block header app hash",
+			"period", period)
+		return ctx.BlockHeader().AppHash, nil
 	}
 
 	// Sort reveals by validator address
 	sort.Slice(reveals, func(i, j int) bool {
-		valAddress, _ := sdk.ValAddressFromBech32(reveals[i].Validator)
-		return bytes.Compare(valAddress.Bytes(), valAddress.Bytes()) < 0
+		valAddressI, err := sdk.ValAddressFromBech32(reveals[i].Validator)
+		if err != nil {
+			logger.Error("failed to parse validator address for sorting",
+				"validator", reveals[i].Validator,
+				"period", period,
+				"error", err)
+			return false
+		}
+		valAddressJ, err := sdk.ValAddressFromBech32(reveals[j].Validator)
+		if err != nil {
+			logger.Error("failed to parse validator address for sorting",
+				"validator", reveals[j].Validator,
+				"period", period,
+				"error", err)
+			return false
+		}
+		return bytes.Compare(valAddressI.Bytes(), valAddressJ.Bytes()) < 0
 	})
 
 	// Combine reveal values
 	combinedValue := []byte{}
 	for _, reveal := range reveals {
+		if reveal.RevealValue == nil {
+			logger.Error("nil reveal value encountered",
+				"validator", reveal.Validator,
+				"period", period)
+			return nil, sdkerrors.Wrap(errortypes.ErrInvalidReveal, "nil reveal value")
+		}
 		combinedValue = append(combinedValue, reveal.RevealValue...)
 	}
 
 	// Add block hash
-	combinedValue = append(combinedValue, ctx.BlockHeader().LastBlockId.Hash...)
+	if ctx.BlockHeader().AppHash == nil {
+		logger.Error("nil block header app hash",
+			"period", period)
+		return nil, sdkerrors.Wrap(errortypes.ErrInvalidState, "nil block header app hash")
+	}
+	combinedValue = append(combinedValue, ctx.BlockHeader().AppHash...)
 
 	// Compute final hash
 	hash := sha256.Sum256(combinedValue)
-	return hash[:]
+	logger.Info("randomness generated successfully",
+		"period", period,
+		"reveal_count", len(reveals))
+
+	return hash[:], nil
 }
 
-func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) {
-	commitments := k.GetCommitmentsByPeriod(ctx, period)
+func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
+	logger := k.Logger(ctx)
 
+	validators, err := k.stakingKeeper.GetAllValidators(ctx)
+	if err != nil {
+		logger.Error("Failed to get validators",
+			"error", err,
+		)
+		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to get validators: %s", err)
+	}
+
+	if len(validators) == 1 {
+		return nil
+	}
+
+	commitments := k.GetCommitmentsByPeriod(ctx, period)
 	for _, commitment := range commitments {
 		if !commitment.Revealed {
-
 			valAddress, _ := sdk.ValAddressFromBech32(commitment.Validator)
 			validator, _ := k.stakingKeeper.Validator(ctx, valAddress)
 
@@ -252,6 +299,7 @@ func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) {
 			}
 		}
 	}
+	return nil
 }
 
 func (k Keeper) ClearPeriodData(ctx context.Context, period uint64) {
@@ -270,9 +318,4 @@ func (k Keeper) ClearPeriodData(ctx context.Context, period uint64) {
 	for ; iterator.Valid(); iterator.Next() {
 		store.Delete(iterator.Key())
 	}
-}
-
-func (k Keeper) UpdateRandParticipants(ctx sdk.Context, validatorAddress string, period uint64) {
-	// Implementation depends on specific requirements
-	// This could involve tracking active validators for the period
 }

@@ -65,9 +65,7 @@ func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
-// QueryParamsResponse is response type for the Query/Params RPC method.
 type QueryParamsResponse struct {
-	// params holds all the parameters of this module.
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
@@ -447,7 +445,6 @@ func (m *QueryRevealsResponse) GetReveals() []*Reveal {
 	return nil
 }
 
-// QueryCurrentRandomnessRequest is the request type for the Query/CurrentRandomness RPC method.
 type QueryCurrentRandomnessRequest struct {
 }
 
@@ -484,7 +481,6 @@ func (m *QueryCurrentRandomnessRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCurrentRandomnessRequest proto.InternalMessageInfo
 
-// QueryCurrentRandomnessResponse is the response type for the Query/CurrentRandomness RPC method.
 type QueryCurrentRandomnessResponse struct {
 	Period     uint64 `protobuf:"varint,1,opt,name=period,proto3" json:"period,omitempty"`
 	Randomness []byte `protobuf:"bytes,2,opt,name=randomness,proto3" json:"randomness,omitempty"`
@@ -613,7 +609,6 @@ type QueryClient interface {
 	Commitment(ctx context.Context, in *QueryCommitmentRequest, opts ...grpc.CallOption) (*QueryCommitmentResponse, error)
 	Commitments(ctx context.Context, in *QueryCommitmentsRequest, opts ...grpc.CallOption) (*QueryCommitmentsResponse, error)
 	Reveals(ctx context.Context, in *QueryRevealsRequest, opts ...grpc.CallOption) (*QueryRevealsResponse, error)
-	// CurrentRandomness queries the current random seed of the period.
 	CurrentRandomness(ctx context.Context, in *QueryCurrentRandomnessRequest, opts ...grpc.CallOption) (*QueryCurrentRandomnessResponse, error)
 }
 
@@ -686,7 +681,6 @@ type QueryServer interface {
 	Commitment(context.Context, *QueryCommitmentRequest) (*QueryCommitmentResponse, error)
 	Commitments(context.Context, *QueryCommitmentsRequest) (*QueryCommitmentsResponse, error)
 	Reveals(context.Context, *QueryRevealsRequest) (*QueryRevealsResponse, error)
-	// CurrentRandomness queries the current random seed of the period.
 	CurrentRandomness(context.Context, *QueryCurrentRandomnessRequest) (*QueryCurrentRandomnessResponse, error)
 }
 

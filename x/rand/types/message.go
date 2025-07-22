@@ -12,7 +12,7 @@ var (
 )
 
 // NewMsgCommit creates a new MsgCommit
-func NewMsgCommit(creator string, validator sdk.ValAddress, commitmentHash string, deposit sdk.Coin) *MsgCommit {
+func NewMsgCommit(creator string, validator sdk.ValAddress, commitmentHash []byte, deposit sdk.Coin) *MsgCommit {
 	return &MsgCommit{
 		Creator:        creator,
 		Validator:      validator.String(),
@@ -47,7 +47,7 @@ func (msg MsgCommit) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgReveal creates a new MsgReveal
-func NewMsgReveal(creator string, period string, validator string, revealValue string) *MsgReveal {
+func NewMsgReveal(creator string, period uint64, validator string, revealValue []byte) *MsgReveal {
 	return &MsgReveal{
 		Creator:     creator,
 		Validator:   validator,
