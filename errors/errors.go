@@ -56,4 +56,5 @@ var (
 
 var (
 	ErrInvalidAddress = sdkerrors.Register(ModuleName, 23, "invalid address")
+	ErrInvalidState   = sdkerrors.Register(ModuleName, 24, "failed to get period stat")
 )
