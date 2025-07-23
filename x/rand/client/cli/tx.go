@@ -127,6 +127,9 @@ func ParseByteSlice(input string) ([]byte, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invalid byte value %q: %w", part, err)
 		}
+		if num < 0 || num > 255 {
+			return nil, fmt.Errorf("byte value out of range (0-255): %d", num)
+		}
 		result = append(result, byte(num))
 	}
 	return result, nil
