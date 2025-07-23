@@ -22,6 +22,7 @@ func GetQueryCmd() *cobra.Command {
 		CmdQueryCommitment(),
 		CmdQueryCommitments(),
 		CmdQueryCurrentRandomness(),
+		CmdQueryPenalty(),
 	)
 
 	return queryCmd

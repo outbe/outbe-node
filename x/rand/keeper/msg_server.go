@@ -39,6 +39,10 @@ func (k msgServer) Commit(goCtx context.Context, msg *types.MsgCommit) (*types.M
 		return nil, sdkerrors.Wrap(errortypes.ErrCommitPhaseClosed, "commit phase closed")
 	}
 
+	if len(msg.CommitmentHash) != 32 { // Assuming SHA-256
+		return nil, sdkerrors.Wrap(errortypes.ErrInvalidHash, "commitment hash must be 32 bytes")
+	}
+
 	valAddress, _ := sdk.ValAddressFromBech32(msg.Validator)
 
 	// Verify validator
@@ -110,6 +114,11 @@ func (k msgServer) Reveal(goCtx context.Context, msg *types.MsgReveal) (*types.M
 		return nil, sdkerrors.Wrap(errortypes.ErrRevealPhaseClosed, "reveal phase closed")
 	}
 
+	_, found := k.GetPenalty(ctx, msg.Period, msg.Validator)
+	if found {
+		return nil, sdkerrors.Wrap(errortypes.ErrHasPenalty, "find validator penalty")
+	}
+
 	commitment, found := k.GetCommitment(ctx, msg.Period, msg.Validator)
 	if !found {
 		return nil, sdkerrors.Wrap(errortypes.ErrNoCommitment, "no commitment found")
@@ -123,7 +132,10 @@ func (k msgServer) Reveal(goCtx context.Context, msg *types.MsgReveal) (*types.M
 	if !bytes.Equal(computedHash, commitment.CommitmentHash) {
 		logger.Error("reveal does not match commitment",
 			"validator", msg.Validator,
-			"period", msg.RevealValue)
+			"period", msg.Period,
+			"reveal_value", fmt.Sprintf("%x", msg.RevealValue),
+			"computed_hash", fmt.Sprintf("%x", computedHash),
+			"commitment_hash", fmt.Sprintf("%x", commitment.CommitmentHash))
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidReveal, "reveal does not match commitment")
 	}
 

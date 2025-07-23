@@ -117,12 +117,64 @@ func (x *_GenesisState_4_list) IsValid() bool {
 	return x.list != nil
 }
 
+var _ protoreflect.List = (*_GenesisState_5_list)(nil)
+
+type _GenesisState_5_list struct {
+	list *[]*Penalty
+}
+
+func (x *_GenesisState_5_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_5_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_5_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*Penalty)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_5_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*Penalty)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_5_list) AppendMutable() protoreflect.Value {
+	v := new(Penalty)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_5_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_5_list) NewElement() protoreflect.Value {
+	v := new(Penalty)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_5_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_GenesisState             protoreflect.MessageDescriptor
 	fd_GenesisState_params      protoreflect.FieldDescriptor
 	fd_GenesisState_period      protoreflect.FieldDescriptor
 	fd_GenesisState_commitments protoreflect.FieldDescriptor
 	fd_GenesisState_reveals     protoreflect.FieldDescriptor
+	fd_GenesisState_penalties   protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -132,6 +184,7 @@ func init() {
 	fd_GenesisState_period = md_GenesisState.Fields().ByName("period")
 	fd_GenesisState_commitments = md_GenesisState.Fields().ByName("commitments")
 	fd_GenesisState_reveals = md_GenesisState.Fields().ByName("reveals")
+	fd_GenesisState_penalties = md_GenesisState.Fields().ByName("penalties")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -223,6 +276,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if len(x.Penalties) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_5_list{list: &x.Penalties})
+		if !f(fd_GenesisState_penalties, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -246,6 +305,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.Commitments) != 0
 	case "outbe.rand.GenesisState.reveals":
 		return len(x.Reveals) != 0
+	case "outbe.rand.GenesisState.penalties":
+		return len(x.Penalties) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -270,6 +331,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.Commitments = nil
 	case "outbe.rand.GenesisState.reveals":
 		x.Reveals = nil
+	case "outbe.rand.GenesisState.penalties":
+		x.Penalties = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -304,6 +367,12 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_4_list{list: &x.Reveals}
 		return protoreflect.ValueOfList(listValue)
+	case "outbe.rand.GenesisState.penalties":
+		if len(x.Penalties) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_5_list{})
+		}
+		listValue := &_GenesisState_5_list{list: &x.Penalties}
+		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -336,6 +405,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_4_list)
 		x.Reveals = *clv.list
+	case "outbe.rand.GenesisState.penalties":
+		lv := value.List()
+		clv := lv.(*_GenesisState_5_list)
+		x.Penalties = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -378,6 +451,12 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_4_list{list: &x.Reveals}
 		return protoreflect.ValueOfList(value)
+	case "outbe.rand.GenesisState.penalties":
+		if x.Penalties == nil {
+			x.Penalties = []*Penalty{}
+		}
+		value := &_GenesisState_5_list{list: &x.Penalties}
+		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -403,6 +482,9 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "outbe.rand.GenesisState.reveals":
 		list := []*Reveal{}
 		return protoreflect.ValueOfList(&_GenesisState_4_list{list: &list})
+	case "outbe.rand.GenesisState.penalties":
+		list := []*Penalty{}
+		return protoreflect.ValueOfList(&_GenesisState_5_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.rand.GenesisState"))
@@ -492,6 +574,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if len(x.Penalties) > 0 {
+			for _, e := range x.Penalties {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -520,6 +608,22 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Penalties) > 0 {
+			for iNdEx := len(x.Penalties) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Penalties[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x2a
+			}
 		}
 		if len(x.Reveals) > 0 {
 			for iNdEx := len(x.Reveals) - 1; iNdEx >= 0; iNdEx-- {
@@ -770,6 +874,40 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Penalties", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Penalties = append(x.Penalties, &Penalty{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Penalties[len(x.Penalties)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -827,6 +965,7 @@ type GenesisState struct {
 	Period      *Period       `protobuf:"bytes,2,opt,name=period,proto3" json:"period,omitempty"`
 	Commitments []*Commitment `protobuf:"bytes,3,rep,name=commitments,proto3" json:"commitments,omitempty"`
 	Reveals     []*Reveal     `protobuf:"bytes,4,rep,name=reveals,proto3" json:"reveals,omitempty"`
+	Penalties   []*Penalty    `protobuf:"bytes,5,rep,name=penalties,proto3" json:"penalties,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -877,6 +1016,13 @@ func (x *GenesisState) GetReveals() []*Reveal {
 	return nil
 }
 
+func (x *GenesisState) GetPenalties() []*Penalty {
+	if x != nil {
+		return x.Penalties
+	}
+	return nil
+}
+
 var File_outbe_rand_genesis_proto protoreflect.FileDescriptor
 
 var file_outbe_rand_genesis_proto_rawDesc = []byte{
@@ -888,7 +1034,7 @@ var file_outbe_rand_genesis_proto_rawDesc = []byte{
 	0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e,
 	0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x6f,
 	0x75, 0x74, 0x62, 0x65, 0x2f, 0x72, 0x61, 0x6e, 0x64, 0x2f, 0x72, 0x61, 0x6e, 0x64, 0x73, 0x74,
-	0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xd9, 0x01, 0x0a, 0x0c, 0x47, 0x65,
+	0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x8c, 0x02, 0x0a, 0x0c, 0x47, 0x65,
 	0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x70, 0x61,
 	0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74,
 	0x62, 0x65, 0x2e, 0x72, 0x61, 0x6e, 0x64, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09,
@@ -902,17 +1048,20 @@ var file_outbe_rand_genesis_proto_rawDesc = []byte{
 	0x69, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x2c, 0x0a, 0x07, 0x72, 0x65, 0x76, 0x65, 0x61,
 	0x6c, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65,
 	0x2e, 0x72, 0x61, 0x6e, 0x64, 0x2e, 0x52, 0x65, 0x76, 0x65, 0x61, 0x6c, 0x52, 0x07, 0x72, 0x65,
-	0x76, 0x65, 0x61, 0x6c, 0x73, 0x42, 0x93, 0x01, 0x0a, 0x0e, 0x63, 0x6f, 0x6d, 0x2e, 0x6f, 0x75,
-	0x74, 0x62, 0x65, 0x2e, 0x72, 0x61, 0x6e, 0x64, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69,
-	0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65,
-	0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f,
-	0x72, 0x61, 0x6e, 0x64, 0xa2, 0x02, 0x03, 0x4f, 0x52, 0x58, 0xaa, 0x02, 0x0a, 0x4f, 0x75, 0x74,
-	0x62, 0x65, 0x2e, 0x52, 0x61, 0x6e, 0x64, 0xca, 0x02, 0x0a, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c,
-	0x52, 0x61, 0x6e, 0x64, 0xe2, 0x02, 0x16, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x52, 0x61, 0x6e,
-	0x64, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0b,
-	0x4f, 0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x52, 0x61, 0x6e, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x76, 0x65, 0x61, 0x6c, 0x73, 0x12, 0x31, 0x0a, 0x09, 0x70, 0x65, 0x6e, 0x61, 0x6c, 0x74, 0x69,
+	0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65,
+	0x2e, 0x72, 0x61, 0x6e, 0x64, 0x2e, 0x50, 0x65, 0x6e, 0x61, 0x6c, 0x74, 0x79, 0x52, 0x09, 0x70,
+	0x65, 0x6e, 0x61, 0x6c, 0x74, 0x69, 0x65, 0x73, 0x42, 0x93, 0x01, 0x0a, 0x0e, 0x63, 0x6f, 0x6d,
+	0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x72, 0x61, 0x6e, 0x64, 0x42, 0x0c, 0x47, 0x65, 0x6e,
+	0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2a, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75,
+	0x74, 0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74,
+	0x62, 0x65, 0x2f, 0x72, 0x61, 0x6e, 0x64, 0xa2, 0x02, 0x03, 0x4f, 0x52, 0x58, 0xaa, 0x02, 0x0a,
+	0x4f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x52, 0x61, 0x6e, 0x64, 0xca, 0x02, 0x0a, 0x4f, 0x75, 0x74,
+	0x62, 0x65, 0x5c, 0x52, 0x61, 0x6e, 0x64, 0xe2, 0x02, 0x16, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c,
+	0x52, 0x61, 0x6e, 0x64, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0b, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x52, 0x61, 0x6e, 0x64, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -934,17 +1083,19 @@ var file_outbe_rand_genesis_proto_goTypes = []interface{}{
 	(*Period)(nil),       // 2: outbe.rand.Period
 	(*Commitment)(nil),   // 3: outbe.rand.Commitment
 	(*Reveal)(nil),       // 4: outbe.rand.Reveal
+	(*Penalty)(nil),      // 5: outbe.rand.Penalty
 }
 var file_outbe_rand_genesis_proto_depIdxs = []int32{
 	1, // 0: outbe.rand.GenesisState.params:type_name -> outbe.rand.Params
 	2, // 1: outbe.rand.GenesisState.period:type_name -> outbe.rand.Period
 	3, // 2: outbe.rand.GenesisState.commitments:type_name -> outbe.rand.Commitment
 	4, // 3: outbe.rand.GenesisState.reveals:type_name -> outbe.rand.Reveal
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 4: outbe.rand.GenesisState.penalties:type_name -> outbe.rand.Penalty
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_outbe_rand_genesis_proto_init() }

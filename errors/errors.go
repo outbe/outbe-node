@@ -57,4 +57,6 @@ var (
 var (
 	ErrInvalidAddress = sdkerrors.Register(ModuleName, 23, "invalid address")
 	ErrInvalidState   = sdkerrors.Register(ModuleName, 24, "failed to get period stat")
+	ErrHasPenalty     = sdkerrors.Register(ModuleName, 25, "fail to reveal deposit due to got penalty. Deposit is freezed.")
+	ErrInvalidHash    = sdkerrors.Register(ModuleName, 26, "faile to validate hash")
 )

@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -25,29 +27,10 @@ func GetTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		NewCommitCmd(),
 		NewRevealCmd(),
+		GenerateCommitHashCmd(),
 	)
 
 	return txCmd
-}
-
-func ParseByteSlice(input string) ([]byte, error) {
-	// Trim brackets
-	clean := strings.Trim(input, "[]")
-
-	// Split by whitespace
-	parts := strings.Fields(clean)
-
-	// Convert to []byte
-	result := make([]byte, 0, len(parts))
-	for _, part := range parts {
-		num, err := strconv.Atoi(part)
-		if err != nil {
-			return nil, fmt.Errorf("invalid byte value %q: %w", part, err)
-		}
-		result = append(result, byte(num))
-	}
-
-	return result, nil
 }
 
 func NewCommitCmd() *cobra.Command {
@@ -86,6 +69,69 @@ func NewCommitCmd() *cobra.Command {
 	return cmd
 }
 
+// ComputeHash (must match the Reveal handler's implementation)
+func ComputeHash(data []byte) []byte {
+	hash := sha256.Sum256(data)
+	return hash[:]
+}
+
+func NewGenerateCommitHashCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "generate-commit-hash [reveal-value] --output [format]",
+		Short: "Generate a commitment hash from a reveal value",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			outputFormat, err := cmd.Flags().GetString("output")
+			if err != nil {
+				return err
+			}
+
+			// Parse the reveal value
+			bytes, err := ParseByteSlice(args[0])
+			if err != nil {
+				return fmt.Errorf("failed to parse reveal value: %w", err)
+			}
+
+			// Compute the hash (must match the Reveal handler's ComputeHash)
+			hash := ComputeHash(bytes)
+
+			// Output based on format
+			switch outputFormat {
+			case "hex":
+				fmt.Println(hex.EncodeToString(hash))
+			case "byte":
+				byteStr := make([]string, len(hash))
+				for i, b := range hash {
+					byteStr[i] = fmt.Sprintf("%d", b)
+				}
+				fmt.Printf("[%s]\n", strings.Join(byteStr, " "))
+			default:
+				return fmt.Errorf("unsupported output format: %s", outputFormat)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.Flags().String("output", "hex", "Output format (hex or byte)")
+	return cmd
+}
+
+// ParseByteSlice (from your existing code)
+func ParseByteSlice(input string) ([]byte, error) {
+	clean := strings.Trim(input, "[]")
+	parts := strings.Fields(clean)
+	result := make([]byte, 0, len(parts))
+	for _, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			return nil, fmt.Errorf("invalid byte value %q: %w", part, err)
+		}
+		result = append(result, byte(num))
+	}
+	return result, nil
+}
+
 func NewRevealCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reveal [period] [validator] [reveal-value]",
@@ -114,5 +160,43 @@ func NewRevealCmd() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func GenerateCommitHashCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "generate-commit-hash [reveal-value] --output [format]",
+		Short: "Generate a commitment hash from a reveal value",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			outputFormat, err := cmd.Flags().GetString("output")
+			if err != nil {
+				return err
+			}
+
+			// Parse the reveal value
+			bytes, err := ParseByteSlice(args[0])
+			if err != nil {
+				return fmt.Errorf("failed to parse reveal value: %w", err)
+			}
+
+			// Compute the hash (must match the ComputeHash function used in Reveal)
+			hash := ComputeHash(bytes)
+
+			// Output based on format
+			switch outputFormat {
+			case "hex":
+				fmt.Println(hex.EncodeToString(hash))
+			case "byte":
+				fmt.Printf("[%s]\n", strings.Join(strings.Fields(fmt.Sprintf("%d", hash)), " "))
+			default:
+				return fmt.Errorf("unsupported output format: %s", outputFormat)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.Flags().String("output", "hex", "Output format (hex or byte)")
 	return cmd
 }

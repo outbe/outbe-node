@@ -15,7 +15,12 @@ func (k Keeper) GenerateRandomValueBinary(ctx sdk.Context, valAddr sdk.ValAddres
 	return hash[:]
 }
 
-func ComputeHash(randomValue []byte) []byte {
-	hash := sha256.Sum256([]byte(randomValue))
+// func ComputeHash(randomValue []byte) []byte {
+// 	hash := sha256.Sum256([]byte(randomValue))
+// 	return hash[:]
+// }
+
+func ComputeHash(data []byte) []byte {
+	hash := sha256.Sum256(data)
 	return hash[:]
 }

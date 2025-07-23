@@ -24,6 +24,7 @@ const (
 	Query_Commitment_FullMethodName        = "/outbe.rand.Query/Commitment"
 	Query_Commitments_FullMethodName       = "/outbe.rand.Query/Commitments"
 	Query_Reveals_FullMethodName           = "/outbe.rand.Query/Reveals"
+	Query_Penalties_FullMethodName         = "/outbe.rand.Query/Penalties"
 	Query_CurrentRandomness_FullMethodName = "/outbe.rand.Query/CurrentRandomness"
 )
 
@@ -36,6 +37,7 @@ type QueryClient interface {
 	Commitment(ctx context.Context, in *QueryCommitmentRequest, opts ...grpc.CallOption) (*QueryCommitmentResponse, error)
 	Commitments(ctx context.Context, in *QueryCommitmentsRequest, opts ...grpc.CallOption) (*QueryCommitmentsResponse, error)
 	Reveals(ctx context.Context, in *QueryRevealsRequest, opts ...grpc.CallOption) (*QueryRevealsResponse, error)
+	Penalties(ctx context.Context, in *QueryPenaltiesRequest, opts ...grpc.CallOption) (*QueryPenaltiesResponse, error)
 	CurrentRandomness(ctx context.Context, in *QueryCurrentRandomnessRequest, opts ...grpc.CallOption) (*QueryCurrentRandomnessResponse, error)
 }
 
@@ -92,6 +94,15 @@ func (c *queryClient) Reveals(ctx context.Context, in *QueryRevealsRequest, opts
 	return out, nil
 }
 
+func (c *queryClient) Penalties(ctx context.Context, in *QueryPenaltiesRequest, opts ...grpc.CallOption) (*QueryPenaltiesResponse, error) {
+	out := new(QueryPenaltiesResponse)
+	err := c.cc.Invoke(ctx, Query_Penalties_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) CurrentRandomness(ctx context.Context, in *QueryCurrentRandomnessRequest, opts ...grpc.CallOption) (*QueryCurrentRandomnessResponse, error) {
 	out := new(QueryCurrentRandomnessResponse)
 	err := c.cc.Invoke(ctx, Query_CurrentRandomness_FullMethodName, in, out, opts...)
@@ -110,6 +121,7 @@ type QueryServer interface {
 	Commitment(context.Context, *QueryCommitmentRequest) (*QueryCommitmentResponse, error)
 	Commitments(context.Context, *QueryCommitmentsRequest) (*QueryCommitmentsResponse, error)
 	Reveals(context.Context, *QueryRevealsRequest) (*QueryRevealsResponse, error)
+	Penalties(context.Context, *QueryPenaltiesRequest) (*QueryPenaltiesResponse, error)
 	CurrentRandomness(context.Context, *QueryCurrentRandomnessRequest) (*QueryCurrentRandomnessResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
@@ -132,6 +144,9 @@ func (UnimplementedQueryServer) Commitments(context.Context, *QueryCommitmentsRe
 }
 func (UnimplementedQueryServer) Reveals(context.Context, *QueryRevealsRequest) (*QueryRevealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reveals not implemented")
+}
+func (UnimplementedQueryServer) Penalties(context.Context, *QueryPenaltiesRequest) (*QueryPenaltiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Penalties not implemented")
 }
 func (UnimplementedQueryServer) CurrentRandomness(context.Context, *QueryCurrentRandomnessRequest) (*QueryCurrentRandomnessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CurrentRandomness not implemented")
@@ -239,6 +254,24 @@ func _Query_Reveals_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Penalties_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPenaltiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Penalties(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Penalties_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Penalties(ctx, req.(*QueryPenaltiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_CurrentRandomness_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCurrentRandomnessRequest)
 	if err := dec(in); err != nil {
@@ -283,6 +316,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Reveals",
 			Handler:    _Query_Reveals_Handler,
+		},
+		{
+			MethodName: "Penalties",
+			Handler:    _Query_Penalties_Handler,
 		},
 		{
 			MethodName: "CurrentRandomness",

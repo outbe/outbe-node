@@ -11,7 +11,6 @@ import (
 	"cosmossdk.io/core/store"
 	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log"
-	"cosmossdk.io/math"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -151,6 +150,40 @@ func (k Keeper) SetReveal(ctx context.Context, reveal types.Reveal) error {
 	return store.Set(types.GetRevealKey(reveal.Period, valAddress), bz)
 }
 
+func (k Keeper) SetPenalty(ctx sdk.Context, penalty types.Penalty) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz := k.cdc.MustMarshal(&penalty)
+	store.Set(types.GetPenaltyKey(penalty.Period, sdk.ValAddress(penalty.Validator)), bz)
+}
+
+func (k Keeper) GetPenalty(ctx context.Context, period uint64, validator string) (val types.Penalty, found bool) {
+
+	store := k.storeService.OpenKVStore(ctx)
+
+	bz, err := store.Get(types.GetPenaltyKey(period, sdk.ValAddress(validator)))
+	if bz == nil || err != nil {
+		return val, false
+	}
+
+	k.cdc.MustUnmarshal(bz, &val)
+	return val, true
+}
+
+func (k Keeper) GetPenalties(ctx context.Context) []*types.Penalty {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iterator := storetypes.KVStorePrefixIterator(store, types.PenaltyKey)
+
+	defer iterator.Close()
+
+	var penalties []*types.Penalty
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Penalty
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		penalties = append(penalties, &val)
+	}
+	return penalties
+}
+
 func (k Keeper) GetReveals(ctx context.Context) []*types.Reveal {
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	iterator := storetypes.KVStorePrefixIterator(store, types.RevealKey)
@@ -259,19 +292,19 @@ func (k Keeper) GenerateRandomness(ctx sdk.Context, period uint64) ([]byte, erro
 }
 
 func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
-	logger := k.Logger(ctx)
+	// logger := k.Logger(ctx)
 
-	validators, err := k.stakingKeeper.GetAllValidators(ctx)
-	if err != nil {
-		logger.Error("Failed to get validators",
-			"error", err,
-		)
-		return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to get validators: %s", err)
-	}
+	// validators, err := k.stakingKeeper.GetAllValidators(ctx)
+	// if err != nil {
+	// 	logger.Error("Failed to get validators",
+	// 		"error", err,
+	// 	)
+	// 	return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to get validators: %s", err)
+	// }
 
-	if len(validators) == 1 {
-		return nil
-	}
+	// if len(validators) == 1 {
+	// 	return nil
+	// }
 
 	commitments := k.GetCommitmentsByPeriod(ctx, period)
 	for _, commitment := range commitments {
@@ -280,15 +313,28 @@ func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
 			validator, _ := k.stakingKeeper.Validator(ctx, valAddress)
 
 			if validator != nil && validator.IsBonded() {
-				params := k.GetParams(ctx)
-				conAddress, _ := validator.GetConsAddr()
-				k.stakingKeeper.Slash(
-					ctx,
-					conAddress,
-					ctx.BlockHeight(),
-					validator.GetConsensusPower(sdk.DefaultPowerReduction),
-					math.LegacyNewDec(params.PenaltyAmount.Amount.Int64()),
-				)
+
+				// Deposit is not returned (stays in module)
+				penalty := types.Penalty{
+					Period:    commitment.Period,
+					Validator: commitment.Validator,
+					Deposit:   commitment.Deposit,
+				}
+				k.SetPenalty(ctx, penalty)
+
+				// Optional: additional penalty through slashing module [Ignored]
+
+				// k.stakingKeeper.Slash(
+				// 	ctx,
+				// 	conAddress,
+				// 	ctx.BlockHeight(),
+				// 	validator.GetConsensusPower(sdk.DefaultPowerReduction),
+				// 	math.LegacyNewDec(params.PenaltyAmount.Amount.Int64()),
+				// )
+
+				// params := k.GetParams(ctx)
+				// conAddress, _ := validator.GetConsAddr()
+
 				ctx.EventManager().EmitEvent(
 					sdk.NewEvent(
 						types.EventTypePenalty,

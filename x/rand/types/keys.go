@@ -18,6 +18,7 @@ var (
 	CommitmentKey = []byte{0x02}
 	RevealKey     = []byte{0x03}
 	ParamsKey     = []byte{0x04}
+	PenaltyKey    = []byte{0x05}
 )
 
 func GetPeriodKey(id string) []byte {
@@ -32,4 +33,8 @@ func GetCommitmentKey(period uint64, validator string) []byte {
 // GetRevealKey constructs the key for a reveal
 func GetRevealKey(period uint64, validator sdk.ValAddress) []byte {
 	return append(RevealKey, append(sdk.Uint64ToBigEndian(period), validator.Bytes()...)...)
+}
+
+func GetPenaltyKey(period uint64, validator sdk.ValAddress) []byte {
+	return append(PenaltyKey, append(sdk.Uint64ToBigEndian(period), validator.Bytes()...)...)
 }

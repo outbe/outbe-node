@@ -38,3 +38,9 @@ message Params {
   cosmos.base.v1beta1.Coin minimum_deposit = 3;
   cosmos.base.v1beta1.Coin penalty_amount = 4;
 }
+
+message Penalty {
+  uint64 period = 1;
+  string validator = 2;
+  cosmos.base.v1beta1.Coin deposit = 3;
+}

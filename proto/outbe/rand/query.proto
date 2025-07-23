@@ -31,6 +31,10 @@ service Query {
     option (google.api.http).get = "/outbe/rand/reveals";
   }
 
+  rpc Penalties(QueryPenaltiesRequest) returns (QueryPenaltiesResponse) {
+    option (google.api.http).get = "/outbe/rand/penalties";
+  }
+
   rpc CurrentRandomness(QueryCurrentRandomnessRequest) returns (QueryCurrentRandomnessResponse) {
     option (google.api.http).get = "/outbe/rand/current_randomness";
   }
@@ -68,6 +72,12 @@ message QueryRevealsRequest {}
 
 message QueryRevealsResponse {
   repeated Reveal reveals = 1;
+}
+
+message QueryPenaltiesRequest {}
+
+message QueryPenaltiesResponse {
+  repeated Penalty penalties = 1;
 }
 
 message QueryCurrentRandomnessRequest {}
