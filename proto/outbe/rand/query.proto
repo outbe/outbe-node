@@ -1,0 +1,88 @@
+syntax = "proto3";
+package outbe.rand;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/rand/types";
+
+import "outbe/rand/randstate.proto";
+
+// Query defines the gRPC querier service for the rand module.
+service Query {
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/outbe/rand/params";
+  }
+
+  rpc Period(QueryPeriodRequest) returns (QueryPeriodResponse) {
+    option (google.api.http).get = "/outbe/rand/period";
+  }
+
+  rpc Commitment(QueryCommitmentRequest) returns (QueryCommitmentResponse) {
+    option (google.api.http).get = "/outbe/rand/commitment/{period}/{validator}";
+  }
+
+  rpc Commitments(QueryCommitmentsRequest) returns (QueryCommitmentsResponse) {
+    option (google.api.http).get = "/outbe/rand/commitments";
+  }
+
+  rpc Reveals(QueryRevealsRequest) returns (QueryRevealsResponse) {
+    option (google.api.http).get = "/outbe/rand/reveals";
+  }
+
+  rpc Penalties(QueryPenaltiesRequest) returns (QueryPenaltiesResponse) {
+    option (google.api.http).get = "/outbe/rand/penalties";
+  }
+
+  rpc CurrentRandomness(QueryCurrentRandomnessRequest) returns (QueryCurrentRandomnessResponse) {
+    option (google.api.http).get = "/outbe/rand/current_randomness";
+  }
+  
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryPeriodRequest {}
+
+message QueryPeriodResponse {
+  Period period = 1;
+}
+
+message QueryCommitmentRequest {
+  string period = 1;
+  string validator = 2;
+}
+
+message QueryCommitmentResponse {
+  Commitment commitment = 1;
+}
+
+message QueryCommitmentsRequest {}
+
+message QueryCommitmentsResponse {
+  repeated Commitment commitments = 1;
+}
+
+message QueryRevealsRequest {}
+
+message QueryRevealsResponse {
+  repeated Reveal reveals = 1;
+}
+
+message QueryPenaltiesRequest {}
+
+message QueryPenaltiesResponse {
+  repeated Penalty penalties = 1;
+}
+
+message QueryCurrentRandomnessRequest {}
+
+message QueryCurrentRandomnessResponse {
+  uint64 period = 1;
+  bytes randomness = 2;
+}

@@ -1,0 +1,46 @@
+syntax = "proto3";
+package outbe.rand;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/rand/types";
+
+message Period {
+  uint64 block = 1;
+  uint64 current_period = 2;
+  int64 period_start_height = 3;
+  bytes current_seed = 4;
+  bool in_commit_phase = 5;
+  int64 commit_end_height = 6;
+  int64 reveal_end_height = 7;
+}
+
+message Commitment {
+  uint64 period = 1;
+  string validator = 2;
+  bytes commitment_hash = 3;
+  int64 block_height = 4;
+  bool revealed = 5;
+  cosmos.base.v1beta1.Coin deposit = 6;
+}
+
+message Reveal {
+  uint64 period = 1;
+  string validator = 2;
+  bytes reveal_value = 3;
+  int64 block_height = 4;
+}
+
+message Params {
+  uint64 commit_period = 1;
+  uint64 reveal_period = 2;
+  cosmos.base.v1beta1.Coin minimum_deposit = 3;
+  cosmos.base.v1beta1.Coin penalty_amount = 4;
+}
+
+message Penalty {
+  uint64 period = 1;
+  string validator = 2;
+  cosmos.base.v1beta1.Coin deposit = 3;
+}

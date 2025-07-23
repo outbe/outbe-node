@@ -1,0 +1,18 @@
+syntax = "proto3";
+package outbe.rand;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/rand/types";
+
+import "outbe/rand/randstate.proto";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  Period period = 2;
+	repeated Commitment commitments = 3;
+	repeated Reveal  reveals = 4;
+  repeated Penalty  penalties = 5;
+}
