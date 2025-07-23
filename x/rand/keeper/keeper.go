@@ -147,7 +147,7 @@ func (k Keeper) SetReveal(ctx context.Context, reveal types.Reveal) error {
 	store := k.storeService.OpenKVStore(ctx)
 	valAddress, _ := sdk.ValAddressFromBech32(reveal.Validator)
 	bz := k.cdc.MustMarshal(&reveal)
-	return store.Set(types.GetRevealKey(reveal.Period, valAddress), bz)
+	return store.Set(types.GetRevealKey(reveal.Period, valAddress.String()), bz)
 }
 
 func (k Keeper) SetPenalty(ctx sdk.Context, penalty types.Penalty) {
@@ -292,20 +292,6 @@ func (k Keeper) GenerateRandomness(ctx sdk.Context, period uint64) ([]byte, erro
 }
 
 func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
-	// logger := k.Logger(ctx)
-
-	// validators, err := k.stakingKeeper.GetAllValidators(ctx)
-	// if err != nil {
-	// 	logger.Error("Failed to get validators",
-	// 		"error", err,
-	// 	)
-	// 	return sdkerrors.Wrapf(errortypes.ErrInvalidPhase, "failed to get validators: %s", err)
-	// }
-
-	// if len(validators) == 1 {
-	// 	return nil
-	// }
-
 	commitments := k.GetCommitmentsByPeriod(ctx, period)
 	for _, commitment := range commitments {
 		if !commitment.Revealed {
@@ -348,20 +334,79 @@ func (k Keeper) PenalizeNonRevealers(ctx sdk.Context, period uint64) error {
 	return nil
 }
 
-func (k Keeper) ClearPeriodData(ctx context.Context, period uint64) {
+func (k Keeper) DeleteCommitments(ctx context.Context) error {
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	commitmentStore := prefix.NewStore(store, types.CommitmentKey)
-	iterator := commitmentStore.Iterator(nil, nil)
+	iterator := storetypes.KVStorePrefixIterator(store, types.CommitmentKey)
+
 	defer iterator.Close()
+
 	for ; iterator.Valid(); iterator.Next() {
-		store.Delete(iterator.Key())
+		var val types.Commitment
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		store.Delete(types.GetCommitmentKey(val.Period, val.Validator))
+	}
+	return nil
+}
+
+func (k Keeper) DeleteReveals(ctx context.Context) error {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iterator := storetypes.KVStorePrefixIterator(store, types.RevealKey)
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Reveal
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		store.Delete(types.GetRevealKey(val.Period, val.Validator))
+	}
+	return nil
+}
+
+func (k Keeper) ClearPeriodData(ctx context.Context) error {
+	commitErr := k.DeleteCommitments(ctx)
+	if commitErr != nil {
+		return commitErr
 	}
 
-	store = runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	revealStore := prefix.NewStore(store, types.RevealKey)
-	iterator = revealStore.Iterator(nil, nil)
+	revealErr := k.DeleteReveals(ctx)
+	if revealErr != nil {
+		return revealErr
+	}
+	return nil
+}
+
+func (k Keeper) GetRevealsByPeriod(ctx context.Context, period uint64) (list []types.Reveal) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	iterator := storetypes.KVStorePrefixIterator(store, types.RevealKey)
+
 	defer iterator.Close()
+
 	for ; iterator.Valid(); iterator.Next() {
-		store.Delete(iterator.Key())
+		var val types.Reveal
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.Period == period {
+			list = append(list, val)
+		}
+	}
+	return
+}
+
+func (k Keeper) ClearCommitmentPeriodData(ctx context.Context, period uint64) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	commitments := k.GetCommitmentsByPeriod(ctx, period)
+	fmt.Println("commitments------------------>", commitments)
+	fmt.Println("period------------------>", period)
+	for _, commitment := range commitments {
+		store.Delete(types.GetCommitmentKey(period, commitment.Validator))
+	}
+}
+
+func (k Keeper) ClearRevealPeriodData(ctx context.Context, period uint64) {
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	reveals := k.GetRevealsByPeriod(ctx, period)
+	fmt.Println("reveal------------------>", reveals)
+	fmt.Println("period------------------>", period)
+	for _, reveal := range reveals {
+		store.Delete(types.GetRevealKey(period, reveal.Validator))
 	}
 }

@@ -83,7 +83,8 @@ func (k Keeper) EndBlocker(ctx sdk.Context) error {
 
 		k.SetPeriod(ctx, state)
 		k.PenalizeNonRevealers(ctx, state.CurrentPeriod-1)
-		k.ClearPeriodData(ctx, state.CurrentPeriod-1)
+		k.ClearCommitmentPeriodData(ctx, state.CurrentPeriod-1)
+		k.ClearRevealPeriodData(ctx, state.CurrentPeriod-1)
 
 		ctx.EventManager().EmitEvents(sdk.Events{
 			sdk.NewEvent(
