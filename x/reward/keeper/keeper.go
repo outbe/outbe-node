@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"cosmossdk.io/collections"
 	storetypes "cosmossdk.io/core/store"
@@ -150,19 +149,18 @@ func (k Keeper) GetValidatorSelfBondedTokens(ctx context.Context, val stakingtyp
 }
 
 func (k Keeper) CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec {
-	return amount.Mul(selfBonded).QuoInt(totalSelfBonded)
+	bonded := selfBonded.QuoInt(totalSelfBonded)
+	return amount.Mul(bonded)
 }
 
-func (k Keeper) CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) sdkmath.LegacyDec {
+func (k Keeper) CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) (sdkmath.LegacyDec, error) {
 	sdkctx := sdk.UnwrapSDKContext(ctx)
 	params := k.GetParams(sdkctx)
 
-	num, err := strconv.ParseInt(params.BlockPerYear, 10, 64)
-	if err != nil {
-		fmt.Printf("Error converting string to int64: %v\n", err)
-		return sdkmath.LegacyDec{}
-	}
+	apr, _ := sdkmath.LegacyNewDecFromStr(params.Apr)
+	blockPerYear, _ := sdkmath.LegacyNewDecFromStr(params.BlockPerYear)
 
-	minAprFactor := sdkmath.LegacyMustNewDecFromStr(params.Apr).QuoInt64(num)
-	return selfBonded.Mul(minAprFactor)
+	minAprFactor := apr.Quo(blockPerYear)
+
+	return selfBonded.Mul(minAprFactor), nil
 }

@@ -26,6 +26,7 @@ type BankKeeper interface {
 	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	GetSupply(ctx context.Context, denom string) sdk.Coin
 }
 
 type StakingKeeper interface {
@@ -37,6 +38,6 @@ type MintKeeper interface {
 	GetWhitelist(ctx context.Context) (list []gemminttypes.Whitelist)
 	IsEligibleSmartContract(ctx context.Context, contractAddress string) bool
 	SetTotalMinted(ctx context.Context, totalMinted gemminttypes.Minted) error
-	//GetTotalMinted(ctx context.Context) (totalMinted gemminttypes.Minted, found bool)
 	GetTotalMinted(ctx context.Context) (val gemminttypes.Minted, found bool)
+	GetAllMinters(ctx context.Context) (list []gemminttypes.Minter)
 }

@@ -3,7 +3,6 @@ package wasmbinding
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"strconv"
 
@@ -55,8 +54,8 @@ func GetBlockEmission(ctx sdk.Context, blockNumber string, poolKeeper Poolkeeper
 	logger := poolKeeper.Logger(ctx)
 	num, err := strconv.ParseInt(blockNumber, 10, 64)
 	if err != nil {
-		fmt.Println("Error converting string to int64:", err)
-		return
+		return bindings.QueryBlockEmissionResponse{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "rror converting string to int64: %v", err)
+
 	}
 
 	if ctx.BlockHeight() < constants.TransitionBlockNumber {

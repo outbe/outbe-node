@@ -2,13 +2,16 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
+	"github.com/outbe/outbe-node/app/params"
+	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/allocationpool/constants"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
+
+	sdkerrors "cosmossdk.io/errors"
 )
 
 func (k Keeper) SetEmission(ctx context.Context, emission types.Emission) error {
@@ -33,12 +36,12 @@ func (k Keeper) GetTotalEmission(ctx context.Context) (val types.Emission, found
 func (k Keeper) CalculateExponentialBlockEmission(ctx context.Context, blockNumber int64) (string, error) {
 	initialRate, err := sdkmath.LegacyNewDecFromStr(k.GetParams(ctx).InitialRate)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateExponentialBlockEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	decay, err := sdkmath.LegacyNewDecFromStr(k.GetParams(ctx).Decay)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateExponentialBlockEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	n := sdkmath.LegacyNewDec(blockNumber)
@@ -65,27 +68,25 @@ func (k Keeper) CalculateFixedBlockEmission(ctx context.Context) (string, error)
 	// Fixed emission: (totalSupply * 0.02) / 365 / 17280
 	apr, err := sdkmath.LegacyNewDecFromStr(constants.APR)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	daysPerYear, err := sdkmath.LegacyNewDecFromStr(constants.DaysPerYear)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	blocksPerDay, err := sdkmath.LegacyNewDecFromStr(constants.BlocksPerDay)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
-	totalSupply := k.TotalSupplyAll(ctx)
-	if totalSupply[0].TotalSupply <= "0" {
-		return "", fmt.Errorf("total supply must be greater than zero")
+	totalSupply := k.bankKeeper.GetSupply(ctx, params.BondDenom)
+	if totalSupply.IsNil() || totalSupply.IsZero() || totalSupply.IsNegative() {
+		return "", sdkerrors.Wrap(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][TotalSupplyAll] failed. total supply must be greater than zero")
 	}
 
-	totalSupply[0].TotalSupply = ""
-
-	decTotalSupply := sdkmath.LegacyMustNewDecFromStr(totalSupply[0].TotalSupply)
+	decTotalSupply := sdkmath.LegacyNewDecFromInt(totalSupply.Amount)
 	emissionPerBlock := decTotalSupply.Mul(apr).Quo(daysPerYear).Quo(blocksPerDay)
 
 	return emissionPerBlock.String(), nil
@@ -96,7 +97,7 @@ func (k Keeper) CalculateFixedDailyEmission(ctx context.Context) (string, error)
 	// Fixed emission: (totalSupply * 0.02) / 365
 	apr, err := sdkmath.LegacyNewDecFromStr(constants.APR)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	daysPerYear, err := sdkmath.LegacyNewDecFromStr(constants.DaysPerYear)
@@ -106,7 +107,8 @@ func (k Keeper) CalculateFixedDailyEmission(ctx context.Context) (string, error)
 
 	totalSupply := k.TotalSupplyAll(ctx)
 	if totalSupply[0].TotalSupply <= "0" {
-		return "", fmt.Errorf("total supply must be greater than zero")
+		return "", sdkerrors.Wrap(errortypes.ErrInvalidCoins, "[CalculateFixedDailyEmission][TotalSupplyAll] failed. total supply must be greater than zero.")
+
 	}
 
 	decTotalSupply := sdkmath.LegacyMustNewDecFromStr(totalSupply[0].TotalSupply)
@@ -120,7 +122,7 @@ func (k Keeper) CalculateFixedAnnualEmission(ctx context.Context) (string, error
 	// Fixed emission: (totalSupply * 0.02)
 	apr, err := sdkmath.LegacyNewDecFromStr(constants.APR)
 	if err != nil {
-		return "", err
+		return "", sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateFixedAnnualEmission][LegacyNewDecFromStr] failed. err:%s", err)
 	}
 
 	totalSupply := k.TotalSupplyAll(ctx)

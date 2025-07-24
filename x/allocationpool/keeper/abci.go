@@ -9,12 +9,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/outbe/outbe-node/errors"
-	"github.com/outbe/outbe-node/x/allocationpool/constants"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
 )
 
 func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+
+	logger := k.Logger(ctx)
 
 	if ctx.BlockHeight() > 0 {
 
@@ -41,7 +42,14 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 			return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker] failed. couldn't convert string to sdk.Dec")
 		}
 
-		if ctx.BlockHeight() < constants.TransitionBlockNumber {
+		inflation := k.mintKeeper.GetAllMinters(ctx)[0].Inflation
+
+		logger.Info("⚠️ Inflation dropped below 2%", "inflation", inflation.String())
+
+		// Check if inflation is below 2%
+		if inflation.GT(sdkmath.LegacyNewDecWithPrec(2, 2)) {
+
+			// if ctx.BlockHeight() < constants.TransitionBlockNumber {
 			emissionToken, err := k.CalculateExponentialBlockEmission(ctx, ctx.BlockHeight())
 			if err != nil {
 				return sdkerrors.Wrap(errortypes.ErrCalculation, "[BeginBlocker] failed. CalculateExponentialTokens failed")

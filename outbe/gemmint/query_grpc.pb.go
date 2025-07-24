@@ -24,6 +24,7 @@ const (
 	Query_AnnualProvisions_FullMethodName = "/outbe.gemmint.Query/AnnualProvisions"
 	Query_Whitelist_FullMethodName        = "/outbe.gemmint.Query/Whitelist"
 	Query_Minted_FullMethodName           = "/outbe.gemmint.Query/Minted"
+	Query_Minters_FullMethodName          = "/outbe.gemmint.Query/Minters"
 )
 
 // QueryClient is the client API for Query service.
@@ -37,6 +38,7 @@ type QueryClient interface {
 	AnnualProvisions(ctx context.Context, in *QueryAnnualProvisionsRequest, opts ...grpc.CallOption) (*QueryAnnualProvisionsResponse, error)
 	Whitelist(ctx context.Context, in *QueryWhitelistRequest, opts ...grpc.CallOption) (*QueryWhitelistResponse, error)
 	Minted(ctx context.Context, in *QueryMintedRequest, opts ...grpc.CallOption) (*QueryMintedResponse, error)
+	Minters(ctx context.Context, in *QueryMinterRequest, opts ...grpc.CallOption) (*QueryMinterResponse, error)
 }
 
 type queryClient struct {
@@ -92,6 +94,15 @@ func (c *queryClient) Minted(ctx context.Context, in *QueryMintedRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Minters(ctx context.Context, in *QueryMinterRequest, opts ...grpc.CallOption) (*QueryMinterResponse, error) {
+	out := new(QueryMinterResponse)
+	err := c.cc.Invoke(ctx, Query_Minters_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -103,6 +114,7 @@ type QueryServer interface {
 	AnnualProvisions(context.Context, *QueryAnnualProvisionsRequest) (*QueryAnnualProvisionsResponse, error)
 	Whitelist(context.Context, *QueryWhitelistRequest) (*QueryWhitelistResponse, error)
 	Minted(context.Context, *QueryMintedRequest) (*QueryMintedResponse, error)
+	Minters(context.Context, *QueryMinterRequest) (*QueryMinterResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -124,6 +136,9 @@ func (UnimplementedQueryServer) Whitelist(context.Context, *QueryWhitelistReques
 }
 func (UnimplementedQueryServer) Minted(context.Context, *QueryMintedRequest) (*QueryMintedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Minted not implemented")
+}
+func (UnimplementedQueryServer) Minters(context.Context, *QueryMinterRequest) (*QueryMinterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Minters not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -228,6 +243,24 @@ func _Query_Minted_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Minters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMinterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Minters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Minters_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Minters(ctx, req.(*QueryMinterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,6 +287,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Minted",
 			Handler:    _Query_Minted_Handler,
+		},
+		{
+			MethodName: "Minters",
+			Handler:    _Query_Minters_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

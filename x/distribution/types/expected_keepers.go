@@ -72,7 +72,7 @@ type RewardKeeper interface {
 	GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (sdkmath.LegacyDec, error)
 	CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error)
 	CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec
-	CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) sdkmath.LegacyDec
+	CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) (seldbondtoken sdkmath.LegacyDec, err error)
 }
 
 type AllocationPoolKeeper interface {

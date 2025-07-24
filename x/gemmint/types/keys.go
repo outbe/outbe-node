@@ -7,7 +7,7 @@ import (
 
 var (
 	// MinterKey is the key to use for the keeper store.
-	MinterKey    = collections.NewPrefix(0)
+	MinterKey    = []byte{0x14}
 	ParamsKey    = collections.NewPrefix(1)
 	WhitelistKey = []byte{0x12}
 	MintedKey    = []byte{0x13}

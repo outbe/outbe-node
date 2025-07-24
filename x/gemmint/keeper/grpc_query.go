@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	gemminttypes "github.com/outbe/outbe-node/x/gemmint/types"
 
@@ -98,19 +97,28 @@ func (k queryServer) Whitelist(c context.Context, req *gemminttypes.QueryWhiteli
 
 func (q queryServer) Minted(c context.Context, req *gemminttypes.QueryMintedRequest) (*gemminttypes.QueryMintedResponse, error) {
 
-	fmt.Println("query Minted is started------------->")
-
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "[Minted] failed. Invalid request.")
 	}
 
 	minted, found := q.k.GetTotalMinted(c)
 
-	fmt.Println("111111111111111111111--minted", minted)
-
 	if !found {
 		minted.TotalMinted = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(0))
 	}
 
 	return &gemminttypes.QueryMintedResponse{TotalMinted: minted}, nil
+}
+
+func (q queryServer) Minters(c context.Context, req *gemminttypes.QueryMinterRequest) (*gemminttypes.QueryMinterResponse, error) {
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "[Minters] failed. Invalid request.")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	allMinter := q.k.GetAllMinters(ctx)
+
+	return &gemminttypes.QueryMinterResponse{Minters: allMinter}, nil
 }

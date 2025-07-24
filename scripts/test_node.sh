@@ -99,6 +99,7 @@ from_scratch () {
   # staking
   update_test_genesis `printf '.app_state["staking"]["params"]["bond_denom"]="%s"' $DENOM`
   update_test_genesis '.app_state["staking"]["params"]["min_commission_rate"]="0.050000000000000000"'
+  
 
   # mint
   update_test_genesis `printf '.app_state["mint"]["params"]["mint_denom"]="%s"' $DENOM`
@@ -125,7 +126,7 @@ from_scratch () {
 
   update_test_genesis '.app_state["reward"]["params"]["apr"]="0.04"'
   update_test_genesis '.app_state["reward"]["params"]["block_per_year"]="6307200"'
-  update_test_genesis '.app_state["reward"]["params"]["max_self_bond_token"]="1000000"'
+  update_test_genesis '.app_state["reward"]["params"]["max_self_bond_token"]="10000000000000000000000"'
 
   update_test_genesis '.app_state["allocationpool"]["params"]["initial_rate"]="65536"'
   update_test_genesis '.app_state["allocationpool"]["params"]["decay"]="0.00000006"'

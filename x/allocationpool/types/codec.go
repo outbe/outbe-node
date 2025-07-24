@@ -19,7 +19,7 @@ func init() {
 }
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgMintTribute{}, "pool/MsgMintTribute", nil)
+	cdc.RegisterConcrete(&MsgMintTribute{}, "allocationpool/MsgMintTribute", nil)
 	// // this line is used by starport scaffolding # 2
 
 	// // proposals

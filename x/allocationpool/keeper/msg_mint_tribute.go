@@ -26,7 +26,6 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 	log.Println("########## Mint Tribute Transaction Started ##########")
 
 	checkEligibleContract := k.mintKeeper.GetWhitelist(ctx)
-	fmt.Println("mint-tributev- ----->checkEligibleContract", checkEligibleContract)
 
 	if len(checkEligibleContract) == 0 {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][GetWhitelist] failed. No smart contract is registered. Register an eligible smart contract first to be able mint tribute for it.")

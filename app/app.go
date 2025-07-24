@@ -178,6 +178,7 @@ import (
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 
 	distributionmodule "github.com/outbe/outbe-node/x/distribution"
+	stakingmodule "github.com/outbe/outbe-node/x/staking"
 
 	rewardmodule "github.com/outbe/outbe-node/x/reward"
 	rewardkeeper "github.com/outbe/outbe-node/x/reward/keeper"
@@ -246,21 +247,21 @@ var (
 var maccPerms = map[string][]string{
 	authtypes.FeeCollectorName:     {authtypes.Minter},
 	distrtypes.ModuleName:          {authtypes.Minter},
-	minttypes.ModuleName:           {authtypes.Minter},
+	minttypes.ModuleName:           nil,
 	allocationpooltypes.ModuleName: {authtypes.Minter, authtypes.Burner},
-	rewardtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+	rewardtypes.ModuleName:         nil,
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	govtypes.ModuleName:            {authtypes.Burner},
 	nft.ModuleName:                 nil,
 	// non sdk modules
-	ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+	ibctransfertypes.ModuleName: {authtypes.Burner},
 	ibcfeetypes.ModuleName:      nil,
 	icatypes.ModuleName:         nil,
 	wasmtypes.ModuleName:        {authtypes.Burner},
-	evmtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+	evmtypes.ModuleName:         {authtypes.Burner},
 	feemarkettypes.ModuleName:   nil,
-	erc20types.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	erc20types.ModuleName:       {authtypes.Burner},
 }
 
 var (
@@ -404,7 +405,8 @@ func NewChainApp(
 	}
 
 	keys := storetypes.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey,
+		authtypes.StoreKey,
+		banktypes.StoreKey,
 		stakingtypes.StoreKey,
 		crisistypes.StoreKey,
 		minttypes.StoreKey,
@@ -976,7 +978,9 @@ func NewChainApp(
 			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
 			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper),
 		// distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		stakingmodule.NewAppModule(
+			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(banktypes.ModuleName)),
+			*app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *app.StakingKeeper, app.RewardKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		params.NewAppModule(app.ParamsKeeper),

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/outbe/outbe-node/x/gemmint/types"
 
@@ -17,9 +16,7 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 )
 
-func (k Keeper) Whitelist1(c context.Context, req *types.QueryWhitelistRequest) (*types.QueryWhitelistResponse, error) {
-
-	fmt.Println("query is started------------->")
+func (k Keeper) Whitelist(c context.Context, req *types.QueryWhitelistRequest) (*types.QueryWhitelistResponse, error) {
 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "[Whitelist] failed. Invalid request.")
@@ -46,12 +43,9 @@ func (k Keeper) Whitelist1(c context.Context, req *types.QueryWhitelistRequest) 
 		if err := k.cdc.Unmarshal(value, &whitelist_details); err != nil {
 			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[Whitelist][Unmarshal] failed. Couldn't parse the Whitelist data encoded.")
 		}
-		fmt.Println("111111111111111111111--whitelist_details", whitelist_details)
 		whitelists = append(whitelists, whitelist_details)
 		return nil
 	})
-
-	fmt.Println("111111111111111111111--whitelist", whitelists)
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, "[Whitelist] failed. Couldn't find a Whitelist infos.")
