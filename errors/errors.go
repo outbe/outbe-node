@@ -40,4 +40,5 @@ var (
 	ErrNoValidatorForAddress = sdkerrors.Register(ModuleName, 11, "address is not associated with any known validator")
 	ErrInsufficientFunds     = sdkerrors.Register(ModuleName, 12, "no insufficient funds")
 	ErrInvalidCoins          = sdkerrors.Register(ModuleName, 13, "no valid coin")
+	ErrInvalidAddress        = sdkerrors.Register(ModuleName, 14, "no valid address")
 )

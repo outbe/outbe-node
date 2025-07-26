@@ -5,7 +5,6 @@ import (
 
 	"cosmossdk.io/core/address"
 	sdkmath "cosmossdk.io/math"
-	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
@@ -70,7 +69,7 @@ type DistributionKeeper interface {
 type RewardKeeper interface {
 	GetParams(ctx sdk.Context) (params rewardtypes.Params)
 	GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (sdkmath.LegacyDec, error)
-	CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error)
+	CalculateTotalSelfBondedTokens(ctx context.Context, validators []stakingtypes.Validator) (sdkmath.Int, error)
 	CalculateFeeShare(amount sdkmath.LegacyDec, selfBonded sdkmath.LegacyDec, totalSelfBonded sdkmath.Int) sdkmath.LegacyDec
 	CalculateMinApr(ctx context.Context, selfBonded sdkmath.LegacyDec) (seldbondtoken sdkmath.LegacyDec, err error)
 }

@@ -8,7 +8,6 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
 )
 
@@ -26,7 +25,9 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 		if !found {
 			emissionToken, err := k.CalculateExponentialBlockEmission(ctx, 1)
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrCalculation, "[BeginBlocker] failed. CalculateExponentialTokens failed")
+				logger.Error("Failed to calculate exponential block emission for block: 1",
+					"error", err)
+				return sdkerrors.Wrap(err, "[CalculateExponentialBlockEmission] failed to calculate exponential block emission")
 			}
 			emission := types.Emission{
 				BlockNumber:       strBlockNumber,
@@ -34,30 +35,40 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 				EmissionTimestamp: strTimeStamp,
 			}
 			k.SetEmission(ctx, emission)
+
+			logger.Info("✅ Completed exponential token emission for block 1 — emission stored in context",
+				"total_emission", emissionToken,
+				"block_number", ctx.BlockHeight())
+
 			return nil
 		}
 
 		decEmission, err := sdkmath.LegacyNewDecFromStr(emission.TotalEmission)
 		if err != nil {
-			return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker] failed. couldn't convert string to sdk.Dec")
+			logger.Error("Failed to convert total emission to sdk.Dec",
+				"error", err,
+				"TotalEmission", emission.TotalEmission)
+			return sdkerrors.Wrap(err, "failed to convert total emission to sdk.Dec")
 		}
 
 		inflation := k.mintKeeper.GetAllMinters(ctx)[0].Inflation
 
-		logger.Info("⚠️ Inflation dropped below 2%", "inflation", inflation.String())
-
-		// Check if inflation is below 2%
 		if inflation.GT(sdkmath.LegacyNewDecWithPrec(2, 2)) {
 
-			// if ctx.BlockHeight() < constants.TransitionBlockNumber {
 			emissionToken, err := k.CalculateExponentialBlockEmission(ctx, ctx.BlockHeight())
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrCalculation, "[BeginBlocker] failed. CalculateExponentialTokens failed")
+				logger.Error("failed to calculate exponential block emission",
+					"error", err,
+					"emission_token", emissionToken)
+				return sdkerrors.Wrap(err, "failed to calculate exponential block emission")
 			}
 
 			decEmissionPerBlock, err := sdkmath.LegacyNewDecFromStr(emissionToken)
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker] failed. failed to convert string to sdk.Dec")
+				logger.Error("Failed to convert emission token to sdk.Dec",
+					"error", err,
+					"emission_token", emissionToken)
+				return sdkerrors.Wrap(err, "failed to convert emission token to sdk.Dec")
 			}
 
 			emission.BlockNumber = strBlockNumber
@@ -65,16 +76,25 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 			emission.EmissionTimestamp = strTimeStamp
 
 			k.SetEmission(ctx, emission)
+
 			return nil
+
 		} else {
+
 			emissionToken, err := k.CalculateFixedBlockEmission(ctx)
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrCalculation, "[BeginBlocker] failed. CalculateFixedTokens failed")
+				logger.Error("[CalculateFixedBlockEmission] failed to calculate fixed block emission",
+					"error", err,
+					"emission_token", emissionToken)
+				return sdkerrors.Wrap(err, "failed to calculate fixed block emission")
 			}
 
 			decEmissionPerBlock, err := sdkmath.LegacyNewDecFromStr(emissionToken)
 			if err != nil {
-				return sdkerrors.Wrap(errortypes.ErrInvalidType, "[BeginBlocker] failed. failed to convert string to sdk.Dec")
+				ctx.Logger().Error("Failed to convert emission token to sdk.Dec",
+					"error", err,
+					"emission_token", emissionToken)
+				return sdkerrors.Wrap(err, "failed to convert emission token to sdk.Dec")
 			}
 
 			emission.BlockNumber = strBlockNumber
@@ -82,8 +102,10 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 			emission.EmissionTimestamp = strTimeStamp
 
 			k.SetEmission(ctx, emission)
+
 			return nil
 		}
 	}
+
 	return nil
 }

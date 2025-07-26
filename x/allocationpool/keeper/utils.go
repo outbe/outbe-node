@@ -8,7 +8,7 @@ import (
 
 func (k Keeper) GenerateTributeID(ctx context.Context) (string, error) {
 	store := k.storeService.OpenKVStore(ctx)
-	key := []byte("TributeIDCounter")
+	key := []byte("allocationpool/tribute_id_counter")
 
 	// Get current counter
 	bz, err := store.Get(key)

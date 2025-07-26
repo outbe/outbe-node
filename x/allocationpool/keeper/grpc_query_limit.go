@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
@@ -10,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) GetEmission(goCtx context.Context, req *types.QueryEmissionRequest) (*types.QueryEmissionResponse, error) {
+func (k Keeper) GetLimit(goCtx context.Context, req *types.QueryLimitRequest) (*types.QueryLimitResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -18,10 +17,7 @@ func (k Keeper) GetEmission(goCtx context.Context, req *types.QueryEmissionReque
 		return nil, status.Error(codes.InvalidArgument, "[GetEmission:] invalid request - request cannot be nil")
 	}
 
-	totalEmission, found := k.GetTotalEmission(ctx)
-	if !found {
-		return nil, errors.New("[GetEmission][GetTotalEmission] failed to fetch total emission")
-	}
+	limit := k.CalculateAnnualEmissionLimit(ctx)
 
-	return &types.QueryEmissionResponse{Emission: &totalEmission}, nil
+	return &types.QueryLimitResponse{Limit: limit}, nil
 }

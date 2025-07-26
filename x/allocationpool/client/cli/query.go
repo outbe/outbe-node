@@ -22,10 +22,10 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryBlockEmission())
-	cmd.AddCommand(CmdQueryTotalSupply())
+	cmd.AddCommand(CmdQueryLimit())
 	cmd.AddCommand(CmdQueryEmission())
 	// cmd.AddCommand(CmdQueryTotalMinted())
-	cmd.AddCommand(CmdQueryTribute())
+	cmd.AddCommand(CmdQueryTributes())
 
 	// this line is used by starport scaffolding # 1
 

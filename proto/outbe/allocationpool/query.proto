@@ -31,12 +31,16 @@ service Query {
     option (google.api.http).get               = "/outbe/allocationpool/emission";
   }
 
-  rpc GetTotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
-    option (google.api.http).get               = "/outbe/allocationpool/totalsupply";
+  rpc GetLimit(QueryLimitRequest) returns (QueryLimitResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/limit";
   }
 
-  rpc GetTribute(QueryTributeRequest) returns (QueryTributeResponse) {
-    option (google.api.http).get               = "/outbe/allocationpool/tribute";
+  // rpc GetTotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+  //   option (google.api.http).get               = "/outbe/allocationpool/totalsupply";
+  // }
+
+  rpc GetTributes(QueryTributesRequest) returns (QueryTributesResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/tributes";
   }
 
 }
@@ -65,18 +69,25 @@ message QueryEmissionResponse {
   Emission emission = 1;
 }
 
-message QueryTotalSupplyRequest {
+message QueryLimitRequest {
 }
 
-message QueryTotalSupplyResponse {
-  Supply total_supply = 1;
+message QueryLimitResponse {
+  string limit = 1;
 }
 
-message QueryTributeRequest {
+// message QueryTotalSupplyRequest {
+// }
+
+// message QueryTotalSupplyResponse {
+//   Supply total_supply = 1;
+// }
+
+message QueryTributesRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryTributeResponse {
-	repeated Tribute tribute = 1  [(gogoproto.nullable) = false];
+message QueryTributesResponse {
+	repeated Tribute tributes = 1  [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

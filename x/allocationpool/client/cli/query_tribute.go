@@ -10,18 +10,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdQueryTribute() *cobra.Command {
+func CmdQueryTributes() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-tribute",
-		Short: "list all tribute",
+		Short: "fetch all tribute",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			req := &types.QueryTributeRequest{}
+			req := &types.QueryTributesRequest{}
 
-			res, err := queryClient.GetTribute(context.Background(), req)
+			res, err := queryClient.GetTributes(context.Background(), req)
 			if err != nil {
 				return err
 			}

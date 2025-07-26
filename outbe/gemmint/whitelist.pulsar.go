@@ -13,72 +13,21 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_Whitelist_2_list)(nil)
-
-type _Whitelist_2_list struct {
-	list *[]*EligibleContract
-}
-
-func (x *_Whitelist_2_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Whitelist_2_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Whitelist_2_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*EligibleContract)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Whitelist_2_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*EligibleContract)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Whitelist_2_list) AppendMutable() protoreflect.Value {
-	v := new(EligibleContract)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Whitelist_2_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Whitelist_2_list) NewElement() protoreflect.Value {
-	v := new(EligibleContract)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Whitelist_2_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_Whitelist                    protoreflect.MessageDescriptor
-	fd_Whitelist_creator            protoreflect.FieldDescriptor
-	fd_Whitelist_eligible_contracts protoreflect.FieldDescriptor
-	fd_Whitelist_total_minted       protoreflect.FieldDescriptor
-	fd_Whitelist_created            protoreflect.FieldDescriptor
+	md_Whitelist                  protoreflect.MessageDescriptor
+	fd_Whitelist_creator          protoreflect.FieldDescriptor
+	fd_Whitelist_contract_address protoreflect.FieldDescriptor
+	fd_Whitelist_created          protoreflect.FieldDescriptor
+	fd_Whitelist_enabled          protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_gemmint_whitelist_proto_init()
 	md_Whitelist = File_outbe_gemmint_whitelist_proto.Messages().ByName("Whitelist")
 	fd_Whitelist_creator = md_Whitelist.Fields().ByName("creator")
-	fd_Whitelist_eligible_contracts = md_Whitelist.Fields().ByName("eligible_contracts")
-	fd_Whitelist_total_minted = md_Whitelist.Fields().ByName("total_minted")
+	fd_Whitelist_contract_address = md_Whitelist.Fields().ByName("contract_address")
 	fd_Whitelist_created = md_Whitelist.Fields().ByName("created")
+	fd_Whitelist_enabled = md_Whitelist.Fields().ByName("enabled")
 }
 
 var _ protoreflect.Message = (*fastReflection_Whitelist)(nil)
@@ -152,21 +101,21 @@ func (x *fastReflection_Whitelist) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if len(x.EligibleContracts) != 0 {
-		value := protoreflect.ValueOfList(&_Whitelist_2_list{list: &x.EligibleContracts})
-		if !f(fd_Whitelist_eligible_contracts, value) {
-			return
-		}
-	}
-	if x.TotalMinted != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.TotalMinted)
-		if !f(fd_Whitelist_total_minted, value) {
+	if x.ContractAddress != "" {
+		value := protoreflect.ValueOfString(x.ContractAddress)
+		if !f(fd_Whitelist_contract_address, value) {
 			return
 		}
 	}
 	if x.Created != "" {
 		value := protoreflect.ValueOfString(x.Created)
 		if !f(fd_Whitelist_created, value) {
+			return
+		}
+	}
+	if x.Enabled != false {
+		value := protoreflect.ValueOfBool(x.Enabled)
+		if !f(fd_Whitelist_enabled, value) {
 			return
 		}
 	}
@@ -187,12 +136,12 @@ func (x *fastReflection_Whitelist) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "outbe.gemmint.Whitelist.creator":
 		return x.Creator != ""
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		return len(x.EligibleContracts) != 0
-	case "outbe.gemmint.Whitelist.total_minted":
-		return x.TotalMinted != uint64(0)
+	case "outbe.gemmint.Whitelist.contract_address":
+		return x.ContractAddress != ""
 	case "outbe.gemmint.Whitelist.created":
 		return x.Created != ""
+	case "outbe.gemmint.Whitelist.enabled":
+		return x.Enabled != false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -211,12 +160,12 @@ func (x *fastReflection_Whitelist) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "outbe.gemmint.Whitelist.creator":
 		x.Creator = ""
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		x.EligibleContracts = nil
-	case "outbe.gemmint.Whitelist.total_minted":
-		x.TotalMinted = uint64(0)
+	case "outbe.gemmint.Whitelist.contract_address":
+		x.ContractAddress = ""
 	case "outbe.gemmint.Whitelist.created":
 		x.Created = ""
+	case "outbe.gemmint.Whitelist.enabled":
+		x.Enabled = false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -236,18 +185,15 @@ func (x *fastReflection_Whitelist) Get(descriptor protoreflect.FieldDescriptor) 
 	case "outbe.gemmint.Whitelist.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		if len(x.EligibleContracts) == 0 {
-			return protoreflect.ValueOfList(&_Whitelist_2_list{})
-		}
-		listValue := &_Whitelist_2_list{list: &x.EligibleContracts}
-		return protoreflect.ValueOfList(listValue)
-	case "outbe.gemmint.Whitelist.total_minted":
-		value := x.TotalMinted
-		return protoreflect.ValueOfUint64(value)
+	case "outbe.gemmint.Whitelist.contract_address":
+		value := x.ContractAddress
+		return protoreflect.ValueOfString(value)
 	case "outbe.gemmint.Whitelist.created":
 		value := x.Created
 		return protoreflect.ValueOfString(value)
+	case "outbe.gemmint.Whitelist.enabled":
+		value := x.Enabled
+		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -270,14 +216,12 @@ func (x *fastReflection_Whitelist) Set(fd protoreflect.FieldDescriptor, value pr
 	switch fd.FullName() {
 	case "outbe.gemmint.Whitelist.creator":
 		x.Creator = value.Interface().(string)
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		lv := value.List()
-		clv := lv.(*_Whitelist_2_list)
-		x.EligibleContracts = *clv.list
-	case "outbe.gemmint.Whitelist.total_minted":
-		x.TotalMinted = value.Uint()
+	case "outbe.gemmint.Whitelist.contract_address":
+		x.ContractAddress = value.Interface().(string)
 	case "outbe.gemmint.Whitelist.created":
 		x.Created = value.Interface().(string)
+	case "outbe.gemmint.Whitelist.enabled":
+		x.Enabled = value.Bool()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -298,18 +242,14 @@ func (x *fastReflection_Whitelist) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Whitelist) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		if x.EligibleContracts == nil {
-			x.EligibleContracts = []*EligibleContract{}
-		}
-		value := &_Whitelist_2_list{list: &x.EligibleContracts}
-		return protoreflect.ValueOfList(value)
 	case "outbe.gemmint.Whitelist.creator":
 		panic(fmt.Errorf("field creator of message outbe.gemmint.Whitelist is not mutable"))
-	case "outbe.gemmint.Whitelist.total_minted":
-		panic(fmt.Errorf("field total_minted of message outbe.gemmint.Whitelist is not mutable"))
+	case "outbe.gemmint.Whitelist.contract_address":
+		panic(fmt.Errorf("field contract_address of message outbe.gemmint.Whitelist is not mutable"))
 	case "outbe.gemmint.Whitelist.created":
 		panic(fmt.Errorf("field created of message outbe.gemmint.Whitelist is not mutable"))
+	case "outbe.gemmint.Whitelist.enabled":
+		panic(fmt.Errorf("field enabled of message outbe.gemmint.Whitelist is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -325,13 +265,12 @@ func (x *fastReflection_Whitelist) NewField(fd protoreflect.FieldDescriptor) pro
 	switch fd.FullName() {
 	case "outbe.gemmint.Whitelist.creator":
 		return protoreflect.ValueOfString("")
-	case "outbe.gemmint.Whitelist.eligible_contracts":
-		list := []*EligibleContract{}
-		return protoreflect.ValueOfList(&_Whitelist_2_list{list: &list})
-	case "outbe.gemmint.Whitelist.total_minted":
-		return protoreflect.ValueOfUint64(uint64(0))
+	case "outbe.gemmint.Whitelist.contract_address":
+		return protoreflect.ValueOfString("")
 	case "outbe.gemmint.Whitelist.created":
 		return protoreflect.ValueOfString("")
+	case "outbe.gemmint.Whitelist.enabled":
+		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.Whitelist"))
@@ -405,18 +344,16 @@ func (x *fastReflection_Whitelist) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.EligibleContracts) > 0 {
-			for _, e := range x.EligibleContracts {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.TotalMinted != 0 {
-			n += 1 + runtime.Sov(uint64(x.TotalMinted))
+		l = len(x.ContractAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		l = len(x.Created)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Enabled {
+			n += 2
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -447,33 +384,29 @@ func (x *fastReflection_Whitelist) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
+		if x.Enabled {
+			i--
+			if x.Enabled {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x20
+		}
 		if len(x.Created) > 0 {
 			i -= len(x.Created)
 			copy(dAtA[i:], x.Created)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Created)))
 			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x1a
 		}
-		if x.TotalMinted != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.TotalMinted))
+		if len(x.ContractAddress) > 0 {
+			i -= len(x.ContractAddress)
+			copy(dAtA[i:], x.ContractAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ContractAddress)))
 			i--
-			dAtA[i] = 0x18
-		}
-		if len(x.EligibleContracts) > 0 {
-			for iNdEx := len(x.EligibleContracts) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.EligibleContracts[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x12
-			}
+			dAtA[i] = 0x12
 		}
 		if len(x.Creator) > 0 {
 			i -= len(x.Creator)
@@ -565,603 +498,6 @@ func (x *fastReflection_Whitelist) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EligibleContracts", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.EligibleContracts = append(x.EligibleContracts, &EligibleContract{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EligibleContracts[len(x.EligibleContracts)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalMinted", wireType)
-				}
-				x.TotalMinted = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.TotalMinted |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Created", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Created = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_EligibleContract                  protoreflect.MessageDescriptor
-	fd_EligibleContract_contract_address protoreflect.FieldDescriptor
-	fd_EligibleContract_target_mint      protoreflect.FieldDescriptor
-	fd_EligibleContract_total_minted     protoreflect.FieldDescriptor
-	fd_EligibleContract_created          protoreflect.FieldDescriptor
-	fd_EligibleContract_enabled          protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_outbe_gemmint_whitelist_proto_init()
-	md_EligibleContract = File_outbe_gemmint_whitelist_proto.Messages().ByName("EligibleContract")
-	fd_EligibleContract_contract_address = md_EligibleContract.Fields().ByName("contract_address")
-	fd_EligibleContract_target_mint = md_EligibleContract.Fields().ByName("target_mint")
-	fd_EligibleContract_total_minted = md_EligibleContract.Fields().ByName("total_minted")
-	fd_EligibleContract_created = md_EligibleContract.Fields().ByName("created")
-	fd_EligibleContract_enabled = md_EligibleContract.Fields().ByName("enabled")
-}
-
-var _ protoreflect.Message = (*fastReflection_EligibleContract)(nil)
-
-type fastReflection_EligibleContract EligibleContract
-
-func (x *EligibleContract) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EligibleContract)(x)
-}
-
-func (x *EligibleContract) slowProtoReflect() protoreflect.Message {
-	mi := &file_outbe_gemmint_whitelist_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_EligibleContract_messageType fastReflection_EligibleContract_messageType
-var _ protoreflect.MessageType = fastReflection_EligibleContract_messageType{}
-
-type fastReflection_EligibleContract_messageType struct{}
-
-func (x fastReflection_EligibleContract_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EligibleContract)(nil)
-}
-func (x fastReflection_EligibleContract_messageType) New() protoreflect.Message {
-	return new(fastReflection_EligibleContract)
-}
-func (x fastReflection_EligibleContract_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EligibleContract
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_EligibleContract) Descriptor() protoreflect.MessageDescriptor {
-	return md_EligibleContract
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EligibleContract) Type() protoreflect.MessageType {
-	return _fastReflection_EligibleContract_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EligibleContract) New() protoreflect.Message {
-	return new(fastReflection_EligibleContract)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_EligibleContract) Interface() protoreflect.ProtoMessage {
-	return (*EligibleContract)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_EligibleContract) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ContractAddress != "" {
-		value := protoreflect.ValueOfString(x.ContractAddress)
-		if !f(fd_EligibleContract_contract_address, value) {
-			return
-		}
-	}
-	if x.TargetMint != int64(0) {
-		value := protoreflect.ValueOfInt64(x.TargetMint)
-		if !f(fd_EligibleContract_target_mint, value) {
-			return
-		}
-	}
-	if x.TotalMinted != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.TotalMinted)
-		if !f(fd_EligibleContract_total_minted, value) {
-			return
-		}
-	}
-	if x.Created != "" {
-		value := protoreflect.ValueOfString(x.Created)
-		if !f(fd_EligibleContract_created, value) {
-			return
-		}
-	}
-	if x.Enabled != false {
-		value := protoreflect.ValueOfBool(x.Enabled)
-		if !f(fd_EligibleContract_enabled, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_EligibleContract) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		return x.ContractAddress != ""
-	case "outbe.gemmint.EligibleContract.target_mint":
-		return x.TargetMint != int64(0)
-	case "outbe.gemmint.EligibleContract.total_minted":
-		return x.TotalMinted != uint64(0)
-	case "outbe.gemmint.EligibleContract.created":
-		return x.Created != ""
-	case "outbe.gemmint.EligibleContract.enabled":
-		return x.Enabled != false
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EligibleContract) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		x.ContractAddress = ""
-	case "outbe.gemmint.EligibleContract.target_mint":
-		x.TargetMint = int64(0)
-	case "outbe.gemmint.EligibleContract.total_minted":
-		x.TotalMinted = uint64(0)
-	case "outbe.gemmint.EligibleContract.created":
-		x.Created = ""
-	case "outbe.gemmint.EligibleContract.enabled":
-		x.Enabled = false
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EligibleContract) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		value := x.ContractAddress
-		return protoreflect.ValueOfString(value)
-	case "outbe.gemmint.EligibleContract.target_mint":
-		value := x.TargetMint
-		return protoreflect.ValueOfInt64(value)
-	case "outbe.gemmint.EligibleContract.total_minted":
-		value := x.TotalMinted
-		return protoreflect.ValueOfUint64(value)
-	case "outbe.gemmint.EligibleContract.created":
-		value := x.Created
-		return protoreflect.ValueOfString(value)
-	case "outbe.gemmint.EligibleContract.enabled":
-		value := x.Enabled
-		return protoreflect.ValueOfBool(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EligibleContract) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		x.ContractAddress = value.Interface().(string)
-	case "outbe.gemmint.EligibleContract.target_mint":
-		x.TargetMint = value.Int()
-	case "outbe.gemmint.EligibleContract.total_minted":
-		x.TotalMinted = value.Uint()
-	case "outbe.gemmint.EligibleContract.created":
-		x.Created = value.Interface().(string)
-	case "outbe.gemmint.EligibleContract.enabled":
-		x.Enabled = value.Bool()
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EligibleContract) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		panic(fmt.Errorf("field contract_address of message outbe.gemmint.EligibleContract is not mutable"))
-	case "outbe.gemmint.EligibleContract.target_mint":
-		panic(fmt.Errorf("field target_mint of message outbe.gemmint.EligibleContract is not mutable"))
-	case "outbe.gemmint.EligibleContract.total_minted":
-		panic(fmt.Errorf("field total_minted of message outbe.gemmint.EligibleContract is not mutable"))
-	case "outbe.gemmint.EligibleContract.created":
-		panic(fmt.Errorf("field created of message outbe.gemmint.EligibleContract is not mutable"))
-	case "outbe.gemmint.EligibleContract.enabled":
-		panic(fmt.Errorf("field enabled of message outbe.gemmint.EligibleContract is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EligibleContract) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "outbe.gemmint.EligibleContract.contract_address":
-		return protoreflect.ValueOfString("")
-	case "outbe.gemmint.EligibleContract.target_mint":
-		return protoreflect.ValueOfInt64(int64(0))
-	case "outbe.gemmint.EligibleContract.total_minted":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "outbe.gemmint.EligibleContract.created":
-		return protoreflect.ValueOfString("")
-	case "outbe.gemmint.EligibleContract.enabled":
-		return protoreflect.ValueOfBool(false)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.gemmint.EligibleContract"))
-		}
-		panic(fmt.Errorf("message outbe.gemmint.EligibleContract does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EligibleContract) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in outbe.gemmint.EligibleContract", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EligibleContract) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EligibleContract) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_EligibleContract) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_EligibleContract) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EligibleContract)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.ContractAddress)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.TargetMint != 0 {
-			n += 1 + runtime.Sov(uint64(x.TargetMint))
-		}
-		if x.TotalMinted != 0 {
-			n += 1 + runtime.Sov(uint64(x.TotalMinted))
-		}
-		l = len(x.Created)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Enabled {
-			n += 2
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EligibleContract)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Enabled {
-			i--
-			if x.Enabled {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x30
-		}
-		if len(x.Created) > 0 {
-			i -= len(x.Created)
-			copy(dAtA[i:], x.Created)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Created)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if x.TotalMinted != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.TotalMinted))
-			i--
-			dAtA[i] = 0x20
-		}
-		if x.TargetMint != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.TargetMint))
-			i--
-			dAtA[i] = 0x18
-		}
-		if len(x.ContractAddress) > 0 {
-			i -= len(x.ContractAddress)
-			copy(dAtA[i:], x.ContractAddress)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ContractAddress)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EligibleContract)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EligibleContract: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EligibleContract: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 2:
-				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ContractAddress", wireType)
 				}
 				var stringLen uint64
@@ -1193,44 +529,6 @@ func (x *fastReflection_EligibleContract) ProtoMethods() *protoiface.Methods {
 				x.ContractAddress = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TargetMint", wireType)
-				}
-				x.TargetMint = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.TargetMint |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TotalMinted", wireType)
-				}
-				x.TotalMinted = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.TotalMinted |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Created", wireType)
 				}
@@ -1262,7 +560,7 @@ func (x *fastReflection_EligibleContract) ProtoMethods() *protoiface.Methods {
 				}
 				x.Created = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 6:
+			case 4:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
 				}
@@ -1336,10 +634,10 @@ type Whitelist struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Creator           string              `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	EligibleContracts []*EligibleContract `protobuf:"bytes,2,rep,name=eligible_contracts,json=eligibleContracts,proto3" json:"eligible_contracts,omitempty"`
-	TotalMinted       uint64              `protobuf:"varint,3,opt,name=total_minted,json=totalMinted,proto3" json:"total_minted,omitempty"`
-	Created           string              `protobuf:"bytes,4,opt,name=created,proto3" json:"created,omitempty"`
+	Creator         string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	ContractAddress string `protobuf:"bytes,2,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
+	Created         string `protobuf:"bytes,3,opt,name=created,proto3" json:"created,omitempty"`
+	Enabled         bool   `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled,omitempty"`
 }
 
 func (x *Whitelist) Reset() {
@@ -1369,18 +667,11 @@ func (x *Whitelist) GetCreator() string {
 	return ""
 }
 
-func (x *Whitelist) GetEligibleContracts() []*EligibleContract {
+func (x *Whitelist) GetContractAddress() string {
 	if x != nil {
-		return x.EligibleContracts
+		return x.ContractAddress
 	}
-	return nil
-}
-
-func (x *Whitelist) GetTotalMinted() uint64 {
-	if x != nil {
-		return x.TotalMinted
-	}
-	return 0
+	return ""
 }
 
 func (x *Whitelist) GetCreated() string {
@@ -1390,67 +681,7 @@ func (x *Whitelist) GetCreated() string {
 	return ""
 }
 
-type EligibleContract struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ContractAddress string `protobuf:"bytes,2,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
-	TargetMint      int64  `protobuf:"varint,3,opt,name=target_mint,json=targetMint,proto3" json:"target_mint,omitempty"`
-	TotalMinted     uint64 `protobuf:"varint,4,opt,name=total_minted,json=totalMinted,proto3" json:"total_minted,omitempty"`
-	Created         string `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
-	Enabled         bool   `protobuf:"varint,6,opt,name=enabled,proto3" json:"enabled,omitempty"`
-}
-
-func (x *EligibleContract) Reset() {
-	*x = EligibleContract{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_outbe_gemmint_whitelist_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EligibleContract) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EligibleContract) ProtoMessage() {}
-
-// Deprecated: Use EligibleContract.ProtoReflect.Descriptor instead.
-func (*EligibleContract) Descriptor() ([]byte, []int) {
-	return file_outbe_gemmint_whitelist_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *EligibleContract) GetContractAddress() string {
-	if x != nil {
-		return x.ContractAddress
-	}
-	return ""
-}
-
-func (x *EligibleContract) GetTargetMint() int64 {
-	if x != nil {
-		return x.TargetMint
-	}
-	return 0
-}
-
-func (x *EligibleContract) GetTotalMinted() uint64 {
-	if x != nil {
-		return x.TotalMinted
-	}
-	return 0
-}
-
-func (x *EligibleContract) GetCreated() string {
-	if x != nil {
-		return x.Created
-	}
-	return ""
-}
-
-func (x *EligibleContract) GetEnabled() bool {
+func (x *Whitelist) GetEnabled() bool {
 	if x != nil {
 		return x.Enabled
 	}
@@ -1464,41 +695,27 @@ var file_outbe_gemmint_whitelist_proto_rawDesc = []byte{
 	0x77, 0x68, 0x69, 0x74, 0x65, 0x6c, 0x69, 0x73, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x0d, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x67, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0x1a, 0x1e,
 	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb2,
+	0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x84,
 	0x01, 0x0a, 0x09, 0x57, 0x68, 0x69, 0x74, 0x65, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07,
 	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4e, 0x0a, 0x12, 0x65, 0x6c, 0x69, 0x67, 0x69, 0x62,
-	0x6c, 0x65, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x67, 0x65, 0x6d, 0x6d, 0x69,
-	0x6e, 0x74, 0x2e, 0x45, 0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x72,
-	0x61, 0x63, 0x74, 0x52, 0x11, 0x65, 0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e,
-	0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f,
-	0x6d, 0x69, 0x6e, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x74, 0x6f,
-	0x74, 0x61, 0x6c, 0x4d, 0x69, 0x6e, 0x74, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x64, 0x22, 0xb5, 0x01, 0x0a, 0x10, 0x45, 0x6c, 0x69, 0x67, 0x69, 0x62, 0x6c, 0x65,
-	0x43, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x6f, 0x6e, 0x74,
-	0x72, 0x61, 0x63, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x6d, 0x69,
-	0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x4d, 0x69, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x6d, 0x69,
-	0x6e, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x74, 0x6f, 0x74, 0x61,
-	0x6c, 0x4d, 0x69, 0x6e, 0x74, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x64, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x42, 0xa7, 0x01, 0x0a, 0x11,
-	0x63, 0x6f, 0x6d, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x67, 0x65, 0x6d, 0x6d, 0x69, 0x6e,
-	0x74, 0x42, 0x0e, 0x57, 0x68, 0x69, 0x74, 0x65, 0x6c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x2d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64, 0x65,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x67, 0x65, 0x6d, 0x6d, 0x69,
-	0x6e, 0x74, 0xa2, 0x02, 0x03, 0x4f, 0x47, 0x58, 0xaa, 0x02, 0x0d, 0x4f, 0x75, 0x74, 0x62, 0x65,
-	0x2e, 0x47, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0xca, 0x02, 0x0d, 0x4f, 0x75, 0x74, 0x62, 0x65,
-	0x5c, 0x47, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0xe2, 0x02, 0x19, 0x4f, 0x75, 0x74, 0x62, 0x65,
-	0x5c, 0x47, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x47, 0x65,
-	0x6d, 0x6d, 0x69, 0x6e, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61,
+	0x63, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x65,
+	0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x64, 0x42, 0xa7, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x6f, 0x75,
+	0x74, 0x62, 0x65, 0x2e, 0x67, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0x42, 0x0e, 0x57, 0x68, 0x69,
+	0x74, 0x65, 0x6c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2d, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f,
+	0x6f, 0x75, 0x74, 0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f,
+	0x75, 0x74, 0x62, 0x65, 0x2f, 0x67, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0xa2, 0x02, 0x03, 0x4f,
+	0x47, 0x58, 0xaa, 0x02, 0x0d, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x47, 0x65, 0x6d, 0x6d, 0x69,
+	0x6e, 0x74, 0xca, 0x02, 0x0d, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x47, 0x65, 0x6d, 0x6d, 0x69,
+	0x6e, 0x74, 0xe2, 0x02, 0x19, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x47, 0x65, 0x6d, 0x6d, 0x69,
+	0x6e, 0x74, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x0e, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x47, 0x65, 0x6d, 0x6d, 0x69, 0x6e, 0x74, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1513,18 +730,16 @@ func file_outbe_gemmint_whitelist_proto_rawDescGZIP() []byte {
 	return file_outbe_gemmint_whitelist_proto_rawDescData
 }
 
-var file_outbe_gemmint_whitelist_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_outbe_gemmint_whitelist_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_outbe_gemmint_whitelist_proto_goTypes = []interface{}{
-	(*Whitelist)(nil),        // 0: outbe.gemmint.Whitelist
-	(*EligibleContract)(nil), // 1: outbe.gemmint.EligibleContract
+	(*Whitelist)(nil), // 0: outbe.gemmint.Whitelist
 }
 var file_outbe_gemmint_whitelist_proto_depIdxs = []int32{
-	1, // 0: outbe.gemmint.Whitelist.eligible_contracts:type_name -> outbe.gemmint.EligibleContract
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_outbe_gemmint_whitelist_proto_init() }
@@ -1545,18 +760,6 @@ func file_outbe_gemmint_whitelist_proto_init() {
 				return nil
 			}
 		}
-		file_outbe_gemmint_whitelist_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EligibleContract); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1564,7 +767,7 @@ func file_outbe_gemmint_whitelist_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_outbe_gemmint_whitelist_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

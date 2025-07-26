@@ -11,21 +11,21 @@ import (
 func (k Keeper) SetWhitelist(ctx context.Context, whitelist types.Whitelist) error {
 	store := k.storeService.OpenKVStore(ctx)
 	b := k.cdc.MustMarshal(&whitelist)
-	return store.Set(types.GetWhitelistKey(whitelist.Creator), b)
+	return store.Set(types.GetWhitelistKey(whitelist.ContractAddress), b)
 }
 
-func (k Keeper) GetWhitelistedContracts(ctx context.Context) (list []types.Whitelist) {
-	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	iterator := storetypes.KVStorePrefixIterator(store, types.WhitelistKey)
+func (k Keeper) GetContractByAddress(ctx context.Context, address string) (contract types.Whitelist, found bool) {
+	store := k.storeService.OpenKVStore(ctx)
+	contractKey := types.GetWhitelistKey(address)
 
-	defer iterator.Close()
+	b, err := store.Get(contractKey)
 
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Whitelist
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+	if b == nil || err != nil {
+		return contract, false
 	}
-	return
+
+	k.cdc.MustUnmarshal(b, &contract)
+	return contract, true
 }
 
 func (k Keeper) GetWhitelist(ctx context.Context) (list []types.Whitelist) {
@@ -54,10 +54,8 @@ func (k Keeper) IsEligibleSmartContract(ctx context.Context, contractAddress str
 			return false
 		}
 
-		for _, contract := range whitelist.EligibleContracts {
-			if contract.ContractAddress == contractAddress && contract.Enabled {
-				return true
-			}
+		if whitelist.ContractAddress == contractAddress && whitelist.Enabled {
+			return true
 		}
 	}
 

@@ -5,7 +5,6 @@ import (
 
 	"cosmossdk.io/math"
 
-	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
@@ -40,5 +39,5 @@ type BankKeeper interface {
 type RewardKeeper interface {
 	GetParams(ctx sdk.Context) (params rewardtypes.Params)
 	GetValidatorSelfBondedTokens(ctx context.Context, val stakingtypes.ValidatorI) (math.LegacyDec, error)
-	CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (math.Int, error)
+	CalculateTotalSelfBondedTokens(ctx context.Context, validators []stakingtypes.Validator) (math.Int, error)
 }

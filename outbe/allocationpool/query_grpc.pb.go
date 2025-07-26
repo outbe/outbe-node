@@ -22,8 +22,8 @@ const (
 	Query_Params_FullMethodName           = "/outbe.allocationpool.Query/Params"
 	Query_GetBlockEmission_FullMethodName = "/outbe.allocationpool.Query/GetBlockEmission"
 	Query_GetEmission_FullMethodName      = "/outbe.allocationpool.Query/GetEmission"
-	Query_GetTotalSupply_FullMethodName   = "/outbe.allocationpool.Query/GetTotalSupply"
-	Query_GetTribute_FullMethodName       = "/outbe.allocationpool.Query/GetTribute"
+	Query_GetLimit_FullMethodName         = "/outbe.allocationpool.Query/GetLimit"
+	Query_GetTributes_FullMethodName      = "/outbe.allocationpool.Query/GetTributes"
 )
 
 // QueryClient is the client API for Query service.
@@ -33,8 +33,8 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	GetBlockEmission(ctx context.Context, in *QueryBlockEmissionRequest, opts ...grpc.CallOption) (*QueryBlockEmissionResponse, error)
 	GetEmission(ctx context.Context, in *QueryEmissionRequest, opts ...grpc.CallOption) (*QueryEmissionResponse, error)
-	GetTotalSupply(ctx context.Context, in *QueryTotalSupplyRequest, opts ...grpc.CallOption) (*QueryTotalSupplyResponse, error)
-	GetTribute(ctx context.Context, in *QueryTributeRequest, opts ...grpc.CallOption) (*QueryTributeResponse, error)
+	GetLimit(ctx context.Context, in *QueryLimitRequest, opts ...grpc.CallOption) (*QueryLimitResponse, error)
+	GetTributes(ctx context.Context, in *QueryTributesRequest, opts ...grpc.CallOption) (*QueryTributesResponse, error)
 }
 
 type queryClient struct {
@@ -72,18 +72,18 @@ func (c *queryClient) GetEmission(ctx context.Context, in *QueryEmissionRequest,
 	return out, nil
 }
 
-func (c *queryClient) GetTotalSupply(ctx context.Context, in *QueryTotalSupplyRequest, opts ...grpc.CallOption) (*QueryTotalSupplyResponse, error) {
-	out := new(QueryTotalSupplyResponse)
-	err := c.cc.Invoke(ctx, Query_GetTotalSupply_FullMethodName, in, out, opts...)
+func (c *queryClient) GetLimit(ctx context.Context, in *QueryLimitRequest, opts ...grpc.CallOption) (*QueryLimitResponse, error) {
+	out := new(QueryLimitResponse)
+	err := c.cc.Invoke(ctx, Query_GetLimit_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) GetTribute(ctx context.Context, in *QueryTributeRequest, opts ...grpc.CallOption) (*QueryTributeResponse, error) {
-	out := new(QueryTributeResponse)
-	err := c.cc.Invoke(ctx, Query_GetTribute_FullMethodName, in, out, opts...)
+func (c *queryClient) GetTributes(ctx context.Context, in *QueryTributesRequest, opts ...grpc.CallOption) (*QueryTributesResponse, error) {
+	out := new(QueryTributesResponse)
+	err := c.cc.Invoke(ctx, Query_GetTributes_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +97,8 @@ type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	GetBlockEmission(context.Context, *QueryBlockEmissionRequest) (*QueryBlockEmissionResponse, error)
 	GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error)
-	GetTotalSupply(context.Context, *QueryTotalSupplyRequest) (*QueryTotalSupplyResponse, error)
-	GetTribute(context.Context, *QueryTributeRequest) (*QueryTributeResponse, error)
+	GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error)
+	GetTributes(context.Context, *QueryTributesRequest) (*QueryTributesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -115,11 +115,11 @@ func (UnimplementedQueryServer) GetBlockEmission(context.Context, *QueryBlockEmi
 func (UnimplementedQueryServer) GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEmission not implemented")
 }
-func (UnimplementedQueryServer) GetTotalSupply(context.Context, *QueryTotalSupplyRequest) (*QueryTotalSupplyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTotalSupply not implemented")
+func (UnimplementedQueryServer) GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLimit not implemented")
 }
-func (UnimplementedQueryServer) GetTribute(context.Context, *QueryTributeRequest) (*QueryTributeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTribute not implemented")
+func (UnimplementedQueryServer) GetTributes(context.Context, *QueryTributesRequest) (*QueryTributesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTributes not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -188,38 +188,38 @@ func _Query_GetEmission_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetTotalSupply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTotalSupplyRequest)
+func _Query_GetLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLimitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetTotalSupply(ctx, in)
+		return srv.(QueryServer).GetLimit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_GetTotalSupply_FullMethodName,
+		FullMethod: Query_GetLimit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetTotalSupply(ctx, req.(*QueryTotalSupplyRequest))
+		return srv.(QueryServer).GetLimit(ctx, req.(*QueryLimitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetTribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTributeRequest)
+func _Query_GetTributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTributesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetTribute(ctx, in)
+		return srv.(QueryServer).GetTributes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_GetTribute_FullMethodName,
+		FullMethod: Query_GetTributes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetTribute(ctx, req.(*QueryTributeRequest))
+		return srv.(QueryServer).GetTributes(ctx, req.(*QueryTributesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,12 +244,12 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GetEmission_Handler,
 		},
 		{
-			MethodName: "GetTotalSupply",
-			Handler:    _Query_GetTotalSupply_Handler,
+			MethodName: "GetLimit",
+			Handler:    _Query_GetLimit_Handler,
 		},
 		{
-			MethodName: "GetTribute",
-			Handler:    _Query_GetTribute_Handler,
+			MethodName: "GetTributes",
+			Handler:    _Query_GetTributes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

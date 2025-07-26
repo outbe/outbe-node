@@ -14,9 +14,9 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (k Keeper) GetTribute(c context.Context, req *types.QueryTributeRequest) (*types.QueryTributeResponse, error) {
+func (k Keeper) GetTributes(c context.Context, req *types.QueryTributesRequest) (*types.QueryTributesResponse, error) {
 	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "[GetTribute] failed. Invalid request.")
+		return nil, status.Error(codes.InvalidArgument, "[GetTribute:] invalid request - request cannot be nil")
 	}
 
 	var tributes []types.Tribute
@@ -38,14 +38,15 @@ func (k Keeper) GetTribute(c context.Context, req *types.QueryTributeRequest) (*
 	pageRes, err := query.Paginate(tributeStore, pagination, func(key []byte, value []byte) error {
 		var tribute types.Tribute
 		if err := k.cdc.Unmarshal(value, &tribute); err != nil {
-			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[GetTribute][Unmarshal] failed. Couldn't parse the tribute data encoded.")
+			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[GetTribute:] failed to unmarshal tribute data")
 		}
 		tributes = append(tributes, tribute)
 		return nil
 	})
+
 	if err != nil {
-		return nil, status.Error(codes.Internal, "[GetTribute] failed. Couldn't find a valid tribute.")
+		return nil, status.Error(codes.Internal, "[GetTribute:] failed to find a valid tribute")
 	}
 
-	return &types.QueryTributeResponse{Tribute: tributes, Pagination: pageRes}, nil
+	return &types.QueryTributesResponse{Tributes: tributes, Pagination: pageRes}, nil
 }

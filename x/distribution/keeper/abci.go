@@ -15,17 +15,23 @@ import (
 func (k WrappedBaseKeeper) BeginBlocker(ctx context.Context) error {
 	defer telemetry.ModuleMeasureSince(stakingtypes.ModuleName, telemetry.Now(), telemetry.MetricKeyBeginBlocker)
 
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	logger := k.Logger(sdkCtx)
+
 	wctx := sdk.UnwrapSDKContext(ctx)
 
 	// determine the total power signing the block
 	var previousTotalPower int64
 
-	for _, voteInfo := range wctx.VoteInfos() {
-		previousTotalPower += voteInfo.Validator.Power
+	validators, err := k.sk.GetAllValidators(ctx)
+	if err != nil {
+		return sdkerrors.Wrapf(errortypes.ErrInvalidType,
+			"[BeginBlocker][Distribution] failed to query all validators: %v", err)
 	}
 
-	if err := k.AllocateTokens(ctx, previousTotalPower, wctx.VoteInfos()); err != nil {
-		return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "failed to distribute validator rewards")
+	if err := k.AllocateTokens(ctx, previousTotalPower, validators); err != nil {
+		logger.Error("Failed to distribute validator rewards", "error", err.Error())
+		return sdkerrors.Wrapf(err, "failed to distribute validator rewards at block %d", sdkCtx.BlockHeight())
 	}
 
 	// record the proposer for when we payout on the next block

@@ -20,3 +20,8 @@ const (
 	ModuleName       = "distribution"
 	LegacyPrecision  = 18
 )
+
+const (
+	ExpectedPrefix = "outbe"
+	ExpectedLength = 64 // typical length for Cosmos addresses
+)

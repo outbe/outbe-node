@@ -3,10 +3,7 @@ package keeper
 import (
 	"context"
 	"errors"
-	"fmt"
-	"log"
 	"math"
-	"strconv"
 
 	errortypes "github.com/outbe/outbe-node/errors"
 
@@ -14,16 +11,14 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/app/params"
-	"github.com/outbe/outbe-node/x/allocationpool/constants"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
-	mintType "github.com/outbe/outbe-node/x/gemmint/types"
 )
 
 func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute) (*types.MsgMintTributeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	log.Println("########## Mint Tribute Transaction Started ##########")
+	logger.Info("🔁 Starting mint tribute transaction")
 
 	checkEligibleContract := k.mintKeeper.GetWhitelist(ctx)
 
@@ -66,70 +61,6 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 	if err != nil {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][SetEmission] failed. Total emission not decreased.")
 	}
-
-	// Get current total supply
-	totalSupply := k.TotalSupplyAll(ctx)
-
-	var currentSupply uint64
-	var strTotalSupply string
-
-	k.Logger(ctx).Info("[MintTribute] Retrieved total supply", "supply", totalSupply)
-
-	if len(totalSupply) == 0 || totalSupply[0].TotalSupply == "" {
-		currentSupply = 0
-		strTotalSupply = "0"
-		k.Logger(ctx).Info("[MintTribute] First mint", "currentSupply", currentSupply, "strTotalSupply", strTotalSupply)
-	} else {
-		var err error
-		currentSupply, err = strconv.ParseUint(totalSupply[0].TotalSupply, 10, 64)
-		if err != nil {
-			return nil, sdkerrors.Wrap(errortypes.ErrInvalidType, "[MintTribute][ParseUint] failed. failed to parse total supply.")
-		}
-		k.Logger(ctx).Info("[MintTribute] Second mint", "currentSupply", currentSupply)
-	}
-
-	k.Logger(ctx).Info("[MintTribute] Before minting", "current_supply", currentSupply, "mint_amount", msg.MintAmount)
-
-	currentSupply += msg.MintAmount
-
-	k.Logger(ctx).Info("[MintTribute] Total minted before saving", "total_mint_amount", currentSupply)
-
-	// Convert back to string
-	strTotalSupply = strconv.FormatUint(currentSupply, 10)
-
-	// Create supply object
-	supply := types.Supply{
-		TotalSupply: strTotalSupply,
-	}
-	if err := k.SetSupply(ctx, supply); err != nil {
-		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][SetSupply] failed. Couldn't store supply into the chain.")
-	}
-
-	k.Logger(ctx).Info("[MintTribute] Prepared supply for storage", "supply", supply)
-
-	minted := mintType.Minted{
-		TotalMinted: sdkmath.LegacyMustNewDecFromStr(strTotalSupply),
-	}
-
-	if err := k.mintKeeper.SetTotalMinted(ctx, minted); err != nil {
-		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][SetTotalMinted] failed. Couldn't store total minted into the chain.")
-	}
-
-	k.Logger(ctx).Info("[MintTribute] Prepared minted for storage", "total_minted", minted)
-
-	minted1, _ := k.mintKeeper.GetTotalMinted(ctx)
-
-	k.Logger(ctx).Info("[MintTribute] fetching minted", "total_minted", minted1)
-
-	verifySupply := k.TotalSupplyAll(ctx)
-
-	k.Logger(ctx).Info("[MintTribute] Verified saved supply", "verified_supply", verifySupply)
-
-	if len(verifySupply) == 0 || verifySupply[0].TotalSupply != strTotalSupply {
-		return nil, fmt.Errorf("failed to verify saved supply: expected %s, got %v", strTotalSupply, verifySupply)
-	}
-
-	k.Logger(ctx).Info("[MintTribute] Prepared minted for storage", "verify_supply", verifySupply)
 
 	// Mint the coins
 	mintCoin := sdk.NewCoin(params.BondDenom, sdkmath.NewInt(int64(msg.MintAmount)))
@@ -180,8 +111,9 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 		RecipientAddress: msg.ReceiptAddress,
 		Amount:           msg.MintAmount,
 	}
+
 	if err := k.SetTribute(ctx, newTribute); err != nil {
-		return nil, sdkerrors.Wrap(err, "[MintTribute] failed to store tribute")
+		return nil, sdkerrors.Wrap(err, "[MintTribute:] failed to store tribute")
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -193,27 +125,9 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 		),
 	)
 
-	logger.Info("########## Mint Tribute Transaction Transaction Completed ##########")
+	logger.Info("✅ Minting tribute successfully completed",
+		"new_tribute", newTribute,
+	)
 
 	return &types.MsgMintTributeResponse{}, nil
-}
-
-func (k msgServer) BlockProvisionAmount(ctx sdk.Context) (uint64, error) {
-
-	if ctx.BlockHeight() < constants.TransitionBlockNumber {
-
-		tokens, err := k.CalculateExponentialBlockEmission(ctx, ctx.BlockHeight())
-		if err != nil {
-			return 0, sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "[BlockProvisionAmount][CalculateExponentialTokens] failed. ")
-		}
-		val, _ := strconv.ParseUint(tokens, 10, 64)
-		return val, nil
-	}
-
-	tokens, err := k.CalculateFixedBlockEmission(ctx)
-	if err != nil {
-		return 0, errors.New("CalculateFixedTokens failed")
-	}
-	val, _ := strconv.ParseUint(tokens, 10, 64)
-	return val, nil
 }

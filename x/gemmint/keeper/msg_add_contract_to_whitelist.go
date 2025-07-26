@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,57 +14,35 @@ func (k msgServer) AddContractToWhitelist(goCtx context.Context, msg *types.MsgA
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	logger.Info("######### Generating Register Eligible Contract Transaction Started #########")
+	logger.Info("🔁 Starting eligible smart contract registeration")
+
+	err := k.ValidateContractAddress(msg.ContractAddress)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(errortypes.ErrInvalidAddress, "[AddContractToWhitelist] smart contract address is not a valid address")
+	}
+
+	isValid := k.IsValidCreator(msg.Creator)
+	if !isValid {
+		return nil, sdkerrors.Wrapf(errortypes.ErrInvalidType, "[AddContractToWhitelist] creator address is not valid")
+	}
 
 	// Attempt to retrieve the existing whitelist from storage
-	whitelists := k.GetWhitelist(ctx)
+	_, found := k.GetContractByAddress(ctx, msg.ContractAddress)
+	if found {
+		return nil, sdkerrors.Wrapf(errortypes.ErrInvalidType, "[AddContractToWhitelist] smart contract address is already registerd in whitelist")
+	}
 
-	// Create a new eligible contract
-	newEligibleContract := &types.EligibleContract{
+	newContract := types.Whitelist{
+		Creator:         msg.Creator,
 		ContractAddress: msg.ContractAddress,
+		Created:         time.Now().UTC().Format(time.RFC3339),
 		Enabled:         true,
-		TargetMint:      0,
-		TotalMinted:     0,
-		Created:         ctx.BlockTime().String(),
 	}
+	k.SetWhitelist(ctx, newContract)
 
-	if len(whitelists) == 0 {
-		// If no whitelist exists, create a new one
-		newWhitelist := types.Whitelist{
-			Creator:           msg.Creator,
-			EligibleContracts: []*types.EligibleContract{newEligibleContract},
-			TotalMinted:       0,
-			Created:           ctx.BlockTime().String(),
-		}
-
-		// Save the newly created whitelist to storage
-		k.SetWhitelist(ctx, newWhitelist)
-		logger.Info("New whitelist created and contract added", "creator", msg.Creator, "contract", msg.ContractAddress)
-	} else {
-		// Validate that the sender is the whitelist owner
-		if whitelists[0].Creator != msg.Creator {
-			logger.Error("[AddContractToWhitelist] Unauthorized transaction: sender is not the whitelist owner",
-				"sender", msg.Creator,
-				"whitelist creator", whitelists[0].Creator,
-			)
-			return nil, sdkerrors.Wrapf(errortypes.ErrUnauthorized, "sender is not the owner of the whitelist")
-		}
-
-		// Check if the contract already exists in the whitelist
-		for _, contract := range whitelists[0].EligibleContracts {
-			if contract.ContractAddress == msg.ContractAddress {
-				logger.Error("[AddContractToWhitelist] Contract already exists in whitelist", "contract", msg.ContractAddress)
-				return nil, sdkerrors.Wrapf(errortypes.ErrConflict, "contract already exists in whitelist")
-			}
-		}
-
-		// Add the new eligible contract to the existing whitelist
-		whitelists[0].EligibleContracts = append(whitelists[0].EligibleContracts, newEligibleContract)
-		k.SetWhitelist(ctx, whitelists[0])
-		logger.Info("Contract successfully added to existing whitelist", "creator", msg.Creator, "contract", msg.ContractAddress)
-	}
-
-	logger.Info("######### End of Register Eligible Contract Transaction #########")
+	logger.Info("✅ An eligible smart contract successfully registered",
+		"whitelists", newContract,
+	)
 
 	return &types.MsgAddContractToWhitelistResponse{}, nil
 }

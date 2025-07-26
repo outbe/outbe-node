@@ -10,19 +10,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdQueryTotalSupply() *cobra.Command {
+func CmdQueryLimit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "total-supply",
-		Short: "shows token total supply amount",
-		//Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
+		Use:   "limit",
+		Short: "fetch current limit",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
+
 			queryClient := types.NewQueryClient(clientCtx)
 
-			req := &types.QueryTotalSupplyRequest{}
+			req := &types.QueryLimitRequest{}
 
-			res, err := queryClient.GetTotalSupply(context.Background(), req)
+			res, err := queryClient.GetLimit(context.Background(), req)
 			if err != nil {
 				return err
 			}
@@ -32,5 +31,6 @@ func CmdQueryTotalSupply() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+
 	return cmd
 }

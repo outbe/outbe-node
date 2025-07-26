@@ -10,7 +10,6 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
-	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -100,23 +99,12 @@ func (k Keeper) UpdateAllocationPool(ctx sdk.Context) {
 	// This could be based on network parameters, block fill ratios, etc.
 }
 
-func (k Keeper) GetTotalSelfBondedTokens(ctx sdk.Context, validatorAddr sdk.ValAddress) sdkmath.Int {
+// calculateTotalSelfBondedTokens sums the self-bonded tokens of all validators in validators.
+func (k Keeper) CalculateTotalSelfBondedTokens(ctx context.Context, validators []stakingtypes.Validator) (sdkmath.Int, error) {
 	total := sdkmath.ZeroInt()
-	k.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		selfDel, _ := k.stakingKeeper.Delegation(ctx, sdk.AccAddress(validatorAddr), validatorAddr)
-		if selfDel != nil {
-			total = total.Add(selfDel.GetShares().TruncateInt())
-		}
-		return false
-	})
-	return total
-}
-
-// calculateTotalSelfBondedTokens sums the self-bonded tokens of all validators in bondedVotes.
-func (k Keeper) CalculateTotalSelfBondedTokens(ctx context.Context, bondedVotes []abci.VoteInfo) (sdkmath.Int, error) {
-	total := sdkmath.ZeroInt()
-	for _, vote := range bondedVotes {
-		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
+	for _, validator := range validators {
+		conAddress, _ := validator.GetConsAddr()
+		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, conAddress)
 		if err != nil {
 			return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrNoValidatorForAddress, "invalid validatir cons adddress")
 		}

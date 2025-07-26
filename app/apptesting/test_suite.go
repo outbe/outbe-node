@@ -3,7 +3,6 @@ package apptesting
 import (
 	"github.com/outbe/outbe-node/app"
 	"github.com/outbe/outbe-node/app/params"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -21,9 +20,9 @@ import (
 
 type KeeperTestSuite struct {
 	suite.Suite
-	Ctx         sdk.Context
-	App         *app.ChainApp
-	QueryClient types.QueryClient
+	Ctx sdk.Context
+	App *app.ChainApp
+	// QueryClient types.QueryClient
 	QueryHelper *baseapp.QueryServiceTestHelper
 	TestAccs    []sdk.AccAddress
 }
