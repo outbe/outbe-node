@@ -118,9 +118,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -155,6 +152,23 @@ import (
 
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	chainante "github.com/outbe/outbe-node/app/ante"
+
+	rewardmodule "github.com/outbe/outbe-node/x/reward"
+	rewardkeeper "github.com/outbe/outbe-node/x/reward/keeper"
+	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
+
+	"github.com/outbe/outbe-node/x/gemmint"
+	mintkeeper "github.com/outbe/outbe-node/x/gemmint/keeper"
+	minttypes "github.com/outbe/outbe-node/x/gemmint/types"
+
+	allocationpoolmodule "github.com/outbe/outbe-node/x/allocationpool"
+	allocationpoolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
+	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
+
+	distributionmodule "github.com/outbe/outbe-node/x/distribution"
+	stakingmodule "github.com/outbe/outbe-node/x/staking"
+
+	gwasm "github.com/outbe/outbe-node/wasmbinding"
 )
 
 const (
@@ -196,8 +210,8 @@ var (
 
 	BaseDenomUnit int64 = 18
 
-	BaseDenom    = "unit"
-	DisplayDenom = "UNIT"
+	BaseDenom    = "outbe"
+	DisplayDenom = "OUTBE"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -216,10 +230,12 @@ var (
 // module account permissions
 var maccPerms = map[string][]string{
 	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	minttypes.ModuleName:           {authtypes.Minter},
+	distrtypes.ModuleName:          {authtypes.Minter},
+	minttypes.ModuleName:           nil,
+	allocationpooltypes.ModuleName: {authtypes.Minter},
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+	rewardtypes.ModuleName:         nil,
 	govtypes.ModuleName:            {authtypes.Burner},
 	nft.ModuleName:                 nil,
 	// non sdk modules
@@ -274,7 +290,11 @@ type ChainApp struct {
 	TransferKeeper      ibctransferkeeper.Keeper
 
 	// Custom
-	WasmKeeper          wasmkeeper.Keeper
+	WasmKeeper wasmkeeper.Keeper
+
+	AllocationPoolKeeper allocationpoolkeeper.Keeper
+	RewardKeeper         rewardkeeper.Keeper
+
 	PacketForwardKeeper *packetforwardkeeper.Keeper
 	WasmClientKeeper    wasmlckeeper.Keeper
 	RatelimitKeeper     ratelimitkeeper.Keeper
@@ -386,6 +406,9 @@ func NewChainApp(
 		packetforwardtypes.StoreKey,
 		wasmlctypes.StoreKey,
 		ratelimittypes.StoreKey,
+
+		allocationpooltypes.StoreKey,
+		rewardtypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(
@@ -489,6 +512,7 @@ func NewChainApp(
 		app.StakingKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.RewardKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -712,6 +736,8 @@ func NewChainApp(
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
 
+	wasmOpts = append(wasmOpts, gwasm.RegisterCustomPlugins(nil, &app.AllocationPoolKeeper)...)
+
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	app.WasmKeeper = wasmkeeper.NewKeeper(
@@ -764,6 +790,28 @@ func NewChainApp(
 		lc08,
 		bApp.GRPCQueryRouter(),
 		wasmlckeeper.WithQueryPlugins(&wasmLightClientQuerier),
+	)
+
+	app.AllocationPoolKeeper = allocationpoolkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[allocationpooltypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.MintKeeper,
+		authtypes.FeeCollectorName,
+	)
+
+	app.RewardKeeper = rewardkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[rewardtypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// Create Transfer Stack
@@ -826,13 +874,17 @@ func NewChainApp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
+		gemmint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.RewardKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(
 			appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper,
 			app.StakingKeeper,
 			app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		distributionmodule.NewAppModule(
+			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper),
+		stakingmodule.NewAppModule(
+			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(banktypes.ModuleName)),
+			*app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *app.StakingKeeper, app.RewardKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		params.NewAppModule(app.ParamsKeeper),
@@ -847,7 +899,8 @@ func NewChainApp(
 			app.StakingKeeper,
 			app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName),
 		),
-
+		allocationpoolmodule.NewAppModule(appCodec, app.AllocationPoolKeeper, app.AccountKeeper, app.BankKeeper),
+		rewardmodule.NewAppModule(appCodec, app.RewardKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -900,6 +953,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -918,6 +973,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -959,6 +1016,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1370,6 +1429,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(packetforwardtypes.ModuleName)
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
-
+	paramsKeeper.Subspace(allocationpooltypes.ModuleName)
+	paramsKeeper.Subspace(rewardtypes.ModuleName)
 	return paramsKeeper
 }

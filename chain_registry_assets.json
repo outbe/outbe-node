@@ -10,12 +10,12 @@
           "exponent": 0
         },
         {
-          "denom": "unit",
+          "denom": "outbe",
           "exponent": 18
         }
       ],
-      "base": "unit",
-      "name": "UNIT",
+      "base": "outbe",
+      "name": "OUTBE",
       "display": "outbe",
       "symbol": "OUTBE",
       "logo_URIs": {

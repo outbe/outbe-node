@@ -16,7 +16,7 @@ export KEYALGO="secp256k1"
 export KEYRING=${KEYRING:-"test"}
 export HOME_DIR=$(eval echo "${HOME_DIR:-"~/.outbe-node"}")
 export BINARY=${BINARY:-outbe-noded}
-export DENOM=${DENOM:-unit}
+export DENOM=${DENOM:-outbe}
 
 export CLEAN=${CLEAN:-"false"}
 export RPC=${RPC:-"26657"}
@@ -108,6 +108,15 @@ from_scratch () {
 
   ## abci
   update_test_genesis '.consensus["params"]["abci"]["vote_extensions_enable_height"]="1"'
+
+  ## reward
+  update_test_genesis '.app_state["reward"]["params"]["apr"]="0.04"'
+  update_test_genesis '.app_state["reward"]["params"]["block_per_year"]="6307200"'
+  update_test_genesis '.app_state["reward"]["params"]["max_self_bond_token"]="10000000000000000000000"'
+
+  ## allocation pool
+  update_test_genesis '.app_state["allocationpool"]["params"]["initial_rate"]="65536"'
+  update_test_genesis '.app_state["allocationpool"]["params"]["decay"]="0.00000006"'
 
   # === CUSTOM MODULES ===
   # tokenfactory

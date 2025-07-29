@@ -1,0 +1,18 @@
+syntax = "proto3";
+package outbe.gemmint;
+
+option go_package = "github.com/outbe/outbe-node/x/gemmint/types";
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
+
+message Minted {
+  string total_minted = 1 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+

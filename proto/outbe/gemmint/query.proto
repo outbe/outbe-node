@@ -1,0 +1,114 @@
+syntax = "proto3";
+package outbe.gemmint;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/mint/v1beta1/mint.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+import "outbe/gemmint/params.proto";
+import "outbe/gemmint/whitelist.proto";
+import "outbe/gemmint/minted.proto";
+import "outbe/gemmint/minter.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/gemmint/types";
+
+// Query provides defines the gRPC querier service.
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/outbe/gemmint/params";
+  }
+
+  // Inflation returns the current minting inflation value.
+  rpc Inflation(QueryInflationRequest) returns (QueryInflationResponse) {
+    option (google.api.http).get = "/outbe/gemmint/inflation";
+  }
+
+  // AnnualProvisions current minting annual provisions value.
+  rpc AnnualProvisions(QueryAnnualProvisionsRequest) returns (QueryAnnualProvisionsResponse) {
+    option (google.api.http).get = "/outbe/gemmint/annual_provisions";
+  }
+
+  rpc Whitelist(QueryWhitelistRequest) returns (QueryWhitelistResponse) {
+      option (google.api.http).get = "/outbe/gemmint/whitelist";
+  }
+
+  rpc Minted(QueryMintedRequest) returns (QueryMintedResponse) {
+      option (google.api.http).get = "/outbe/gemmint/minted";
+  }
+
+  rpc Minters(QueryMinterRequest) returns (QueryMinterResponse) {
+      option (google.api.http).get = "/outbe/gemmint/minters";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params defines the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+// QueryInflationRequest is the request type for the Query/Inflation RPC method.
+message QueryInflationRequest {}
+
+// QueryInflationResponse is the response type for the Query/Inflation RPC
+// method.
+message QueryInflationResponse {
+  // inflation is the current minting inflation value.
+  bytes inflation = 1 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// QueryAnnualProvisionsRequest is the request type for the
+// Query/AnnualProvisions RPC method.
+message QueryAnnualProvisionsRequest {}
+
+// QueryAnnualProvisionsResponse is the response type for the
+// Query/AnnualProvisions RPC method.
+message QueryAnnualProvisionsResponse {
+  // annual_provisions is the current minting annual provisions value.
+  bytes annual_provisions = 1 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// Query for the current whitelist state
+message QueryWhitelistRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// Query for the current auction state
+message QueryWhitelistResponse {
+  repeated Whitelist whitelist = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// Query for the current whitelist state
+message QueryMintedRequest {
+}
+
+// Query for the current auction state
+message QueryMintedResponse {
+  Minted total_minted = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryMinterRequest {
+}
+
+// Query for the current auction state
+message QueryMinterResponse {
+  repeated Minter minters = 1 [(gogoproto.nullable) = false];
+}

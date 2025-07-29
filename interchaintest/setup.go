@@ -28,7 +28,7 @@ var (
 	VotingPeriod     = "15s"
 	MaxDepositPeriod = "10s"
 
-	Denom = "unit"
+	Denom = "outbe"
 	Name  = "outbe-node"
 
 	ChainID = "localchain-1"
