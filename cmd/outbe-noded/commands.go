@@ -16,10 +16,15 @@ import (
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	cmtcli "github.com/cometbft/cometbft/libs/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
@@ -32,16 +37,6 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	evmosserverconfig "github.com/cosmos/evm/server/config"
-
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	evmoscmd "github.com/cosmos/evm/client"
-	evmosserver "github.com/cosmos/evm/server"
-	srvflags "github.com/cosmos/evm/server/flags"
 )
 
 // initCometBFTConfig helps to override default CometBFT Config values.
@@ -59,10 +54,7 @@ func initCometBFTConfig() *cmtcfg.Config {
 type CustomAppConfig struct {
 	serverconfig.Config
 
-	Wasm    wasmtypes.WasmConfig `mapstructure:"wasm"`
-	EVM     evmosserverconfig.EVMConfig
-	JSONRPC evmosserverconfig.JSONRPCConfig
-	TLS     evmosserverconfig.TLSConfig
+	Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
 }
 
 // initAppConfig helps to override default appConfig template and configs.
@@ -89,18 +81,13 @@ func initAppConfig() (string, interface{}) {
 	// srvCfg.BaseConfig.IAVLDisableFastNode = true // disable fastnode by default
 
 	customAppConfig := CustomAppConfig{
-		Config:  *srvCfg,
-		Wasm:    wasmtypes.DefaultWasmConfig(),
-		EVM:     *evmosserverconfig.DefaultEVMConfig(),
-		JSONRPC: *evmosserverconfig.DefaultJSONRPCConfig(),
-		TLS:     *evmosserverconfig.DefaultTLSConfig(),
+		Config: *srvCfg,
+		Wasm:   wasmtypes.DefaultWasmConfig(),
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate
 
 	customAppTemplate += wasmtypes.DefaultConfigTemplate()
-
-	customAppTemplate += evmosserverconfig.DefaultEVMConfigTemplate
 
 	return customAppTemplate, customAppConfig
 }
@@ -109,12 +96,12 @@ func initRootCmd(
 	rootCmd *cobra.Command,
 	chainApp *app.ChainApp,
 ) {
+
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(chainApp.BasicModuleManager, app.DefaultNodeHome),
-		genutilcli.Commands(chainApp.TxConfig(), chainApp.BasicModuleManager, app.DefaultNodeHome),
 		cmtcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
@@ -122,36 +109,38 @@ func initRootCmd(
 		snapshot.Cmd(newApp),
 	)
 
+	sdkserver.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, addModuleInitFlags)
 	wasmcli.ExtendUnsafeResetAllCmd(rootCmd)
-
-	// add EVM' flavored TM commands to start server, etc.
-	evmosserver.AddCommands(
-		rootCmd,
-		evmosserver.NewDefaultStartOptions(newApp, app.DefaultNodeHome),
-		appExport,
-		addModuleInitFlags,
-	)
-
-	// add EVM key commands
-	rootCmd.AddCommand(
-		evmoscmd.KeyCommands(app.DefaultNodeHome, true),
-	)
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
-
+		genesisCommand(chainApp.TxConfig(), chainApp.BasicModuleManager),
+		keys.Commands(),
 		queryCommand(),
 		txCommand(),
 	)
 
-	var err error
-	// add general tx flags to the root command
-	rootCmd, err = srvflags.AddTxFlags(rootCmd)
-	if err != nil {
-		panic(err)
-	}
+	// rootCmd.AddCommand(
+	// 	genutilcli.InitCmd(chainApp.BasicModuleManager, app.DefaultNodeHome),
+	// 	genutilcli.Commands(chainApp.TxConfig(), chainApp.BasicModuleManager, app.DefaultNodeHome),
+	// 	cmtcli.NewCompletionCmd(rootCmd, true),
+	// 	debug.Cmd(),
+	// 	confixcmd.ConfigCommand(),
+	// 	pruning.Cmd(newApp, app.DefaultNodeHome),
+	// 	snapshot.Cmd(newApp),
+	// )
 
+	// wasmcli.ExtendUnsafeResetAllCmd(rootCmd)
+
+	// // add keybase, auxiliary RPC, query, genesis, and tx child commands
+	// rootCmd.AddCommand(
+	// 	server.StatusCommand(),
+	// 	genesisCommand(chainApp.TxConfig(), chainApp.BasicModuleManager),
+	// 	keys.Commands(),
+	// 	queryCommand(),
+	// 	txCommand(),
+	// )
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -237,7 +226,6 @@ func newApp(
 		logger, db, traceStore, true,
 		appOpts,
 		wasmOpts,
-		app.EVMAppOptions,
 		baseappOptions...,
 	)
 }
@@ -277,7 +265,6 @@ func appExport(
 		height == -1,
 		appOpts,
 		nil,
-		app.EVMAppOptions,
 	)
 
 	if height != -1 {

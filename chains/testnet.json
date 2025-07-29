@@ -2,13 +2,13 @@
     "chains": [
         {
             "name": "outbe-node",
-            "chain_id": "localchain_90001-1",
+            "chain_id": "localchain-1",
             "docker_image": {
                 "repository": "outbe-node",
                 "version": "local",
                 "uid-gid": ""
             },
-            "gas_prices": "0.0qnt",
+            "gas_prices": "0.0outbe",
             "gas_adjustment": 2,
             "genesis": {
                 "modify": [
@@ -73,7 +73,7 @@
                 }
             ],
             "ibc_paths": [
-                "localchain_90001-1_localcosmos-1"
+                "localchain-1_localcosmos-1"
             ],
             "number_vals": 1,
             "number_node": 0,
@@ -150,7 +150,7 @@
                 ]
             },
             "ibc_paths": [
-                "localchain_90001-1_localcosmos-1"
+                "localchain-1_localcosmos-1"
             ],
             "number_vals": 1,
             "number_node": 0,

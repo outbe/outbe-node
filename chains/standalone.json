@@ -2,13 +2,13 @@
     "chains": [
         {
             "name": "outbe-node",
-            "chain_id": "localchain_90001-1",
+            "chain_id": "localchain-1",
             "docker_image": {
                 "repository": "outbe-node",
                 "version": "local",
                 "uid-gid": ""
             },
-            "gas_prices": "0.0qnt",
+            "gas_prices": "0.0outbe",
             "gas_adjustment": 2,
             "genesis": {
                 "modify": [

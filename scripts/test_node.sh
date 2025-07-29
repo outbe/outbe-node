@@ -2,17 +2,17 @@
 # Run this script to quickly install, setup, and run the current version of the network without docker.
 #
 # Examples:
-# CHAIN_ID="localchain_90001-1" HOME_DIR="~/.outbe-node" BLOCK_TIME="1000ms" CLEAN=true sh scripts/test_node.sh
-# CHAIN_ID="localchain_90001-2" HOME_DIR="~/.outbe-node" CLEAN=true RPC=36657 REST=2317 PROFF=6061 P2P=36656 GRPC=8090 GRPC_WEB=8091 ROSETTA=8081 BLOCK_TIME="500ms" sh scripts/test_node.sh
+# CHAIN_ID="localchain-1" HOME_DIR="~/.outbe-node" BLOCK_TIME="1000ms" CLEAN=true sh scripts/test_node.sh
+# CHAIN_ID="localchain-2" HOME_DIR="~/.outbe-node" CLEAN=true RPC=36657 REST=2317 PROFF=6061 P2P=36656 GRPC=8090 GRPC_WEB=8091 ROSETTA=8081 BLOCK_TIME="500ms" sh scripts/test_node.sh
 
 set -eu
 
 export KEY="acc0"
 export KEY2="acc1"
 
-export CHAIN_ID=${CHAIN_ID:-"localchain_90001-1"}
+export CHAIN_ID=${CHAIN_ID:-"localchain-1"}
 export MONIKER="localvalidator"
-export KEYALGO="eth_secp256k1"
+export KEYALGO="secp256k1"
 export KEYRING=${KEYRING:-"test"}
 export HOME_DIR=$(eval echo "${HOME_DIR:-"~/.outbe-node"}")
 export BINARY=${BINARY:-outbe-noded}
@@ -109,6 +109,15 @@ from_scratch () {
   ## abci
   update_test_genesis '.consensus["params"]["abci"]["vote_extensions_enable_height"]="1"'
 
+  ## reward
+  update_test_genesis '.app_state["reward"]["params"]["apr"]="0.04"'
+  update_test_genesis '.app_state["reward"]["params"]["block_per_year"]="6307200"'
+  update_test_genesis '.app_state["reward"]["params"]["max_self_bond_token"]="10000000000000000000000"'
+
+  ## allocation pool
+  update_test_genesis '.app_state["allocationpool"]["params"]["initial_rate"]="65536"'
+  update_test_genesis '.app_state["allocationpool"]["params"]["decay"]="0.00000006"'
+
   # === CUSTOM MODULES ===
   # tokenfactory
   #update_test_genesis '.app_state["tokenfactory"]["params"]["denom_creation_fee"]=[]'
@@ -165,4 +174,4 @@ sed -i -e 's/address = ":8080"/address = "0.0.0.0:'$ROSETTA'"/g' $HOME_DIR/confi
 # Faster blocks
 sed -i -e 's/timeout_commit = "5s"/timeout_commit = "'$BLOCK_TIME'"/g' $HOME_DIR/config/config.toml
 
-$BINARY start --pruning=nothing  --minimum-gas-prices=0$DENOM --rpc.laddr="tcp://0.0.0.0:$RPC" --home $HOME_DIR --json-rpc.api=eth,txpool,personal,net,debug,web3 --chain-id="$CHAIN_ID"
+$BINARY start --pruning=nothing  --minimum-gas-prices=0$DENOM --rpc.laddr="tcp://0.0.0.0:$RPC" --home $HOME_DIR

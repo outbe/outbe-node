@@ -30,7 +30,6 @@ func MakeEncodingConfig(t testing.TB) params.EncodingConfig {
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(t.TempDir()),
 		[]wasmkeeper.Option{},
-		EVMAppOptions,
 	)
 	return makeEncodingConfig(tempApp)
 }

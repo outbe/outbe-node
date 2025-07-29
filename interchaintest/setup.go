@@ -31,7 +31,7 @@ var (
 	Denom = "outbe"
 	Name  = "outbe-node"
 
-	ChainID = "localchain_90001-1"
+	ChainID = "localchain-1"
 	Binary  = "outbe-noded"
 	Bech32  = "outbe"
 	ibcPath = "ibc-path"

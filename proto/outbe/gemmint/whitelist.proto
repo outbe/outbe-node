@@ -1,0 +1,14 @@
+syntax = "proto3";
+package outbe.gemmint;
+
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/gemmint/types";
+
+// Message to maintain the eligible contracts to mint native token
+message Whitelist{
+    string creator = 1; 
+    string contract_address = 2; 
+    string created = 3;
+    bool enabled = 4;
+}

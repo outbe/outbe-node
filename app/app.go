@@ -28,10 +28,9 @@ import (
 	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
 	ibcfeekeeper "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/keeper"
 	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
-	"github.com/ethereum/go-ethereum/core/vm"
 
-	transfer "github.com/cosmos/evm/x/ibc/transfer"
-	ibctransferkeeper "github.com/cosmos/evm/x/ibc/transfer/keeper"
+	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
@@ -79,6 +78,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
@@ -118,9 +118,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -153,24 +150,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	evmosante "github.com/cosmos/evm/ante"
-	evmosevmante "github.com/cosmos/evm/ante/evm"
-	evmosencoding "github.com/cosmos/evm/encoding"
-	srvflags "github.com/cosmos/evm/server/flags"
-	evmostypes "github.com/cosmos/evm/types"
-	evmosutils "github.com/cosmos/evm/utils"
-	"github.com/cosmos/evm/x/erc20"
-	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
-	erc20types "github.com/cosmos/evm/x/erc20/types"
-	"github.com/cosmos/evm/x/feemarket"
-	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
-	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
-	cosmosevmvm "github.com/cosmos/evm/x/vm"
-	_ "github.com/cosmos/evm/x/vm/core/tracers/js"
-	_ "github.com/cosmos/evm/x/vm/core/tracers/native"
-	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
-	evmtypes "github.com/cosmos/evm/x/vm/types"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	chainante "github.com/outbe/outbe-node/app/ante"
+
+	rewardmodule "github.com/outbe/outbe-node/x/reward"
+	rewardkeeper "github.com/outbe/outbe-node/x/reward/keeper"
+	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
+
+	"github.com/outbe/outbe-node/x/gemmint"
+	mintkeeper "github.com/outbe/outbe-node/x/gemmint/keeper"
+	minttypes "github.com/outbe/outbe-node/x/gemmint/types"
+
+	allocationpoolmodule "github.com/outbe/outbe-node/x/allocationpool"
+	allocationpoolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
+	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
+
+	distributionmodule "github.com/outbe/outbe-node/x/distribution"
+	stakingmodule "github.com/outbe/outbe-node/x/staking"
+
+	gwasm "github.com/outbe/outbe-node/wasmbinding"
 )
 
 const (
@@ -178,7 +176,7 @@ const (
 	NodeDir      = ".outbe-node"
 	Bech32Prefix = "outbe"
 
-	ChainID = "localchain_90001-1"
+	ChainID = "localchain-1"
 )
 
 var (
@@ -208,7 +206,7 @@ var (
 	// DefaultNodeHome default home directories for appd
 	DefaultNodeHome = os.ExpandEnv("$HOME/") + NodeDir
 
-	CoinType uint32 = 60
+	CoinType uint32 = 118
 
 	BaseDenomUnit int64 = 18
 
@@ -232,10 +230,12 @@ var (
 // module account permissions
 var maccPerms = map[string][]string{
 	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	minttypes.ModuleName:           {authtypes.Minter},
+	distrtypes.ModuleName:          {authtypes.Minter},
+	minttypes.ModuleName:           nil,
+	allocationpooltypes.ModuleName: {authtypes.Minter},
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+	rewardtypes.ModuleName:         nil,
 	govtypes.ModuleName:            {authtypes.Burner},
 	nft.ModuleName:                 nil,
 	// non sdk modules
@@ -243,9 +243,6 @@ var maccPerms = map[string][]string{
 	ibcfeetypes.ModuleName:      nil,
 	icatypes.ModuleName:         nil,
 	wasmtypes.ModuleName:        {authtypes.Burner},
-	evmtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-	feemarkettypes.ModuleName:   nil,
-	erc20types.ModuleName:       {authtypes.Minter, authtypes.Burner},
 }
 
 var (
@@ -293,13 +290,14 @@ type ChainApp struct {
 	TransferKeeper      ibctransferkeeper.Keeper
 
 	// Custom
-	WasmKeeper          wasmkeeper.Keeper
+	WasmKeeper wasmkeeper.Keeper
+
+	AllocationPoolKeeper allocationpoolkeeper.Keeper
+	RewardKeeper         rewardkeeper.Keeper
+
 	PacketForwardKeeper *packetforwardkeeper.Keeper
 	WasmClientKeeper    wasmlckeeper.Keeper
 	RatelimitKeeper     ratelimitkeeper.Keeper
-	FeeMarketKeeper     feemarketkeeper.Keeper
-	EVMKeeper           *evmkeeper.Keeper
-	Erc20Keeper         erc20keeper.Keeper
 
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
@@ -328,15 +326,15 @@ func NewChainApp(
 	loadLatest bool,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
-	evmosAppOptions EVMOptionsFn,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *ChainApp {
 
-	encodingConfig := evmosencoding.MakeConfig()
-	interfaceRegistry := encodingConfig.InterfaceRegistry
-	appCodec := encodingConfig.Codec
-	legacyAmino := encodingConfig.Amino
-	txConfig := encodingConfig.TxConfig
+	interfaceRegistry := GetInterfaceRegistry()
+	appCodec := codec.NewProtoCodec(interfaceRegistry)
+	legacyAmino := codec.NewLegacyAmino()
+	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
+	std.RegisterLegacyAminoCodec(legacyAmino)
+	std.RegisterInterfaces(interfaceRegistry)
 
 	// Below we could construct and set an application specific mempool and
 	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are
@@ -380,11 +378,6 @@ func NewChainApp(
 
 	bApp.SetTxEncoder(txConfig.TxEncoder())
 
-	if err := evmosAppOptions(bApp.ChainID()); err != nil {
-		// initialize the EVM application configuration
-		panic(fmt.Errorf("failed to initialize EVM app configuration: %w", err))
-	}
-
 	keys := storetypes.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey,
 		stakingtypes.StoreKey,
@@ -413,15 +406,13 @@ func NewChainApp(
 		packetforwardtypes.StoreKey,
 		wasmlctypes.StoreKey,
 		ratelimittypes.StoreKey,
-		evmtypes.StoreKey,
-		feemarkettypes.StoreKey,
-		erc20types.StoreKey,
+
+		allocationpooltypes.StoreKey,
+		rewardtypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(
 		paramstypes.TStoreKey,
-		evmtypes.TransientKey,
-		feemarkettypes.TransientKey,
 	)
 	memKeys := storetypes.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
@@ -521,6 +512,7 @@ func NewChainApp(
 		app.StakingKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.RewardKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -665,63 +657,6 @@ func NewChainApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-		appCodec,
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		keys[feemarkettypes.StoreKey],
-		tkeys[feemarkettypes.TransientKey],
-		app.GetSubspace(feemarkettypes.ModuleName),
-	)
-
-	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
-
-	// NOTE: it's required to set up the EVM keeper before the ERC-20 keeper, because it is used in its instantiation.
-	app.EVMKeeper = evmkeeper.NewKeeper(
-		appCodec,
-		keys[evmtypes.StoreKey],
-		tkeys[evmtypes.TransientKey],
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.FeeMarketKeeper,
-		&app.Erc20Keeper,
-		tracer, app.GetSubspace(evmtypes.ModuleName),
-	)
-
-	app.Erc20Keeper = erc20keeper.NewKeeper(
-		keys[erc20types.StoreKey],
-		appCodec,
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.EVMKeeper,
-		app.StakingKeeper,
-		app.AuthzKeeper,
-		&app.TransferKeeper,
-	)
-
-	// NOTE: we are adding all available EVM extensions.
-	// Not all of them need to be enabled, which can be configured on a per-chain basis.
-	corePrecompiles := NewAvailableStaticPrecompiles(
-		*app.StakingKeeper,
-		app.DistrKeeper,
-		app.BankKeeper,
-		app.Erc20Keeper,
-		app.AuthzKeeper, // TODO: get off fork so we can support this
-		app.TransferKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		app.EVMKeeper,
-		app.GovKeeper,
-		app.SlashingKeeper,
-		app.EvidenceKeeper,
-	)
-	app.EVMKeeper.WithStaticPrecompiles(
-		corePrecompiles,
-	)
-
-	wasmOpts = append(wasmOpts)
-
 	// IBC Fee Module keeper
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
 		appCodec, keys[ibcfeetypes.StoreKey],
@@ -753,7 +688,6 @@ func NewChainApp(
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedTransferKeeper,
-		app.Erc20Keeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -795,11 +729,14 @@ func NewChainApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	wasmOpts = append(wasmOpts)
 	wasmDir := filepath.Join(homePath, "data")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
+
+	wasmOpts = append(wasmOpts, gwasm.RegisterCustomPlugins(nil, &app.AllocationPoolKeeper)...)
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -853,6 +790,28 @@ func NewChainApp(
 		lc08,
 		bApp.GRPCQueryRouter(),
 		wasmlckeeper.WithQueryPlugins(&wasmLightClientQuerier),
+	)
+
+	app.AllocationPoolKeeper = allocationpoolkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[allocationpooltypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.MintKeeper,
+		authtypes.FeeCollectorName,
+	)
+
+	app.RewardKeeper = rewardkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[rewardtypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// Create Transfer Stack
@@ -915,13 +874,17 @@ func NewChainApp(
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
+		gemmint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.RewardKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(
 			appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper,
 			app.StakingKeeper,
 			app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		distributionmodule.NewAppModule(
+			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper),
+		stakingmodule.NewAppModule(
+			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(banktypes.ModuleName)),
+			*app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *app.StakingKeeper, app.RewardKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		params.NewAppModule(app.ParamsKeeper),
@@ -936,7 +899,8 @@ func NewChainApp(
 			app.StakingKeeper,
 			app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName),
 		),
-
+		allocationpoolmodule.NewAppModule(appCodec, app.AllocationPoolKeeper, app.AccountKeeper, app.BankKeeper),
+		rewardmodule.NewAppModule(appCodec, app.RewardKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -947,9 +911,6 @@ func NewChainApp(
 		packetforward.NewAppModule(app.PacketForwardKeeper, app.GetSubspace(packetforwardtypes.ModuleName)),
 		wasmlc.NewAppModule(app.WasmClientKeeper),
 		ratelimit.NewAppModule(appCodec, app.RatelimitKeeper),
-		cosmosevmvm.NewAppModule(app.EVMKeeper, app.AccountKeeper, app.GetSubspace(evmtypes.ModuleName)),
-		feemarket.NewAppModule(app.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
-		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper, app.GetSubspace(erc20types.ModuleName)),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -975,9 +936,6 @@ func NewChainApp(
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.ModuleManager.SetOrderBeginBlockers(
 		minttypes.ModuleName,
-		erc20types.ModuleName,
-		feemarkettypes.ModuleName,
-		evmtypes.ModuleName, // NOTE: EVM BeginBlocker must come after FeeMarket BeginBlocker
 
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -995,6 +953,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -1004,8 +964,6 @@ func NewChainApp(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		group.ModuleName,
-		// additional non simd modules
-		evmtypes.ModuleName, erc20types.ModuleName, feemarkettypes.ModuleName,
 		capabilitytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -1015,6 +973,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1035,12 +995,6 @@ func NewChainApp(
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		minttypes.ModuleName,
-		// NOTE: feemarket module needs to be initialized before genutil module:
-		// gentx transactions use MinGasPriceDecorator.AnteHandle
-		evmtypes.ModuleName,
-		feemarkettypes.ModuleName,
-		erc20types.ModuleName,
-
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -1062,6 +1016,8 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
+		allocationpooltypes.ModuleName,
+		rewardtypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1118,19 +1074,13 @@ func NewChainApp(
 		AccountKeeper:         app.AccountKeeper,
 		BankKeeper:            app.BankKeeper,
 		FeegrantKeeper:        app.FeeGrantKeeper,
-		FeeMarketKeeper:       app.FeeMarketKeeper,
 		SignModeHandler:       txConfig.SignModeHandler(),
 		IBCKeeper:             app.IBCKeeper,
 		WasmKeeper:            &app.WasmKeeper,
 		WasmConfig:            &wasmConfig,
 		TXCounterStoreService: runtime.NewKVStoreService(keys[wasmtypes.StoreKey]),
 		CircuitKeeper:         &app.CircuitKeeper,
-
-		EvmKeeper:              app.EVMKeeper,
-		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
-		SigGasConsumer:         evmosante.SigVerificationGasConsumer,
-		MaxTxGasWanted:         cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted)),
-		TxFeeChecker:           evmosevmante.NewDynamicFeeChecker(app.FeeMarketKeeper),
+		SigGasConsumer:        authante.DefaultSigVerificationGasConsumer,
 	})
 
 	// must be before Loading version
@@ -1264,8 +1214,7 @@ func (a *ChainApp) Configurator() module.Configurator {
 
 // InitChainer application update at chain initialization
 func (app *ChainApp) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
-
-	var genesisState evmostypes.GenesisState
+	var genesisState GenesisState
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
@@ -1336,17 +1285,6 @@ func (a *ChainApp) DefaultGenesis() map[string]json.RawMessage {
 	mintGenState := minttypes.DefaultGenesisState()
 	mintGenState.Params.MintDenom = BaseDenom
 	genesis[minttypes.ModuleName] = a.appCodec.MustMarshalJSON(mintGenState)
-
-	evmGenState := evmtypes.DefaultGenesisState()
-	evmGenState.Params.ActiveStaticPrecompiles = evmtypes.AvailableStaticPrecompiles
-	genesis[evmtypes.ModuleName] = a.appCodec.MustMarshalJSON(evmGenState)
-
-	// NOTE: for the example chain implementation we are also adding a default token pair,
-	// which is the base denomination of the chain (i.e. the WTOKEN contract)
-	erc20GenState := erc20types.DefaultGenesisState()
-	erc20GenState.TokenPairs = ExampleTokenPairs
-	erc20GenState.Params.NativePrecompiles = append(erc20GenState.Params.NativePrecompiles, WTokenContractMainnet)
-	genesis[erc20types.ModuleName] = a.appCodec.MustMarshalJSON(erc20GenState)
 
 	return genesis
 }
@@ -1462,15 +1400,6 @@ func BlockedAddresses() map[string]bool {
 	// allow the following addresses to receive funds
 	delete(blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	blockedPrecompilesHex := evmtypes.AvailableStaticPrecompiles
-	for _, addr := range vm.PrecompiledAddressesBerlin {
-		blockedPrecompilesHex = append(blockedPrecompilesHex, addr.Hex())
-	}
-
-	for _, precompile := range blockedPrecompilesHex {
-		blockedAddrs[evmosutils.EthHexToCosmosAddr(precompile).String()] = true
-	}
-
 	return blockedAddrs
 }
 
@@ -1500,10 +1429,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(packetforwardtypes.ModuleName)
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
-
-	paramsKeeper.Subspace(evmtypes.ModuleName)
-	paramsKeeper.Subspace(feemarkettypes.ModuleName)
-	paramsKeeper.Subspace(erc20types.ModuleName)
-
+	paramsKeeper.Subspace(allocationpooltypes.ModuleName)
+	paramsKeeper.Subspace(rewardtypes.ModuleName)
 	return paramsKeeper
 }
