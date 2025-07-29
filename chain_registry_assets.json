@@ -14,10 +14,10 @@
           "exponent": 18
         }
       ],
-      "base": "outbe",
-      "name": "OUTBE",
-      "display": "outbe",
-      "symbol": "OUTBE",
+      "base": "unit",
+      "name": "coen",
+      "display": "coen",
+      "symbol": "COEN",
       "logo_URIs": {
         "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png",
         "svg": "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.svg"
