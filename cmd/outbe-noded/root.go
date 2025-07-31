@@ -20,7 +20,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	evmoskeyring "github.com/cosmos/evm/crypto/keyring"
 	"github.com/outbe/outbe-node/app"
 	"github.com/outbe/outbe-node/app/params"
 )
@@ -33,7 +32,6 @@ func NewRootCmd() *cobra.Command {
 	tempApp := app.NewChainApp(
 		log.NewNopLogger(), dbm.NewMemDB(), nil, false, simtestutil.NewAppOptionsWithFlagHome(tempDir()),
 		[]wasmkeeper.Option{},
-		app.EVMAppOptions,
 	)
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
@@ -51,7 +49,6 @@ func NewRootCmd() *cobra.Command {
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithHomeDir(app.DefaultNodeHome).
 		WithBroadcastMode(flags.FlagBroadcastMode).
-		WithKeyringOptions(evmoskeyring.Option()).
 		WithLedgerHasProtobuf(true).
 		WithViper("")
 
