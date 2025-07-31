@@ -210,8 +210,8 @@ var (
 
 	BaseDenomUnit int64 = 18
 
-	BaseDenom    = "outbe"
-	DisplayDenom = "OUTBE"
+	BaseDenom    = "unit"
+	DisplayDenom = "UNIT"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -231,7 +231,7 @@ var (
 var maccPerms = map[string][]string{
 	authtypes.FeeCollectorName:     nil,
 	distrtypes.ModuleName:          {authtypes.Minter},
-	minttypes.ModuleName:           nil,
+	minttypes.ModuleName:           {authtypes.Minter},
 	allocationpooltypes.ModuleName: {authtypes.Minter},
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},

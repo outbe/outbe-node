@@ -5,7 +5,7 @@ const (
 	Name                 = "outbe-node"
 
 	// BondDenom defines the native staking token denomination.
-	BondDenom = "outbe"
+	BondDenom = "unit"
 
 	MinDeposit = 10000000
 

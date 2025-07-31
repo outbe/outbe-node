@@ -16,7 +16,7 @@ export KEYALGO="secp256k1"
 export KEYRING=${KEYRING:-"test"}
 export HOME_DIR=$(eval echo "${HOME_DIR:-"~/.outbe-node"}")
 export BINARY=${BINARY:-outbe-noded}
-export DENOM=${DENOM:-outbe}
+export DENOM=${DENOM:-unit}
 
 export CLEAN=${CLEAN:-"false"}
 export RPC=${RPC:-"26657"}

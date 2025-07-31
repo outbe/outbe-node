@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/outbe/outbe-node/app/params"
 	"github.com/outbe/outbe-node/x/gemmint/types"
 )
 
@@ -82,7 +83,8 @@ func (k Keeper) Logger(ctx context.Context) customLog.Logger {
 }
 
 func (k Keeper) StakingTokenSupply(ctx context.Context) (sdkmath.Int, error) {
-	return k.stakingKeeper.StakingTokenSupply(ctx)
+	tokenSupply := k.bankKeeper.GetSupply(ctx, params.BondDenom).Amount
+	return tokenSupply, nil
 }
 
 func (k Keeper) BondedRatio(ctx context.Context) (sdkmath.LegacyDec, error) {

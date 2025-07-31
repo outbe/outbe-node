@@ -15,7 +15,7 @@ var (
 )
 
 const (
-	Denom            = "outbe"
+	Denom            = "unit"
 	FeeCollectorName = "fee_collector"
 	ModuleName       = "distribution"
 	LegacyPrecision  = 18

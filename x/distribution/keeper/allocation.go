@@ -134,49 +134,51 @@ func (k WrappedBaseKeeper) AllocateTokens(ctx context.Context, totalPreviousPowe
 			reward = sdk.NewDecCoins(sdk.NewDecCoinFromDec(params.BondDenom, newAmount))
 		}
 
-		emission, found := k.apk.GetTotalEmission(ctx)
-		if !found {
-			return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[AllocateTokens][GetTotalEmission] failed. Total emission not found.")
-		}
+		if sdkCtx.BlockHeight() > 1 {
+			emission, found := k.apk.GetTotalEmission(ctx)
+			if !found {
+				return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[AllocateTokens][GetTotalEmission] failed. Total emission not found.")
+			}
 
-		decEmission, err := math.LegacyNewDecFromStr(emission.TotalEmission)
-		if err != nil {
-			return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[AllocateTokens][LegacyNewDecFromStr] failed. couldn't create a decimal from an input decimal string.")
-		}
+			decEmission, err := math.LegacyNewDecFromStr(emission.TotalEmission)
+			if err != nil {
+				return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[AllocateTokens][LegacyNewDecFromStr] failed. couldn't create a decimal from an input decimal string.")
+			}
 
-		if decEmission.Sub(reward[0].Amount).LT(reward[0].Amount) {
-			logger.Warn("[AllocateTokensToValidator] Skipping validator due to insufficient emission tokens.",
-				"validator", validator.GetOperator(),
-				"required_reward", reward[0].Amount.String(),
-				"total_emission", emission.TotalEmission,
+			if decEmission.Sub(reward[0].Amount).LT(reward[0].Amount) {
+				logger.Warn("[AllocateTokensToValidator] Skipping validator due to insufficient emission tokens.",
+					"validator", validator.GetOperator(),
+					"required_reward", reward[0].Amount.String(),
+					"total_emission", emission.TotalEmission,
+				)
+				return nil
+			}
+
+			if decEmission.Sub(reward[0].Amount).IsNegative() || decEmission.Sub(reward[0].Amount).IsZero() {
+				logger.Warn("[AllocateTokens] Validator reward exceeds available emission.",
+					"total_emission", decEmission.String(),
+					"required_reward", reward[0].Amount.String(),
+					"validator", validator.GetOperator(),
+				)
+				return sdkerrors.Wrap(errortypes.ErrInvalidType, "[AllocateTokens] insufficient emission to cover validator reward")
+			}
+
+			emission.TotalEmission = decEmission.Sub(reward[0].Amount).String()
+			err = k.apk.SetEmission(ctx, emission)
+			if err != nil {
+				logger.Error("[AllocateTokens] Failed to update emission pool after deducting validator reward.",
+					"error", err.Error(),
+					"remaining_emission", decEmission.String(),
+				)
+				return sdkerrors.Wrapf(errortypes.ErrInvalidRequest,
+					"failed to update emission pool after deducting validator reward: %v", err)
+			}
+
+			logger.Info("[AllocateTokens] Total emission in the allocation pool successfully updated.",
+				"block_height", sdkCtx.BlockHeight(),
+				"reward_amount", reward[0].Amount.String(),
 			)
-			return nil
 		}
-
-		if decEmission.Sub(reward[0].Amount).IsNegative() || decEmission.Sub(reward[0].Amount).IsZero() {
-			logger.Warn("[AllocateTokens] Validator reward exceeds available emission.",
-				"total_emission", decEmission.String(),
-				"required_reward", reward[0].Amount.String(),
-				"validator", validator.GetOperator(),
-			)
-			return sdkerrors.Wrap(errortypes.ErrInvalidType, "[AllocateTokens] insufficient emission to cover validator reward")
-		}
-
-		emission.TotalEmission = decEmission.Sub(reward[0].Amount).String()
-		err = k.apk.SetEmission(ctx, emission)
-		if err != nil {
-			logger.Error("[AllocateTokens] Failed to update emission pool after deducting validator reward.",
-				"error", err.Error(),
-				"remaining_emission", decEmission.String(),
-			)
-			return sdkerrors.Wrapf(errortypes.ErrInvalidRequest,
-				"failed to update emission pool after deducting validator reward: %v", err)
-		}
-
-		logger.Info("[AllocateTokens] Total emission in the allocation pool successfully updated.",
-			"block_height", sdkCtx.BlockHeight(),
-			"reward_amount", reward[0].Amount.String(),
-		)
 
 		err = k.AllocateTokensToValidator(ctx, validator, reward)
 		if err != nil {
