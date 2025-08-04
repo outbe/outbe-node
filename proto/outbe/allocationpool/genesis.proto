@@ -1,0 +1,21 @@
+syntax = "proto3";
+package outbe.allocationpool;
+
+import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/outbe/outbe-node/x/allocationpool/types";
+
+import "outbe/allocationpool/supply.proto";
+import "outbe/allocationpool/tribute.proto";
+import "outbe/allocationpool/emission.proto";
+import "outbe/allocationpool/params.proto";
+
+message GenesisState {
+    repeated Supply SupplyList = 1 [(gogoproto.nullable) = false];
+    repeated Tribute TributeList = 2 [(gogoproto.nullable) = false];
+    repeated Emission EmissionList = 3 [(gogoproto.nullable) = false];
+    Params params = 4 [(gogoproto.nullable) = false];
+}

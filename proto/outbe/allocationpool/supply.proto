@@ -1,0 +1,15 @@
+syntax = "proto3";
+package outbe.allocationpool;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/outbe/outbe-node/x/allocationpool/types";
+
+message Supply {
+  string total_supply = 1;
+}
