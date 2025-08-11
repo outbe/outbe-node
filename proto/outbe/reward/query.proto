@@ -1,0 +1,30 @@
+syntax = "proto3";
+package outbe.reward;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/mint/v1beta1/mint.proto";
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+
+import "outbe/reward/params.proto";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/reward/types";
+
+// Query provides defines the gRPC querier service.
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/outbe/reward/params";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params defines the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}

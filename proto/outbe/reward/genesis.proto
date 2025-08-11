@@ -1,0 +1,15 @@
+syntax = "proto3";
+package outbe.reward;
+
+import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+
+import "outbe/reward/params.proto";
+
+option go_package = "github.com/outbe/outbe-node/x/reward/types";
+
+// GenesisState defines the mint module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}

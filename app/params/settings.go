@@ -1,0 +1,14 @@
+package params
+
+const (
+	AccountAddressPrefix = "outbe"
+	Name                 = "outbe-node"
+
+	// BondDenom defines the native staking token denomination.
+	BondDenom = "unit"
+
+	MinDeposit = 10000000
+
+	Prefix     = "outbe"
+	TurnUpLogs = "true"
+)
