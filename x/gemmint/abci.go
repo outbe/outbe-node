@@ -55,8 +55,6 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper, ic types.InflationCalcul
 		return err
 	}
 
-	logger.Info("🔁 Starting calculation of each validated block, calculated reward", mintedCoins)
-
 	// send the minted coins to the fee collector account
 	err = k.AddCollectedFees(ctx, mintedCoins)
 	if err != nil {

@@ -6,9 +6,9 @@ import (
 	"github.com/outbe/outbe-node/x/gemmint/types"
 )
 
-func (k Keeper) SetTotalMinted(ctx context.Context, total_minted types.Minted) error {
+func (k Keeper) SetTotalMinted(ctx context.Context, minted types.Minted) error {
 	store := k.storeService.OpenKVStore(ctx)
-	b := k.cdc.MustMarshal(&total_minted)
+	b := k.cdc.MustMarshal(&minted)
 	return store.Set(types.GetMintedKey("minted"), b)
 }
 

@@ -5,5 +5,5 @@ const (
 	EventType = ModuleName
 
 	AttributeKeyMintAmount    = "mint_amount"
-	AttributeKeyTotalEmission = "total_emission"
+	AttributeKeyTotalEmission = "remain_block_emission"
 )

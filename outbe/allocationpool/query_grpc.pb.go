@@ -19,11 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_Params_FullMethodName           = "/outbe.allocationpool.Query/Params"
-	Query_GetBlockEmission_FullMethodName = "/outbe.allocationpool.Query/GetBlockEmission"
-	Query_GetEmission_FullMethodName      = "/outbe.allocationpool.Query/GetEmission"
-	Query_GetLimit_FullMethodName         = "/outbe.allocationpool.Query/GetLimit"
-	Query_GetTributes_FullMethodName      = "/outbe.allocationpool.Query/GetTributes"
+	Query_Params_FullMethodName                = "/outbe.allocationpool.Query/Params"
+	Query_EmissionAll_FullMethodName           = "/outbe.allocationpool.Query/EmissionAll"
+	Query_GetEmissionEntity_FullMethodName     = "/outbe.allocationpool.Query/GetEmissionEntity"
+	Query_GetTotalBlockEmission_FullMethodName = "/outbe.allocationpool.Query/GetTotalBlockEmission"
+	Query_GetEmission_FullMethodName           = "/outbe.allocationpool.Query/GetEmission"
+	Query_GetDailyEmission_FullMethodName      = "/outbe.allocationpool.Query/GetDailyEmission"
+	Query_GetLimit_FullMethodName              = "/outbe.allocationpool.Query/GetLimit"
+	Query_GetTributes_FullMethodName           = "/outbe.allocationpool.Query/GetTributes"
 )
 
 // QueryClient is the client API for Query service.
@@ -31,8 +34,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	GetBlockEmission(ctx context.Context, in *QueryBlockEmissionRequest, opts ...grpc.CallOption) (*QueryBlockEmissionResponse, error)
+	EmissionAll(ctx context.Context, in *QueryAllEmissionRequest, opts ...grpc.CallOption) (*QueryAllEmissionResponse, error)
+	GetEmissionEntity(ctx context.Context, in *QueryEmissionEntityRequest, opts ...grpc.CallOption) (*QueryEmissionEntityResponse, error)
+	GetTotalBlockEmission(ctx context.Context, in *QueryTotalBlockEmissionRequest, opts ...grpc.CallOption) (*QueryTotalBlockEmissionResponse, error)
 	GetEmission(ctx context.Context, in *QueryEmissionRequest, opts ...grpc.CallOption) (*QueryEmissionResponse, error)
+	GetDailyEmission(ctx context.Context, in *QueryDailyEmissionRequest, opts ...grpc.CallOption) (*QueryDailyEmissionResponse, error)
 	GetLimit(ctx context.Context, in *QueryLimitRequest, opts ...grpc.CallOption) (*QueryLimitResponse, error)
 	GetTributes(ctx context.Context, in *QueryTributesRequest, opts ...grpc.CallOption) (*QueryTributesResponse, error)
 }
@@ -54,9 +60,27 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) GetBlockEmission(ctx context.Context, in *QueryBlockEmissionRequest, opts ...grpc.CallOption) (*QueryBlockEmissionResponse, error) {
-	out := new(QueryBlockEmissionResponse)
-	err := c.cc.Invoke(ctx, Query_GetBlockEmission_FullMethodName, in, out, opts...)
+func (c *queryClient) EmissionAll(ctx context.Context, in *QueryAllEmissionRequest, opts ...grpc.CallOption) (*QueryAllEmissionResponse, error) {
+	out := new(QueryAllEmissionResponse)
+	err := c.cc.Invoke(ctx, Query_EmissionAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GetEmissionEntity(ctx context.Context, in *QueryEmissionEntityRequest, opts ...grpc.CallOption) (*QueryEmissionEntityResponse, error) {
+	out := new(QueryEmissionEntityResponse)
+	err := c.cc.Invoke(ctx, Query_GetEmissionEntity_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GetTotalBlockEmission(ctx context.Context, in *QueryTotalBlockEmissionRequest, opts ...grpc.CallOption) (*QueryTotalBlockEmissionResponse, error) {
+	out := new(QueryTotalBlockEmissionResponse)
+	err := c.cc.Invoke(ctx, Query_GetTotalBlockEmission_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +90,15 @@ func (c *queryClient) GetBlockEmission(ctx context.Context, in *QueryBlockEmissi
 func (c *queryClient) GetEmission(ctx context.Context, in *QueryEmissionRequest, opts ...grpc.CallOption) (*QueryEmissionResponse, error) {
 	out := new(QueryEmissionResponse)
 	err := c.cc.Invoke(ctx, Query_GetEmission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GetDailyEmission(ctx context.Context, in *QueryDailyEmissionRequest, opts ...grpc.CallOption) (*QueryDailyEmissionResponse, error) {
+	out := new(QueryDailyEmissionResponse)
+	err := c.cc.Invoke(ctx, Query_GetDailyEmission_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +128,11 @@ func (c *queryClient) GetTributes(ctx context.Context, in *QueryTributesRequest,
 // for forward compatibility
 type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	GetBlockEmission(context.Context, *QueryBlockEmissionRequest) (*QueryBlockEmissionResponse, error)
+	EmissionAll(context.Context, *QueryAllEmissionRequest) (*QueryAllEmissionResponse, error)
+	GetEmissionEntity(context.Context, *QueryEmissionEntityRequest) (*QueryEmissionEntityResponse, error)
+	GetTotalBlockEmission(context.Context, *QueryTotalBlockEmissionRequest) (*QueryTotalBlockEmissionResponse, error)
 	GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error)
+	GetDailyEmission(context.Context, *QueryDailyEmissionRequest) (*QueryDailyEmissionResponse, error)
 	GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error)
 	GetTributes(context.Context, *QueryTributesRequest) (*QueryTributesResponse, error)
 	mustEmbedUnimplementedQueryServer()
@@ -109,11 +145,20 @@ type UnimplementedQueryServer struct {
 func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (UnimplementedQueryServer) GetBlockEmission(context.Context, *QueryBlockEmissionRequest) (*QueryBlockEmissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBlockEmission not implemented")
+func (UnimplementedQueryServer) EmissionAll(context.Context, *QueryAllEmissionRequest) (*QueryAllEmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EmissionAll not implemented")
+}
+func (UnimplementedQueryServer) GetEmissionEntity(context.Context, *QueryEmissionEntityRequest) (*QueryEmissionEntityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEmissionEntity not implemented")
+}
+func (UnimplementedQueryServer) GetTotalBlockEmission(context.Context, *QueryTotalBlockEmissionRequest) (*QueryTotalBlockEmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTotalBlockEmission not implemented")
 }
 func (UnimplementedQueryServer) GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEmission not implemented")
+}
+func (UnimplementedQueryServer) GetDailyEmission(context.Context, *QueryDailyEmissionRequest) (*QueryDailyEmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDailyEmission not implemented")
 }
 func (UnimplementedQueryServer) GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLimit not implemented")
@@ -152,20 +197,56 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetBlockEmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBlockEmissionRequest)
+func _Query_EmissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllEmissionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetBlockEmission(ctx, in)
+		return srv.(QueryServer).EmissionAll(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_GetBlockEmission_FullMethodName,
+		FullMethod: Query_EmissionAll_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetBlockEmission(ctx, req.(*QueryBlockEmissionRequest))
+		return srv.(QueryServer).EmissionAll(ctx, req.(*QueryAllEmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GetEmissionEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryEmissionEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetEmissionEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetEmissionEntity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetEmissionEntity(ctx, req.(*QueryEmissionEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GetTotalBlockEmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalBlockEmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetTotalBlockEmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetTotalBlockEmission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetTotalBlockEmission(ctx, req.(*QueryTotalBlockEmissionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -184,6 +265,24 @@ func _Query_GetEmission_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).GetEmission(ctx, req.(*QueryEmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GetDailyEmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDailyEmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetDailyEmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetDailyEmission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetDailyEmission(ctx, req.(*QueryDailyEmissionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,12 +335,24 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
-			MethodName: "GetBlockEmission",
-			Handler:    _Query_GetBlockEmission_Handler,
+			MethodName: "EmissionAll",
+			Handler:    _Query_EmissionAll_Handler,
+		},
+		{
+			MethodName: "GetEmissionEntity",
+			Handler:    _Query_GetEmissionEntity_Handler,
+		},
+		{
+			MethodName: "GetTotalBlockEmission",
+			Handler:    _Query_GetTotalBlockEmission_Handler,
 		},
 		{
 			MethodName: "GetEmission",
 			Handler:    _Query_GetEmission_Handler,
+		},
+		{
+			MethodName: "GetDailyEmission",
+			Handler:    _Query_GetDailyEmission_Handler,
 		},
 		{
 			MethodName: "GetLimit",

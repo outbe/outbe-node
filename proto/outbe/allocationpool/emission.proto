@@ -3,8 +3,21 @@ package outbe.allocationpool;
 
 option go_package = "github.com/outbe/outbe-node/x/allocationpool/types";
 
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+
 message Emission{
   string block_number = 1;
-  string total_emission = 2;
-  string emission_timestamp = 3;
+  string actual_emission = 2;
+  string remain_block_emission = 3;
+  string emission_timestamp = 4;
+}
+
+message CRADailyEmission{
+  uint64 block_number = 1;
+  string cra_daily_emission = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
 }

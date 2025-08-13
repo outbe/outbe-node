@@ -3,11 +3,13 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"cosmossdk.io/log"
 
 	"cosmossdk.io/collections"
 	storetypes "cosmossdk.io/core/store"
 
-	customLog "cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -77,9 +79,13 @@ func (k Keeper) GetAuthority() string {
 	return k.authority
 }
 
-func (k Keeper) Logger(ctx context.Context) customLog.Logger {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	return sdkCtx.Logger().With("module", "x/"+types.ModuleName)
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	logger := ctx.Logger().With(
+		"height", ctx.BlockHeight(),
+		"timestamp", time.Now().UTC().Format(time.RFC3339),
+		"module", fmt.Sprintf("x/%s", types.ModuleName),
+	)
+	return logger
 }
 
 func (k Keeper) StakingTokenSupply(ctx context.Context) (sdkmath.Int, error) {
@@ -101,8 +107,9 @@ func (k Keeper) MintCoins(ctx context.Context, newCoins sdk.Coins) error {
 }
 
 func (k Keeper) AddCollectedFees(ctx context.Context, fees sdk.Coins) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	k.Logger(ctx).Info("[AddCollectedFees] fetching fee amount", "fees", fees)
+	k.Logger(sdkCtx).Info("[AddCollectedFees] fetching fee amount", "fees", fees)
 
 	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
 }

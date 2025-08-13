@@ -4,7 +4,10 @@
 package types
 
 import (
+	cosmossdk_io_math "cosmossdk.io/math"
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-proto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
@@ -23,9 +26,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Emission struct {
-	BlockNumber       string `protobuf:"bytes,1,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
-	TotalEmission     string `protobuf:"bytes,2,opt,name=total_emission,json=totalEmission,proto3" json:"total_emission,omitempty"`
-	EmissionTimestamp string `protobuf:"bytes,3,opt,name=emission_timestamp,json=emissionTimestamp,proto3" json:"emission_timestamp,omitempty"`
+	BlockNumber         string `protobuf:"bytes,1,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
+	ActualEmission      string `protobuf:"bytes,2,opt,name=actual_emission,json=actualEmission,proto3" json:"actual_emission,omitempty"`
+	RemainBlockEmission string `protobuf:"bytes,3,opt,name=remain_block_emission,json=remainBlockEmission,proto3" json:"remain_block_emission,omitempty"`
+	EmissionTimestamp   string `protobuf:"bytes,4,opt,name=emission_timestamp,json=emissionTimestamp,proto3" json:"emission_timestamp,omitempty"`
 }
 
 func (m *Emission) Reset()         { *m = Emission{} }
@@ -68,9 +72,16 @@ func (m *Emission) GetBlockNumber() string {
 	return ""
 }
 
-func (m *Emission) GetTotalEmission() string {
+func (m *Emission) GetActualEmission() string {
 	if m != nil {
-		return m.TotalEmission
+		return m.ActualEmission
+	}
+	return ""
+}
+
+func (m *Emission) GetRemainBlockEmission() string {
+	if m != nil {
+		return m.RemainBlockEmission
 	}
 	return ""
 }
@@ -82,8 +93,54 @@ func (m *Emission) GetEmissionTimestamp() string {
 	return ""
 }
 
+type CRADailyEmission struct {
+	BlockNumber      uint64                      `protobuf:"varint,1,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
+	CraDailyEmission cosmossdk_io_math.LegacyDec `protobuf:"bytes,2,opt,name=cra_daily_emission,json=craDailyEmission,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"cra_daily_emission"`
+}
+
+func (m *CRADailyEmission) Reset()         { *m = CRADailyEmission{} }
+func (m *CRADailyEmission) String() string { return proto.CompactTextString(m) }
+func (*CRADailyEmission) ProtoMessage()    {}
+func (*CRADailyEmission) Descriptor() ([]byte, []int) {
+	return fileDescriptor_18fe2ce76e127b27, []int{1}
+}
+func (m *CRADailyEmission) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CRADailyEmission) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CRADailyEmission.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CRADailyEmission) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CRADailyEmission.Merge(m, src)
+}
+func (m *CRADailyEmission) XXX_Size() int {
+	return m.Size()
+}
+func (m *CRADailyEmission) XXX_DiscardUnknown() {
+	xxx_messageInfo_CRADailyEmission.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CRADailyEmission proto.InternalMessageInfo
+
+func (m *CRADailyEmission) GetBlockNumber() uint64 {
+	if m != nil {
+		return m.BlockNumber
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Emission)(nil), "outbe.allocationpool.Emission")
+	proto.RegisterType((*CRADailyEmission)(nil), "outbe.allocationpool.CRADailyEmission")
 }
 
 func init() {
@@ -91,21 +148,29 @@ func init() {
 }
 
 var fileDescriptor_18fe2ce76e127b27 = []byte{
-	// 215 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0xce, 0x2f, 0x2d, 0x49,
-	0x4a, 0xd5, 0x4f, 0xcc, 0xc9, 0xc9, 0x4f, 0x4e, 0x2c, 0xc9, 0xcc, 0xcf, 0x2b, 0xc8, 0xcf, 0xcf,
-	0xd1, 0x4f, 0xcd, 0xcd, 0x2c, 0x2e, 0xce, 0xcc, 0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17,
-	0x12, 0x01, 0x2b, 0xd2, 0x43, 0x55, 0xa4, 0xd4, 0xcc, 0xc8, 0xc5, 0xe1, 0x0a, 0x55, 0x28, 0xa4,
-	0xc8, 0xc5, 0x93, 0x94, 0x93, 0x9f, 0x9c, 0x1d, 0x9f, 0x57, 0x9a, 0x9b, 0x94, 0x5a, 0x24, 0xc1,
-	0xa8, 0xc0, 0xa8, 0xc1, 0x19, 0xc4, 0x0d, 0x16, 0xf3, 0x03, 0x0b, 0x09, 0xa9, 0x72, 0xf1, 0x95,
-	0xe4, 0x97, 0x24, 0xe6, 0xc4, 0xc3, 0x4c, 0x97, 0x60, 0x02, 0x2b, 0xe2, 0x05, 0x8b, 0xc2, 0x4d,
-	0xd2, 0xe5, 0x12, 0x82, 0x29, 0x88, 0x2f, 0xc9, 0xcc, 0x4d, 0x2d, 0x2e, 0x49, 0xcc, 0x2d, 0x90,
-	0x60, 0x06, 0x2b, 0x15, 0x84, 0xc9, 0x84, 0xc0, 0x24, 0x9c, 0x7c, 0x4e, 0x3c, 0x92, 0x63, 0xbc,
-	0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63,
-	0xb8, 0xf1, 0x58, 0x8e, 0x21, 0xca, 0x28, 0x3d, 0xb3, 0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f,
-	0x57, 0x1f, 0xe2, 0x4b, 0x30, 0xa9, 0x9b, 0x97, 0x9f, 0x92, 0xaa, 0x5f, 0x81, 0xee, 0xe5, 0x92,
-	0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0xb0, 0x87, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x93,
-	0x59, 0x74, 0x26, 0x17, 0x01, 0x00, 0x00,
+	// 344 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0xbf, 0x4e, 0xc2, 0x40,
+	0x18, 0xc0, 0x7b, 0x4a, 0x8c, 0x9e, 0x46, 0xb1, 0x62, 0x82, 0x98, 0x14, 0xc5, 0x41, 0x17, 0xda,
+	0x88, 0x4f, 0x20, 0xe2, 0x46, 0x1c, 0x88, 0x93, 0xcb, 0xe5, 0x7a, 0x5c, 0xca, 0x85, 0x5e, 0xbf,
+	0xa6, 0x77, 0x4d, 0xe4, 0x2d, 0x9c, 0x7c, 0x12, 0x17, 0xdf, 0x80, 0x91, 0x38, 0x19, 0x07, 0x62,
+	0xe0, 0x45, 0x0c, 0x77, 0x94, 0x04, 0x06, 0x97, 0xa6, 0xf7, 0xfd, 0x7e, 0xdf, 0x97, 0xef, 0x0f,
+	0xbe, 0x82, 0x5c, 0x87, 0x3c, 0xa0, 0x71, 0x0c, 0x8c, 0x6a, 0x01, 0x49, 0x0a, 0x10, 0x07, 0x5c,
+	0x0a, 0xa5, 0x04, 0x24, 0x7e, 0x9a, 0x81, 0x06, 0xb7, 0x62, 0x24, 0x7f, 0x5d, 0xaa, 0x55, 0x22,
+	0x88, 0xc0, 0x08, 0xc1, 0xe2, 0xcf, 0xba, 0xb5, 0x33, 0x06, 0x4a, 0x82, 0x22, 0x16, 0xd8, 0x87,
+	0x45, 0x8d, 0x4f, 0x84, 0x77, 0x1f, 0x97, 0x95, 0xdd, 0x4b, 0x7c, 0x10, 0xc6, 0xc0, 0x86, 0x24,
+	0xc9, 0x65, 0xc8, 0xb3, 0x2a, 0xba, 0x40, 0x37, 0x7b, 0xbd, 0x7d, 0x13, 0x7b, 0x32, 0x21, 0xf7,
+	0x1a, 0x1f, 0x51, 0xa6, 0x73, 0x1a, 0x93, 0xa2, 0x9f, 0xea, 0x96, 0xb1, 0x0e, 0x6d, 0x78, 0x55,
+	0xab, 0x85, 0x4f, 0x33, 0x2e, 0xa9, 0x48, 0x88, 0x2d, 0xb9, 0xd2, 0xb7, 0x8d, 0x7e, 0x62, 0x61,
+	0x7b, 0xc1, 0x56, 0x39, 0x4d, 0xec, 0x16, 0x1a, 0xd1, 0x42, 0x72, 0xa5, 0xa9, 0x4c, 0xab, 0x25,
+	0x93, 0x70, 0x5c, 0x90, 0xe7, 0x02, 0x34, 0xde, 0x11, 0x2e, 0x3f, 0xf4, 0xee, 0x3b, 0x54, 0xc4,
+	0xa3, 0x7f, 0x67, 0x28, 0xad, 0xcf, 0x40, 0xb0, 0xcb, 0x32, 0x4a, 0xfa, 0x8b, 0xbc, 0x8d, 0x31,
+	0xda, 0xb7, 0xe3, 0x69, 0xdd, 0xf9, 0x99, 0xd6, 0xcf, 0xed, 0x96, 0x54, 0x7f, 0xe8, 0x0b, 0x08,
+	0x24, 0xd5, 0x03, 0xbf, 0xcb, 0x23, 0xca, 0x46, 0x1d, 0xce, 0xbe, 0x3e, 0x9a, 0x78, 0xb9, 0xc4,
+	0x0e, 0x67, 0xbd, 0x32, 0xcb, 0xe8, 0x5a, 0x0f, 0xed, 0xee, 0x78, 0xe6, 0xa1, 0xc9, 0xcc, 0x43,
+	0xbf, 0x33, 0x0f, 0xbd, 0xcd, 0x3d, 0x67, 0x32, 0xf7, 0x9c, 0xef, 0xb9, 0xe7, 0xbc, 0xb4, 0x22,
+	0xa1, 0x07, 0x79, 0xe8, 0x33, 0x90, 0x81, 0xbd, 0xb2, 0xf9, 0x36, 0x13, 0xe8, 0xf3, 0xe0, 0x75,
+	0xf3, 0xe4, 0x7a, 0x94, 0x72, 0x15, 0xee, 0x98, 0x4b, 0xdd, 0xfd, 0x05, 0x00, 0x00, 0xff, 0xff,
+	0x5f, 0xf9, 0xa8, 0xd5, 0x17, 0x02, 0x00, 0x00,
 }
 
 func (m *Emission) Marshal() (dAtA []byte, err error) {
@@ -133,12 +198,19 @@ func (m *Emission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.EmissionTimestamp)
 		i = encodeVarintEmission(dAtA, i, uint64(len(m.EmissionTimestamp)))
 		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.RemainBlockEmission) > 0 {
+		i -= len(m.RemainBlockEmission)
+		copy(dAtA[i:], m.RemainBlockEmission)
+		i = encodeVarintEmission(dAtA, i, uint64(len(m.RemainBlockEmission)))
+		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.TotalEmission) > 0 {
-		i -= len(m.TotalEmission)
-		copy(dAtA[i:], m.TotalEmission)
-		i = encodeVarintEmission(dAtA, i, uint64(len(m.TotalEmission)))
+	if len(m.ActualEmission) > 0 {
+		i -= len(m.ActualEmission)
+		copy(dAtA[i:], m.ActualEmission)
+		i = encodeVarintEmission(dAtA, i, uint64(len(m.ActualEmission)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -148,6 +220,44 @@ func (m *Emission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintEmission(dAtA, i, uint64(len(m.BlockNumber)))
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CRADailyEmission) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CRADailyEmission) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CRADailyEmission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.CraDailyEmission.Size()
+		i -= size
+		if _, err := m.CraDailyEmission.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEmission(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if m.BlockNumber != 0 {
+		i = encodeVarintEmission(dAtA, i, uint64(m.BlockNumber))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -173,7 +283,11 @@ func (m *Emission) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEmission(uint64(l))
 	}
-	l = len(m.TotalEmission)
+	l = len(m.ActualEmission)
+	if l > 0 {
+		n += 1 + l + sovEmission(uint64(l))
+	}
+	l = len(m.RemainBlockEmission)
 	if l > 0 {
 		n += 1 + l + sovEmission(uint64(l))
 	}
@@ -181,6 +295,20 @@ func (m *Emission) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEmission(uint64(l))
 	}
+	return n
+}
+
+func (m *CRADailyEmission) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BlockNumber != 0 {
+		n += 1 + sovEmission(uint64(m.BlockNumber))
+	}
+	l = m.CraDailyEmission.Size()
+	n += 1 + l + sovEmission(uint64(l))
 	return n
 }
 
@@ -253,7 +381,7 @@ func (m *Emission) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TotalEmission", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ActualEmission", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -281,9 +409,41 @@ func (m *Emission) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TotalEmission = string(dAtA[iNdEx:postIndex])
+			m.ActualEmission = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainBlockEmission", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEmission
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEmission
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEmission
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemainBlockEmission = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EmissionTimestamp", wireType)
 			}
@@ -314,6 +474,109 @@ func (m *Emission) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.EmissionTimestamp = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEmission(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEmission
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CRADailyEmission) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEmission
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CRADailyEmission: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CRADailyEmission: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockNumber", wireType)
+			}
+			m.BlockNumber = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEmission
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockNumber |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CraDailyEmission", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEmission
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEmission
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEmission
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CraDailyEmission.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

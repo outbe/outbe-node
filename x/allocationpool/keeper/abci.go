@@ -21,40 +21,8 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 		strBlockNumber := strconv.FormatInt(ctx.BlockHeight(), 10)
 		strTimeStamp := strconv.FormatInt(ctx.BlockTime().Unix(), 10)
 
-		emission, found := k.GetTotalEmission(ctx)
-		if !found {
-			emissionToken, err := k.CalculateExponentialBlockEmission(ctx, 1)
-			if err != nil {
-				logger.Error("Failed to calculate exponential block emission for block: 1",
-					"error", err)
-				return sdkerrors.Wrap(err, "[CalculateExponentialBlockEmission] failed to calculate exponential block emission")
-			}
-			emission := types.Emission{
-				BlockNumber:       strBlockNumber,
-				TotalEmission:     emissionToken,
-				EmissionTimestamp: strTimeStamp,
-			}
-			k.SetEmission(ctx, emission)
-
-			logger.Info("✅ Completed exponential token emission for block 1 — emission stored in context",
-				"total_emission", emissionToken,
-				"block_number", ctx.BlockHeight())
-
-			return nil
-		}
-
-		decEmission, err := sdkmath.LegacyNewDecFromStr(emission.TotalEmission)
-		if err != nil {
-			logger.Error("Failed to convert total emission to sdk.Dec",
-				"error", err,
-				"TotalEmission", emission.TotalEmission)
-			return sdkerrors.Wrap(err, "failed to convert total emission to sdk.Dec")
-		}
-
 		inflation := k.mintKeeper.GetAllMinters(ctx)[0].Inflation
-
 		if inflation.GT(sdkmath.LegacyNewDecWithPrec(2, 2)) {
-
 			emissionToken, err := k.CalculateExponentialBlockEmission(ctx, ctx.BlockHeight())
 			if err != nil {
 				logger.Error("failed to calculate exponential block emission",
@@ -63,24 +31,17 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 				return sdkerrors.Wrap(err, "failed to calculate exponential block emission")
 			}
 
-			decEmissionPerBlock, err := sdkmath.LegacyNewDecFromStr(emissionToken)
-			if err != nil {
-				logger.Error("Failed to convert emission token to sdk.Dec",
-					"error", err,
-					"emission_token", emissionToken)
-				return sdkerrors.Wrap(err, "failed to convert emission token to sdk.Dec")
+			newEmission := types.Emission{
+				BlockNumber:         strBlockNumber,
+				ActualEmission:      emissionToken,
+				RemainBlockEmission: emissionToken,
+				EmissionTimestamp:   strTimeStamp,
 			}
-
-			emission.BlockNumber = strBlockNumber
-			emission.TotalEmission = decEmission.Add(decEmissionPerBlock).String()
-			emission.EmissionTimestamp = strTimeStamp
-
-			k.SetEmission(ctx, emission)
+			k.SetEmission(ctx, newEmission)
 
 			return nil
 
 		} else {
-
 			emissionToken, err := k.CalculateFixedBlockEmission(ctx)
 			if err != nil {
 				logger.Error("[CalculateFixedBlockEmission] failed to calculate fixed block emission",
@@ -89,19 +50,13 @@ func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 				return sdkerrors.Wrap(err, "failed to calculate fixed block emission")
 			}
 
-			decEmissionPerBlock, err := sdkmath.LegacyNewDecFromStr(emissionToken)
-			if err != nil {
-				ctx.Logger().Error("Failed to convert emission token to sdk.Dec",
-					"error", err,
-					"emission_token", emissionToken)
-				return sdkerrors.Wrap(err, "failed to convert emission token to sdk.Dec")
+			newEmission := types.Emission{
+				BlockNumber:         strBlockNumber,
+				ActualEmission:      emissionToken,
+				RemainBlockEmission: emissionToken,
+				EmissionTimestamp:   strTimeStamp,
 			}
-
-			emission.BlockNumber = strBlockNumber
-			emission.TotalEmission = decEmission.Add(decEmissionPerBlock).String()
-			emission.EmissionTimestamp = strTimeStamp
-
-			k.SetEmission(ctx, emission)
+			k.SetEmission(ctx, newEmission)
 
 			return nil
 		}

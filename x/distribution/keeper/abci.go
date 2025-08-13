@@ -30,8 +30,18 @@ func (k WrappedBaseKeeper) BeginBlocker(ctx context.Context) error {
 	}
 
 	if err := k.AllocateTokens(ctx, previousTotalPower, validators); err != nil {
-		logger.Error("Failed to distribute validator rewards", "error", err.Error())
-		return sdkerrors.Wrapf(err, "failed to distribute validator rewards at block %d", sdkCtx.BlockHeight())
+		logger.Error("[BeginBlocker][Distribution] failed to distribute validator rewards", "error", err.Error())
+		return sdkerrors.Wrapf(err, "[BeginBlocker][Distribution] failed to distribute transactions fee for a validator at block %d", sdkCtx.BlockHeight())
+	}
+
+	for _, voteInfo := range wctx.VoteInfos() {
+		previousTotalPower += voteInfo.Validator.Power
+	}
+
+	if wctx.BlockHeight() > 1 {
+		if err := k.AllocateBlockProvisioningTokens(ctx, previousTotalPower, wctx.VoteInfos()); err != nil {
+			return sdkerrors.Wrapf(err, "[BeginBlocker][Distribution] failed to distribute block provisioning rewards for a validator at block %d", sdkCtx.BlockHeight())
+		}
 	}
 
 	// record the proposer for when we payout on the next block

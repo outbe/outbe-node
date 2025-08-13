@@ -15,7 +15,7 @@ import (
 
 func CmdQueryBlockEmission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "block-emission [block_number]",
+		Use:   "total-block-emission [block_number]",
 		Short: "Query token emission amount for a specific block",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,11 +31,11 @@ func CmdQueryBlockEmission() *cobra.Command {
 				return sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "failed to parse block number: %v", err)
 			}
 
-			req := &types.QueryBlockEmissionRequest{
+			req := &types.QueryTotalBlockEmissionRequest{
 				BlockNumber: blockNumber,
 			}
 
-			res, err := queryClient.GetBlockEmission(context.Background(), req)
+			res, err := queryClient.GetTotalBlockEmission(context.Background(), req)
 			if err != nil {
 				return sdkerrors.Wrapf(err, "failed to query block emission for block %d", blockNumber)
 			}

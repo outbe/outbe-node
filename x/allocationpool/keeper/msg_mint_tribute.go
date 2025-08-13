@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"strconv"
 
 	errortypes "github.com/outbe/outbe-node/errors"
 
@@ -34,12 +35,12 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidMintAmount, "[MintTribute] failed. Mint amount must be greater than zero")
 	}
 
-	emission, found := k.GetTotalEmission(ctx)
+	emission, found := k.GetEmissionEntityPerBlock(ctx, strconv.FormatInt(ctx.BlockHeight(), 10))
 	if !found {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][GetTotalEmission] failed. Total emission not found.")
 	}
 
-	decEmission, err := sdkmath.LegacyNewDecFromStr(emission.TotalEmission)
+	decEmission, err := sdkmath.LegacyNewDecFromStr(emission.RemainBlockEmission)
 	if err != nil {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][LegacyNewDecFromStr] failed. Total emission not converted.")
 	}
@@ -56,7 +57,7 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][Sub] failed. No coin for mint.")
 	}
 
-	emission.TotalEmission = decEmission.Sub(decMintAmount).String()
+	emission.RemainBlockEmission = decEmission.Sub(decMintAmount).String()
 	err = k.SetEmission(ctx, emission)
 	if err != nil {
 		return nil, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[MintTribute][SetEmission] failed. Total emission not decreased.")
@@ -121,7 +122,7 @@ func (k msgServer) MintTribute(goCtx context.Context, msg *types.MsgMintTribute)
 		sdk.NewEvent(
 			types.EventType,
 			sdk.NewAttribute(types.AttributeKeyMintAmount, mintCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyTotalEmission, emission.TotalEmission),
+			sdk.NewAttribute(types.AttributeKeyTotalEmission, emission.RemainBlockEmission),
 		),
 	)
 
