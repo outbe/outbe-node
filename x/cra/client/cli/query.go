@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -21,12 +21,8 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
-	cmd.AddCommand(CmdQueryBlockEmission())
-	cmd.AddCommand(CmdQueryLimit())
-	cmd.AddCommand(CmdQueryEmissions())
-	cmd.AddCommand(CmdQueryDailyEmission())
-	cmd.AddCommand(CmdQueryTributes())
-	cmd.AddCommand(CmdQueryEmissionEntity())
+	cmd.AddCommand(CmdQueryAllCRAs())
+	cmd.AddCommand(CmdQueryAllWallets())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

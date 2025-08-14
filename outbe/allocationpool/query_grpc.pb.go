@@ -24,9 +24,8 @@ const (
 	Query_GetEmissionEntity_FullMethodName     = "/outbe.allocationpool.Query/GetEmissionEntity"
 	Query_GetTotalBlockEmission_FullMethodName = "/outbe.allocationpool.Query/GetTotalBlockEmission"
 	Query_GetEmission_FullMethodName           = "/outbe.allocationpool.Query/GetEmission"
+	Query_GetDailyEmission_FullMethodName      = "/outbe.allocationpool.Query/GetDailyEmission"
 	Query_GetLimit_FullMethodName              = "/outbe.allocationpool.Query/GetLimit"
-	Query_AllCRAs_FullMethodName               = "/outbe.allocationpool.Query/AllCRAs"
-	Query_AllWallets_FullMethodName            = "/outbe.allocationpool.Query/AllWallets"
 	Query_GetTributes_FullMethodName           = "/outbe.allocationpool.Query/GetTributes"
 )
 
@@ -39,9 +38,8 @@ type QueryClient interface {
 	GetEmissionEntity(ctx context.Context, in *QueryEmissionEntityRequest, opts ...grpc.CallOption) (*QueryEmissionEntityResponse, error)
 	GetTotalBlockEmission(ctx context.Context, in *QueryTotalBlockEmissionRequest, opts ...grpc.CallOption) (*QueryTotalBlockEmissionResponse, error)
 	GetEmission(ctx context.Context, in *QueryEmissionRequest, opts ...grpc.CallOption) (*QueryEmissionResponse, error)
+	GetDailyEmission(ctx context.Context, in *QueryDailyEmissionRequest, opts ...grpc.CallOption) (*QueryDailyEmissionResponse, error)
 	GetLimit(ctx context.Context, in *QueryLimitRequest, opts ...grpc.CallOption) (*QueryLimitResponse, error)
-	AllCRAs(ctx context.Context, in *QueryAllCRAsRequest, opts ...grpc.CallOption) (*QueryAllCRAsResponse, error)
-	AllWallets(ctx context.Context, in *QueryAllWalletsRequest, opts ...grpc.CallOption) (*QueryAllWalletsResponse, error)
 	GetTributes(ctx context.Context, in *QueryTributesRequest, opts ...grpc.CallOption) (*QueryTributesResponse, error)
 }
 
@@ -98,27 +96,18 @@ func (c *queryClient) GetEmission(ctx context.Context, in *QueryEmissionRequest,
 	return out, nil
 }
 
+func (c *queryClient) GetDailyEmission(ctx context.Context, in *QueryDailyEmissionRequest, opts ...grpc.CallOption) (*QueryDailyEmissionResponse, error) {
+	out := new(QueryDailyEmissionResponse)
+	err := c.cc.Invoke(ctx, Query_GetDailyEmission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) GetLimit(ctx context.Context, in *QueryLimitRequest, opts ...grpc.CallOption) (*QueryLimitResponse, error) {
 	out := new(QueryLimitResponse)
 	err := c.cc.Invoke(ctx, Query_GetLimit_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AllCRAs(ctx context.Context, in *QueryAllCRAsRequest, opts ...grpc.CallOption) (*QueryAllCRAsResponse, error) {
-	out := new(QueryAllCRAsResponse)
-	err := c.cc.Invoke(ctx, Query_AllCRAs_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AllWallets(ctx context.Context, in *QueryAllWalletsRequest, opts ...grpc.CallOption) (*QueryAllWalletsResponse, error) {
-	out := new(QueryAllWalletsResponse)
-	err := c.cc.Invoke(ctx, Query_AllWallets_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,9 +132,8 @@ type QueryServer interface {
 	GetEmissionEntity(context.Context, *QueryEmissionEntityRequest) (*QueryEmissionEntityResponse, error)
 	GetTotalBlockEmission(context.Context, *QueryTotalBlockEmissionRequest) (*QueryTotalBlockEmissionResponse, error)
 	GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error)
+	GetDailyEmission(context.Context, *QueryDailyEmissionRequest) (*QueryDailyEmissionResponse, error)
 	GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error)
-	AllCRAs(context.Context, *QueryAllCRAsRequest) (*QueryAllCRAsResponse, error)
-	AllWallets(context.Context, *QueryAllWalletsRequest) (*QueryAllWalletsResponse, error)
 	GetTributes(context.Context, *QueryTributesRequest) (*QueryTributesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
@@ -169,14 +157,11 @@ func (UnimplementedQueryServer) GetTotalBlockEmission(context.Context, *QueryTot
 func (UnimplementedQueryServer) GetEmission(context.Context, *QueryEmissionRequest) (*QueryEmissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEmission not implemented")
 }
+func (UnimplementedQueryServer) GetDailyEmission(context.Context, *QueryDailyEmissionRequest) (*QueryDailyEmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDailyEmission not implemented")
+}
 func (UnimplementedQueryServer) GetLimit(context.Context, *QueryLimitRequest) (*QueryLimitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLimit not implemented")
-}
-func (UnimplementedQueryServer) AllCRAs(context.Context, *QueryAllCRAsRequest) (*QueryAllCRAsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AllCRAs not implemented")
-}
-func (UnimplementedQueryServer) AllWallets(context.Context, *QueryAllWalletsRequest) (*QueryAllWalletsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AllWallets not implemented")
 }
 func (UnimplementedQueryServer) GetTributes(context.Context, *QueryTributesRequest) (*QueryTributesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTributes not implemented")
@@ -284,6 +269,24 @@ func _Query_GetEmission_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetDailyEmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDailyEmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetDailyEmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetDailyEmission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetDailyEmission(ctx, req.(*QueryDailyEmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_GetLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryLimitRequest)
 	if err := dec(in); err != nil {
@@ -298,42 +301,6 @@ func _Query_GetLimit_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).GetLimit(ctx, req.(*QueryLimitRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AllCRAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllCRAsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AllCRAs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_AllCRAs_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AllCRAs(ctx, req.(*QueryAllCRAsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AllWallets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllWalletsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AllWallets(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_AllWallets_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AllWallets(ctx, req.(*QueryAllWalletsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -384,16 +351,12 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GetEmission_Handler,
 		},
 		{
+			MethodName: "GetDailyEmission",
+			Handler:    _Query_GetDailyEmission_Handler,
+		},
+		{
 			MethodName: "GetLimit",
 			Handler:    _Query_GetLimit_Handler,
-		},
-		{
-			MethodName: "AllCRAs",
-			Handler:    _Query_AllCRAs_Handler,
-		},
-		{
-			MethodName: "AllWallets",
-			Handler:    _Query_AllWallets_Handler,
 		},
 		{
 			MethodName: "GetTributes",

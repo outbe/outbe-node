@@ -5,13 +5,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 	"github.com/spf13/cobra"
 )
 
-func CmdQueryAllCRAs() *cobra.Command {
+func CmdQueryAllWallets() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-cras",
+		Use:   "list-wallet",
 		Short: "shows the parameters of the module",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -19,7 +19,7 @@ func CmdQueryAllCRAs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.AllCRAs(context.Background(), &types.QueryAllCRAsRequest{})
+			res, err := queryClient.AllWallets(context.Background(), &types.QueryAllWalletsRequest{})
 			if err != nil {
 				return err
 			}

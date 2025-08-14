@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 )
@@ -19,6 +19,9 @@ func GetTxCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	cmd.AddCommand(CmdMintTribute())
+	cmd.AddCommand(CmdRegisterCRA())
+	cmd.AddCommand(CmdRegisterWallet())
+	cmd.AddCommand(CmdWalletReward())
+	cmd.AddCommand(CmdCRAReward())
 	return cmd
 }

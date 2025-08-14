@@ -177,3 +177,22 @@ func (k Keeper) GetEmissionPerBlock(goCtx context.Context, blockNumber int64) (v
 		return tokens, true
 	}
 }
+
+func (k Keeper) SetDailyEmission(ctx context.Context, emission types.CRADailyEmission) error {
+	store := k.storeService.OpenKVStore(ctx)
+	b := k.cdc.MustMarshal(&emission)
+	return store.Set(types.GetDailyEmissionKey("daily_emission"), b)
+}
+
+func (k Keeper) GetDailyEmissionAmount(ctx context.Context) (val types.CRADailyEmission, found bool) {
+	store := k.storeService.OpenKVStore(ctx)
+	emissionKey := types.GetDailyEmissionKey("daily_emission")
+	b, err := store.Get(emissionKey)
+
+	if b == nil || err != nil {
+		return val, false
+	}
+
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
+}

@@ -6,5 +6,4 @@ const (
 
 	AttributeKeyMintAmount    = "mint_amount"
 	AttributeKeyTotalEmission = "remain_block_emission"
-	AttributeCraAddress       = "cra_address"
 )

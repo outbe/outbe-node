@@ -1,17 +1,7 @@
 package keeper
 
 import (
-	"context"
-
-	sdkerrors "cosmossdk.io/errors"
-	"cosmossdk.io/store/prefix"
-	"github.com/cosmos/cosmos-sdk/runtime"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	errortypes "github.com/outbe/outbe-node/errors"
 	"github.com/outbe/outbe-node/x/allocationpool/types"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type QueryServer struct {
@@ -24,74 +14,4 @@ func NewQueryServerImpl(keeper Keeper) types.QueryServer {
 	return &QueryServer{
 		Keeper: keeper,
 	}
-}
-
-func (k Keeper) AllCRAs(c context.Context, req *types.QueryAllCRAsRequest) (*types.QueryAllCRAsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "[AllCRAs] failed. Invalid request.")
-	}
-
-	var cras []types.CRACU
-	ctx := sdk.UnwrapSDKContext(c)
-
-	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	cuStore := prefix.NewStore(store, types.CraKey)
-
-	pagination := req.Pagination
-	if pagination == nil {
-		pagination = &query.PageRequest{Limit: 100, CountTotal: true}
-	} else {
-		if pagination.Limit == 0 || pagination.Limit > 1000 {
-			pagination.Limit = 1000
-		}
-		pagination.CountTotal = true
-	}
-
-	pageRes, err := query.Paginate(cuStore, pagination, func(key []byte, value []byte) error {
-		var cra types.CRACU
-		if err := k.cdc.Unmarshal(value, &cra); err != nil {
-			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[AllCRAs][Unmarshal] failed. Couldn't parse the cu data encoded.")
-		}
-		cras = append(cras, cra)
-		return nil
-	})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "[AllCRAs] failed. Couldn't find an valid cu.")
-	}
-	return &types.QueryAllCRAsResponse{Cras: cras, Pagination: pageRes}, nil
-}
-
-func (k Keeper) AllWallets(c context.Context, req *types.QueryAllWalletsRequest) (*types.QueryAllWalletsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "[AllWallets] failed. Invalid request.")
-	}
-
-	var wallets []types.Wallet
-	ctx := sdk.UnwrapSDKContext(c)
-
-	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	cuStore := prefix.NewStore(store, types.WalletKey)
-
-	pagination := req.Pagination
-	if pagination == nil {
-		pagination = &query.PageRequest{Limit: 100, CountTotal: true}
-	} else {
-		if pagination.Limit == 0 || pagination.Limit > 1000 {
-			pagination.Limit = 1000
-		}
-		pagination.CountTotal = true
-	}
-
-	pageRes, err := query.Paginate(cuStore, pagination, func(key []byte, value []byte) error {
-		var wallet types.Wallet
-		if err := k.cdc.Unmarshal(value, &wallet); err != nil {
-			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[AllWallets][Unmarshal] failed. Couldn't parse the cu data encoded.")
-		}
-		wallets = append(wallets, wallet)
-		return nil
-	})
-	if err != nil {
-		return nil, status.Error(codes.Internal, "[AllWallets] failed. Couldn't find an valid cu.")
-	}
-	return &types.QueryAllWalletsResponse{Wallets: wallets, Pagination: pageRes}, nil
 }

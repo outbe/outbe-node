@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/app/params"
 	errortypes "github.com/outbe/outbe-node/errors"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 )
 
 func (k msgServer) CRAReward(goCtx context.Context, msg *types.MsgCRAReward) (*types.MsgCRARewardResponse, error) {

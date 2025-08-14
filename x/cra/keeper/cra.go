@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 )
 
 func (k Keeper) SetCRA(ctx context.Context, cra types.CRACU) error {

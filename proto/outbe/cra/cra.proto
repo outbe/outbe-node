@@ -1,0 +1,74 @@
+syntax = "proto3";
+package outbe.cra;
+
+option go_package = "github.com/outbe/outbe-node/x/cra/types";
+
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+// Params defines the module parameters.
+message Params {
+  string theta_cra = 1 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string per_cra_cap = 2 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string ema_lambda = 3 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string beta_min = 4 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string beta_max = 5 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string anomaly_threshold = 6 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string b_base = 7 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  string b_scale = 8 [    
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", 
+    (gogoproto.nullable) = false
+  ];
+  uint64 grace_period_days = 9;
+}
+
+message CRACU {
+  string creator = 1;
+  string cra_address = 2;
+  string reward = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message Wallet {
+  string creator = 1;
+  string address = 2;
+  string reward = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+}

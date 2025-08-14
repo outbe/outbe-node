@@ -6,16 +6,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/outbe/outbe-node/x/allocationpool/types"
+	"github.com/outbe/outbe-node/x/cra/types"
 	"github.com/spf13/cobra"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdWalletReward() *cobra.Command {
+func CmdCRAReward() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "wallet-reward [address]",
-		Short: "claim wallet reward",
+		Use:   "cra-reward [cra_address]",
+		Short: "claim cra rewrad",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
@@ -24,8 +24,8 @@ func CmdWalletReward() *cobra.Command {
 				return err
 			}
 
-			msg := &types.MsgWalletReward{
-				Address: args[0],
+			msg := &types.MsgCRAReward{
+				CraAddress: args[0],
 			}
 
 			// Broadcast the transaction
