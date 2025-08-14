@@ -165,6 +165,10 @@ import (
 	allocationpoolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 
+	cramodule "github.com/outbe/outbe-node/x/cra"
+	crakeeper "github.com/outbe/outbe-node/x/cra/keeper"
+	cratypes "github.com/outbe/outbe-node/x/cra/types"
+
 	distributionmodule "github.com/outbe/outbe-node/x/distribution"
 	stakingmodule "github.com/outbe/outbe-node/x/staking"
 
@@ -236,6 +240,7 @@ var maccPerms = map[string][]string{
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	rewardtypes.ModuleName:         nil,
+	cratypes.ModuleName:            nil,
 	govtypes.ModuleName:            {authtypes.Burner},
 	nft.ModuleName:                 nil,
 	// non sdk modules
@@ -294,6 +299,7 @@ type ChainApp struct {
 
 	AllocationPoolKeeper allocationpoolkeeper.Keeper
 	RewardKeeper         rewardkeeper.Keeper
+	CRAKeeper            crakeeper.Keeper
 
 	PacketForwardKeeper *packetforwardkeeper.Keeper
 	WasmClientKeeper    wasmlckeeper.Keeper
@@ -409,6 +415,7 @@ func NewChainApp(
 
 		allocationpooltypes.StoreKey,
 		rewardtypes.StoreKey,
+		cratypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(
@@ -814,6 +821,17 @@ func NewChainApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.CRAKeeper = crakeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[cratypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	// Create Transfer Stack
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.TransferKeeper)
@@ -881,7 +899,7 @@ func NewChainApp(
 			app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
 		distributionmodule.NewAppModule(
 			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper, app.MintKeeper),
+			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper, app.MintKeeper, app.CRAKeeper),
 		stakingmodule.NewAppModule(
 			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(banktypes.ModuleName)),
 			*app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *app.StakingKeeper, app.RewardKeeper),
@@ -901,6 +919,7 @@ func NewChainApp(
 		),
 		allocationpoolmodule.NewAppModule(appCodec, app.AllocationPoolKeeper, app.AccountKeeper, app.BankKeeper),
 		rewardmodule.NewAppModule(appCodec, app.RewardKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
+		cramodule.NewAppModule(appCodec, app.CRAKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -955,6 +974,7 @@ func NewChainApp(
 		ratelimittypes.ModuleName,
 		allocationpooltypes.ModuleName,
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -975,6 +995,7 @@ func NewChainApp(
 		ratelimittypes.ModuleName,
 		allocationpooltypes.ModuleName,
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1018,6 +1039,7 @@ func NewChainApp(
 		ratelimittypes.ModuleName,
 		allocationpooltypes.ModuleName,
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1431,5 +1453,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(allocationpooltypes.ModuleName)
 	paramsKeeper.Subspace(rewardtypes.ModuleName)
+	paramsKeeper.Subspace(cratypes.ModuleName)
 	return paramsKeeper
 }
