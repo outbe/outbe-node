@@ -11,6 +11,7 @@ import "outbe/allocationpool/emission.proto";
 import "outbe/allocationpool/supply.proto";
 import "outbe/allocationpool/tribute.proto";
 import "outbe/allocationpool/params.proto";
+import "outbe/allocationpool/cra.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -39,17 +40,17 @@ service Query {
     option (google.api.http).get               = "/outbe/allocationpool/emission";
   }
 
-  rpc GetDailyEmission(QueryDailyEmissionRequest) returns (QueryDailyEmissionResponse) {
-    option (google.api.http).get               = "/outbe/allocationpool/daily_emission";
-  }
-
   rpc GetLimit(QueryLimitRequest) returns (QueryLimitResponse) {
     option (google.api.http).get               = "/outbe/allocationpool/limit";
   }
 
-  // rpc GetTotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
-  //   option (google.api.http).get               = "/outbe/allocationpool/totalsupply";
-  // }
+  rpc AllCRAs(QueryAllCRAsRequest) returns (QueryAllCRAsResponse) {
+    option (google.api.http).get = "/outbe/allocationpool/cras";
+  }
+
+  rpc AllWallets(QueryAllWalletsRequest) returns (QueryAllWalletsResponse) {
+    option (google.api.http).get = "/outbe/allocationpool/wallets";
+  }
 
   rpc GetTributes(QueryTributesRequest) returns (QueryTributesResponse) {
     option (google.api.http).get               = "/outbe/allocationpool/tributes";
@@ -98,13 +99,6 @@ message QueryEmissionResponse {
   Emission emission = 1;
 }
 
-message QueryDailyEmissionRequest {
-}
-
-message QueryDailyEmissionResponse {
-  CRADailyEmission cra_daily_emission = 1;
-}
-
 message QueryLimitRequest {
 }
 
@@ -112,12 +106,23 @@ message QueryLimitResponse {
   string limit = 1;
 }
 
-// message QueryTotalSupplyRequest {
-// }
+message QueryAllCRAsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
 
-// message QueryTotalSupplyResponse {
-//   Supply total_supply = 1;
-// }
+message QueryAllCRAsResponse {
+  repeated CRACU  cras = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllWalletsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllWalletsResponse {
+  repeated Wallet  wallets = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 message QueryTributesRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;

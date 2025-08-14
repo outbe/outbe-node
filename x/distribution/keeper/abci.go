@@ -79,16 +79,16 @@ func (k WrappedBaseKeeper) BeginBlocker(ctx context.Context) error {
 		return nil
 	}
 
-	cras := k.crk.GetCRAAll(ctx)
+	cras := k.apk.GetCRAAll(ctx)
 	for _, cra := range cras {
 		craReward := craRewardPerBlock.Quo(sdkmath.LegacyNewDec(2)).Mul(sdkmath.LegacyNewDecWithPrec(32, 2))
 
-		cra, found := k.crk.GetCRAByCRAAddress(ctx, cra.CraAddress)
+		cra, found := k.apk.GetCRAByCRAAddress(ctx, cra.CraAddress)
 		if !found {
 			return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "failed to fetch a valid cra for giving address")
 		}
 		cra.Reward.Add(craReward)
-		k.crk.SetCRA(ctx, cra)
+		k.apk.SetCRA(ctx, cra)
 
 		newCoin := sdk.NewDecCoinFromDec(params.BondDenom, craReward)
 		coin := newCoin.Amount.TruncateDec()
@@ -103,16 +103,16 @@ func (k WrappedBaseKeeper) BeginBlocker(ctx context.Context) error {
 		}
 	}
 
-	wallets := k.crk.GetWalletAll(ctx)
+	wallets := k.apk.GetWalletAll(ctx)
 	for _, wallet := range wallets {
 		walletReward := craRewardPerBlock.Quo(sdkmath.LegacyNewDec(2)).Mul(sdkmath.LegacyNewDecWithPrec(32, 2))
 
-		wallet, found := k.crk.GetWalletByCRAAddress(ctx, wallet.Address)
+		wallet, found := k.apk.GetWalletByCRAAddress(ctx, wallet.Address)
 		if !found {
 			return sdkerrors.Wrap(errortypes.ErrInvalidRequest, "failed to fetch a valid wallet for giving address")
 		}
 		wallet.Reward.Add(walletReward)
-		k.crk.SetWallet(ctx, wallet)
+		k.apk.SetWallet(ctx, wallet)
 
 		newCoin := sdk.NewDecCoinFromDec(params.BondDenom, walletReward)
 		coin := newCoin.Amount.TruncateDec()

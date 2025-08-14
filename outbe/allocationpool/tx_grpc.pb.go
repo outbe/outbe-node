@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_MintTribute_FullMethodName = "/outbe.allocationpool.Msg/MintTribute"
+	Msg_MintTribute_FullMethodName    = "/outbe.allocationpool.Msg/MintTribute"
+	Msg_RegisterCRA_FullMethodName    = "/outbe.allocationpool.Msg/RegisterCRA"
+	Msg_RegisterWallet_FullMethodName = "/outbe.allocationpool.Msg/RegisterWallet"
 )
 
 // MsgClient is the client API for Msg service.
@@ -28,6 +30,8 @@ const (
 type MsgClient interface {
 	// Msg defines the Msg service.
 	MintTribute(ctx context.Context, in *MsgMintTribute, opts ...grpc.CallOption) (*MsgMintTributeResponse, error)
+	RegisterCRA(ctx context.Context, in *MsgRegisterCRA, opts ...grpc.CallOption) (*MsgRegisterCRAResponse, error)
+	RegisterWallet(ctx context.Context, in *MsgRegisterWallet, opts ...grpc.CallOption) (*MsgRegisterWalletResponse, error)
 }
 
 type msgClient struct {
@@ -47,12 +51,32 @@ func (c *msgClient) MintTribute(ctx context.Context, in *MsgMintTribute, opts ..
 	return out, nil
 }
 
+func (c *msgClient) RegisterCRA(ctx context.Context, in *MsgRegisterCRA, opts ...grpc.CallOption) (*MsgRegisterCRAResponse, error) {
+	out := new(MsgRegisterCRAResponse)
+	err := c.cc.Invoke(ctx, Msg_RegisterCRA_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RegisterWallet(ctx context.Context, in *MsgRegisterWallet, opts ...grpc.CallOption) (*MsgRegisterWalletResponse, error) {
+	out := new(MsgRegisterWalletResponse)
+	err := c.cc.Invoke(ctx, Msg_RegisterWallet_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
 	// Msg defines the Msg service.
 	MintTribute(context.Context, *MsgMintTribute) (*MsgMintTributeResponse, error)
+	RegisterCRA(context.Context, *MsgRegisterCRA) (*MsgRegisterCRAResponse, error)
+	RegisterWallet(context.Context, *MsgRegisterWallet) (*MsgRegisterWalletResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -62,6 +86,12 @@ type UnimplementedMsgServer struct {
 
 func (UnimplementedMsgServer) MintTribute(context.Context, *MsgMintTribute) (*MsgMintTributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MintTribute not implemented")
+}
+func (UnimplementedMsgServer) RegisterCRA(context.Context, *MsgRegisterCRA) (*MsgRegisterCRAResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterCRA not implemented")
+}
+func (UnimplementedMsgServer) RegisterWallet(context.Context, *MsgRegisterWallet) (*MsgRegisterWalletResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterWallet not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -94,6 +124,42 @@ func _Msg_MintTribute_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_RegisterCRA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterCRA)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterCRA(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RegisterCRA_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterCRA(ctx, req.(*MsgRegisterCRA))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RegisterWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterWallet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterWallet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RegisterWallet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterWallet(ctx, req.(*MsgRegisterWallet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +170,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MintTribute",
 			Handler:    _Msg_MintTribute_Handler,
+		},
+		{
+			MethodName: "RegisterCRA",
+			Handler:    _Msg_RegisterCRA_Handler,
+		},
+		{
+			MethodName: "RegisterWallet",
+			Handler:    _Msg_RegisterWallet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

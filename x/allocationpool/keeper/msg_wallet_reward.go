@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/app/params"
 	errortypes "github.com/outbe/outbe-node/errors"
-	"github.com/outbe/outbe-node/x/cra/types"
+	"github.com/outbe/outbe-node/x/allocationpool/types"
 )
 
 func (k msgServer) WalletReward(goCtx context.Context, msg *types.MsgWalletReward) (*types.MsgWalletRewardResponse, error) {

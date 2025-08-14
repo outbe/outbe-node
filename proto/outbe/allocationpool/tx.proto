@@ -11,8 +11,11 @@ service Msg {
 
   option (cosmos.msg.v1.service) = true;
 
-     // Msg defines the Msg service.
+  // Msg defines the Msg service.
    rpc MintTribute(MsgMintTribute) returns (MsgMintTributeResponse);
+
+   rpc RegisterCRA(MsgRegisterCRA) returns (MsgRegisterCRAResponse);
+   rpc RegisterWallet(MsgRegisterWallet) returns (MsgRegisterWalletResponse);
 
 }
 
@@ -29,4 +32,40 @@ message MsgMintTribute {
 
 // Msg defines the Msg service.
 message MsgMintTributeResponse {}
+
+message MsgRegisterCRA {
+  option (amino.name) = "outbe/MsgRegisterCRA";
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string cra_address = 1;
+}
+
+message MsgRegisterCRAResponse {}
+
+message MsgRegisterWallet {
+  option (amino.name) = "outbe/MsgRegisterWallet";
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string address = 1;
+}
+
+message MsgRegisterWalletResponse {}
+
+message MsgCRAReward {
+  option (amino.name) = "outbe/MsgCRAReward";
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string cra_address = 1;
+}
+
+message MsgCRARewardResponse {}
+
+message MsgWalletReward {
+  option (amino.name) = "outbe/MsgWalletReward";
+  option (cosmos.msg.v1.signer) = "authority";
+
+  string address = 1;
+}
+
+message MsgWalletRewardResponse {}
 

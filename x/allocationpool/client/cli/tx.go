@@ -20,5 +20,9 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	cmd.AddCommand(CmdMintTribute())
+	cmd.AddCommand(CmdRegisterCRA())
+	cmd.AddCommand(CmdRegisterWallet())
+	cmd.AddCommand(CmdWalletReward())
+	cmd.AddCommand(CmdCRAReward())
 	return cmd
 }

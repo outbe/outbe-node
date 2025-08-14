@@ -26,8 +26,11 @@ var (
 	MintKey          = []byte{0x04}
 	EmissionKey      = []byte("Emission/")
 	DailyEmissionKey = []byte{0x05}
+	CraKey           = []byte{0x06}
+	WalletKey        = []byte{0x07}
 	TotalMintedKey   = []byte{0x13}
 	ParamsKey        = []byte{0x14}
+
 	//    = []byte{0x14}
 	//    = []byte{0x15}
 	//    = []byte{0x21}
@@ -58,10 +61,14 @@ func GetTotalSupplyKey(id string) []byte {
 	return append(TotalSupplyKey, address.MustLengthPrefix([]byte(id))...)
 }
 
-func GetDailyEmissionKey(id string) []byte {
-	return append(DailyEmissionKey, address.MustLengthPrefix([]byte(id))...)
-}
-
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+func GetCRAKey(id string) []byte {
+	return append(CraKey, address.MustLengthPrefix([]byte(id))...)
+}
+
+func GetWalletKey(id string) []byte {
+	return append(WalletKey, address.MustLengthPrefix([]byte(id))...)
 }

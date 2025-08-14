@@ -7,7 +7,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/outbe/outbe-node/errors"
-	"github.com/outbe/outbe-node/x/cra/types"
+	"github.com/outbe/outbe-node/x/allocationpool/types"
 )
 
 func (k msgServer) RegisterCRA(goCtx context.Context, msg *types.MsgRegisterCRA) (*types.MsgRegisterCRAResponse, error) {
