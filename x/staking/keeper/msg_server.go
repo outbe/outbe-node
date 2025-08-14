@@ -276,15 +276,15 @@ func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidato
 }
 
 func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
-	valAddr, valErr := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorAddress)
-	if valErr != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", valErr)
-	}
+	// valAddr, valErr := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorAddress)
+	// if valErr != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", valErr)
+	// }
 
-	delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
-	}
+	// delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
+	// }
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
 		return nil, errorsmod.Wrap(
@@ -293,10 +293,10 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
-	validator, err := k.GetValidator(ctx, valAddr)
-	if err != nil {
-		return nil, err
-	}
+	// validator, err := k.GetValidator(ctx, valAddr)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	bondDenom, err := k.BondDenom(ctx)
 	if err != nil {
@@ -310,10 +310,12 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 	}
 
 	// NOTE: source funds are always unbonded
-	newShares, err := k.Keeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true)
-	if err != nil {
-		return nil, err
-	}
+	// newShares, err := k.Keeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	newShares := math.LegacyNewDecFromInt(msg.Amount.Amount)
 
 	if msg.Amount.Amount.IsInt64() {
 		defer func() {
@@ -336,20 +338,20 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 }
 
 func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedelegate) (*types.MsgBeginRedelegateResponse, error) {
-	valSrcAddr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorSrcAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid source validator address: %s", err)
-	}
+	// valSrcAddr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorSrcAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid source validator address: %s", err)
+	// }
 
-	valDstAddr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorDstAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid destination validator address: %s", err)
-	}
+	// valDstAddr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorDstAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid destination validator address: %s", err)
+	// }
 
-	delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
-	}
+	// delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
+	// }
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
 		return nil, errorsmod.Wrap(
@@ -358,12 +360,12 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		)
 	}
 
-	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, valSrcAddr, msg.Amount.Amount,
-	)
-	if err != nil {
-		return nil, err
-	}
+	// shares, err := k.ValidateUnbondAmount(
+	// 	ctx, delegatorAddress, valSrcAddr, msg.Amount.Amount,
+	// )
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	bondDenom, err := k.BondDenom(ctx)
 	if err != nil {
@@ -376,12 +378,12 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		)
 	}
 
-	completionTime, err := k.BeginRedelegation(
-		ctx, delegatorAddress, valSrcAddr, valDstAddr, shares,
-	)
-	if err != nil {
-		return nil, err
-	}
+	// completionTime, err := k.BeginRedelegation(
+	// 	ctx, delegatorAddress, valSrcAddr, valDstAddr, shares,
+	// )
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	if msg.Amount.Amount.IsInt64() {
 		defer func() {
@@ -396,25 +398,25 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 			sdk.NewAttribute(types.AttributeKeySrcValidator, msg.ValidatorSrcAddress),
 			sdk.NewAttribute(types.AttributeKeyDstValidator, msg.ValidatorDstAddress),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
-			sdk.NewAttribute(types.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
+			sdk.NewAttribute(types.AttributeKeyCompletionTime, time.Now().Format(time.RFC3339)),
 		),
 	})
 
 	return &types.MsgBeginRedelegateResponse{
-		CompletionTime: completionTime,
+		CompletionTime: time.Now(),
 	}, nil
 }
 
 func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*types.MsgUndelegateResponse, error) {
-	addr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
-	}
+	// addr, err := k.Keeper.ValidatorAddressCodec().StringToBytes(msg.ValidatorAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
+	// }
 
-	delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
-	}
+	// delegatorAddress, err := k.ak.AddressCodec().StringToBytes(msg.DelegatorAddress)
+	// if err != nil {
+	// 	return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
+	// }
 
 	if !msg.Amount.IsValid() || !msg.Amount.IsPositive() {
 		return nil, errorsmod.Wrap(
@@ -423,12 +425,12 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	shares, err := k.Keeper.ValidateUnbondAmount(
-		ctx, delegatorAddress, addr, msg.Amount.Amount,
-	)
-	if err != nil {
-		return nil, err
-	}
+	// shares, err := k.Keeper.ValidateUnbondAmount(
+	// 	ctx, delegatorAddress, addr, msg.Amount.Amount,
+	// )
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	bondDenom, err := k.Keeper.BondDenom(ctx)
 	if err != nil {
@@ -441,12 +443,12 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, shares)
-	if err != nil {
-		return nil, err
-	}
+	// completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, shares)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	undelegatedCoin := sdk.NewCoin(msg.Amount.Denom, undelegatedAmt)
+	//undelegatedCoin := sdk.NewCoin(msg.Amount.Denom, undelegatedAmt)
 
 	if msg.Amount.Amount.IsInt64() {
 		defer func() {
@@ -460,14 +462,14 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 			types.EventTypeUnbond,
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.ValidatorAddress),
 			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, undelegatedCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, ""),
+			sdk.NewAttribute(types.AttributeKeyCompletionTime, time.Now().Format(time.RFC3339)),
 		),
 	})
 
 	return &types.MsgUndelegateResponse{
-		CompletionTime: completionTime,
-		Amount:         undelegatedCoin,
+		CompletionTime: time.Now(),
+		Amount:         msg.Amount,
 	}, nil
 }
 
@@ -612,23 +614,4 @@ func (k msgServer) UpdateParams(ctx context.Context, msg *types.MsgUpdateParams)
 	}
 
 	return &types.MsgUpdateParamsResponse{}, nil
-}
-
-func (k msgServer) getValidator(goCtx context.Context, address string) (types.Validator, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	logger := k.Logger(ctx)
-	validators, err := k.Keeper.GetAllValidators(ctx)
-	if err != nil {
-		logger.Error("[Undelegate] Minting failed",
-			"validator address", address,
-			"error", err,
-		)
-		return types.Validator{}, err
-	}
-	for _, validator := range validators {
-		if validator.OperatorAddress == address {
-			return validator, nil
-		}
-	}
-	return types.Validator{}, nil
 }

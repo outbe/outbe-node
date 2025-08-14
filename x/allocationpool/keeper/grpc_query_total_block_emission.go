@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) GetBlockEmission(goCtx context.Context, req *types.QueryBlockEmissionRequest) (*types.QueryBlockEmissionResponse, error) {
+func (k Keeper) GetTotalBlockEmission(goCtx context.Context, req *types.QueryTotalBlockEmissionRequest) (*types.QueryTotalBlockEmissionResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -32,7 +32,7 @@ func (k Keeper) GetBlockEmission(goCtx context.Context, req *types.QueryBlockEmi
 			return nil, errors.New("[GetBlockEmission][CalculateExponentialBlockEmission] failed to calculate exponential block emission")
 		}
 
-		return &types.QueryBlockEmissionResponse{BlockEmission: tokens}, nil
+		return &types.QueryTotalBlockEmissionResponse{BlockEmission: tokens}, nil
 
 	} else {
 
@@ -41,6 +41,6 @@ func (k Keeper) GetBlockEmission(goCtx context.Context, req *types.QueryBlockEmi
 			return nil, errors.New("[GetBlockEmission][CalculateFixedBlockEmission] failed to calculate fixed emission")
 		}
 
-		return &types.QueryBlockEmissionResponse{BlockEmission: tokens}, nil
+		return &types.QueryTotalBlockEmissionResponse{BlockEmission: tokens}, nil
 	}
 }

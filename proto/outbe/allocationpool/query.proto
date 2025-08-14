@@ -23,12 +23,24 @@ service Query {
     option (google.api.http).get = "/outbe/allocationpool/params";
   }
 
-  rpc GetBlockEmission(QueryBlockEmissionRequest) returns (QueryBlockEmissionResponse) {
+  rpc EmissionAll(QueryAllEmissionRequest) returns (QueryAllEmissionResponse) {
+    option (google.api.http).get = "/outbe/allocationpool/emissions";
+  }
+
+  rpc GetEmissionEntity(QueryEmissionEntityRequest) returns (QueryEmissionEntityResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/block_emission/{block_number}";
+  }
+
+  rpc GetTotalBlockEmission(QueryTotalBlockEmissionRequest) returns (QueryTotalBlockEmissionResponse) {
     option (google.api.http).get               = "/outbe/allocationpool/emission/{block_number}";
   }
 
   rpc GetEmission(QueryEmissionRequest) returns (QueryEmissionResponse) {
     option (google.api.http).get               = "/outbe/allocationpool/emission";
+  }
+
+  rpc GetDailyEmission(QueryDailyEmissionRequest) returns (QueryDailyEmissionResponse) {
+    option (google.api.http).get               = "/outbe/allocationpool/daily_emission";
   }
 
   rpc GetLimit(QueryLimitRequest) returns (QueryLimitResponse) {
@@ -54,11 +66,28 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
-message QueryBlockEmissionRequest {
+message QueryEmissionEntityRequest {
   int64 block_number = 1;
 }
 
-message QueryBlockEmissionResponse {
+message QueryEmissionEntityResponse {
+  Emission emission = 1;
+}
+
+message QueryAllEmissionRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllEmissionResponse {
+	repeated Emission emissions = 1  [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryTotalBlockEmissionRequest {
+  int64 block_number = 1;
+}
+
+message QueryTotalBlockEmissionResponse {
   string block_emission = 1;
 }
 
@@ -67,6 +96,13 @@ message QueryEmissionRequest {
 
 message QueryEmissionResponse {
   Emission emission = 1;
+}
+
+message QueryDailyEmissionRequest {
+}
+
+message QueryDailyEmissionResponse {
+  CRADailyEmission cra_daily_emission = 1;
 }
 
 message QueryLimitRequest {

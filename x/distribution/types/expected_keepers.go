@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
+	gemminttypes "github.com/outbe/outbe-node/x/gemmint/types"
 	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
 
@@ -75,6 +76,14 @@ type RewardKeeper interface {
 }
 
 type AllocationPoolKeeper interface {
-	GetTotalEmission(ctx context.Context) (val allocationpooltypes.Emission, found bool)
+	GetEmissionState(ctx context.Context) (val allocationpooltypes.Emission, found bool)
 	SetEmission(ctx context.Context, emission allocationpooltypes.Emission) error
+	GetDailyEmissionAmount(ctx context.Context) (val allocationpooltypes.CRADailyEmission, found bool)
+	SetDailyEmission(ctx context.Context, emission allocationpooltypes.CRADailyEmission) error
+	GetEmissionPerBlock(goCtx context.Context, blockNumber int64) (val string, found bool)
+	GetEmissionEntityPerBlock(ctx context.Context, blockNumber string) (emission allocationpooltypes.Emission, found bool)
+}
+
+type MintKeeper interface {
+	GetTotalMinted(ctx context.Context) (val gemminttypes.Minted, found bool)
 }

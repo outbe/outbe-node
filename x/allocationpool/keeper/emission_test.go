@@ -6,18 +6,18 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
+	"github.com/outbe/outbe-node/x/allocationpool/constants"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCalculateExponentialBlockEmission(t *testing.T) {
-	initialRateStr := "65536"
-	decayStr := "0.00000006"
+
 	blockNumber := int64(1) // Test for block 1
 
-	initialRate, err := sdkmath.LegacyNewDecFromStr(initialRateStr)
+	initialRate, err := sdkmath.LegacyNewDecFromStr(constants.InitialRateStr)
 	require.NoError(t, err)
 
-	decay, err := sdkmath.LegacyNewDecFromStr(decayStr)
+	decay, err := sdkmath.LegacyNewDecFromStr(constants.DecayStr)
 	require.NoError(t, err)
 
 	n := sdkmath.LegacyNewDec(blockNumber)
@@ -42,9 +42,9 @@ func TestCalculateExponentialBlockEmission(t *testing.T) {
 
 func TestCalculateFixedBlockEmission_HighPrecision(t *testing.T) {
 	totalSupply := sdkmath.LegacyMustNewDecFromStr("200000000000000000000000000") // 200M * 1e18
-	apr := sdkmath.LegacyMustNewDecFromStr("0.02")
-	daysPerYear := sdkmath.LegacyMustNewDecFromStr("365")
-	blocksPerDay := sdkmath.LegacyMustNewDecFromStr("17280")
+	apr := sdkmath.LegacyMustNewDecFromStr(constants.EmissionRate)
+	daysPerYear := sdkmath.LegacyMustNewDecFromStr(constants.DaysPerYear)
+	blocksPerDay := sdkmath.LegacyMustNewDecFromStr(constants.BlocksPerDay)
 
 	emissionPerBlock := totalSupply.Mul(apr).Quo(daysPerYear).Quo(blocksPerDay)
 
@@ -57,11 +57,10 @@ func TestCalculateFixedBlockEmission_HighPrecision(t *testing.T) {
 func TestCalculateFixedAnnualEmission(t *testing.T) {
 	// Constants
 	totalSupplyStr := "200000000000000000000000000" // 200M OUTBE (18 decimals)
-	aprStr := "0.02"                                // 2%
 
 	// Convert to Dec
 	totalSupply := sdkmath.LegacyMustNewDecFromStr(totalSupplyStr)
-	apr := sdkmath.LegacyMustNewDecFromStr(aprStr)
+	apr := sdkmath.LegacyMustNewDecFromStr(constants.EmissionRate)
 
 	// Calculate
 	emission := totalSupply.Mul(apr)
@@ -76,13 +75,11 @@ func TestCalculateFixedAnnualEmission(t *testing.T) {
 func TestCalculateFixedDailyEmission(t *testing.T) {
 	// Given constants
 	totalSupplyStr := "200000000000000000000000000" // 200M OUTBE with 18 decimals
-	aprStr := "0.02"                                // 2% APR
-	daysPerYearStr := "365"
 
 	// Convert to Dec
 	totalSupply := sdkmath.LegacyMustNewDecFromStr(totalSupplyStr)
-	apr := sdkmath.LegacyMustNewDecFromStr(aprStr)
-	daysPerYear := sdkmath.LegacyMustNewDecFromStr(daysPerYearStr)
+	apr := sdkmath.LegacyMustNewDecFromStr(constants.EmissionRate)
+	daysPerYear := sdkmath.LegacyMustNewDecFromStr(constants.DaysPerYear)
 
 	// Expected formula: (totalSupply * apr) / 365
 	expected := totalSupply.Mul(apr).Quo(daysPerYear)

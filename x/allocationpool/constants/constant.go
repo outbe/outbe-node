@@ -6,5 +6,6 @@ const (
 	EmissionRate          = "0.02"
 	DaysPerYear           = "365"
 	BlocksPerDay          = "17280" // Blocks per day
-	LimitRate             = "0.02"
+	InitialRateStr        = "65536"
+	DecayStr              = "0.00000006"
 )

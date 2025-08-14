@@ -11,8 +11,8 @@ import (
 func (k Keeper) CalculateAnnualEmissionLimit(ctx context.Context) string {
 	totalSupply := k.bankKeeper.GetSupply(ctx, params.BondDenom)
 
-	limitRate := sdkmath.LegacyMustNewDecFromStr(constants.LimitRate) // 2%
-	supply := sdkmath.LegacyNewDecFromInt(totalSupply.Amount)         // total supply
+	limitRate := sdkmath.LegacyMustNewDecFromStr(constants.EmissionRate) // 2%
+	supply := sdkmath.LegacyNewDecFromInt(totalSupply.Amount)            // total supply
 
 	// annual_limit = supply * 0.02
 	annualLimit := supply.Mul(limitRate)
