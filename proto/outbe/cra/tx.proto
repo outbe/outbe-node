@@ -17,40 +17,46 @@ service Msg {
 
     rpc RegisterCRA(MsgRegisterCRA) returns (MsgRegisterCRAResponse);
     rpc RegisterWallet(MsgRegisterWallet) returns (MsgRegisterWalletResponse);
+    rpc CRAReward(MsgCRAReward) returns (MsgCRARewardResponse);
+    rpc WalletReward(MsgWalletReward) returns (MsgWalletRewardResponse);
 }
 
 message MsgRegisterCRA {
   option (amino.name) = "cra/MsgRegisterCRA";
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "creator";
 
-  string cra_address = 1;
+  string creator = 1;
+  string cra_address = 2;
 }
 
 message MsgRegisterCRAResponse {}
 
 message MsgRegisterWallet {
   option (amino.name) = "cra/MsgRegisterWallet";
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "creator";
 
-  string address = 1;
+  string creator = 1;
+  string address = 2;
 }
 
 message MsgRegisterWalletResponse {}
 
 message MsgCRAReward {
   option (amino.name) = "cra/MsgCRAReward";
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "creator";
 
-  string cra_address = 1;
+  string creator = 1;
+  string cra_address = 2;
 }
 
 message MsgCRARewardResponse {}
 
 message MsgWalletReward {
   option (amino.name) = "cra/MsgWalletReward";
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "creator";
 
-  string address = 1;
+  string creator = 1;
+  string address = 2;
 }
 
 message MsgWalletRewardResponse {}

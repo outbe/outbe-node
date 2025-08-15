@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 
 func CmdWalletReward() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "wallet-reward [address]",
+		Use:   "wallet_reward [address]",
 		Short: "claim wallet reward",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -25,6 +25,7 @@ func CmdWalletReward() *cobra.Command {
 			}
 
 			msg := &types.MsgWalletReward{
+				Creator: clientCtx.GetFromAddress().String(),
 				Address: args[0],
 			}
 

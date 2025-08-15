@@ -66,3 +66,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	)
 	return logger
 }
+
+func (k Keeper) StoreService() store.KVStoreService {
+	return k.storeService
+}

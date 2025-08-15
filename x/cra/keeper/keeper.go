@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"cosmossdk.io/collections"
+	"cosmossdk.io/core/store"
 	storetypes "cosmossdk.io/core/store"
 	customLog "cosmossdk.io/log"
 
@@ -18,6 +19,7 @@ import (
 type Keeper struct {
 	cdc              codec.BinaryCodec
 	storeService     storetypes.KVStoreService
+	accountKeeper    types.AccountKeeper
 	stakingKeeper    types.StakingKeeper
 	bankKeeper       types.BankKeeper
 	feeCollectorName string
@@ -33,8 +35,8 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeService storetypes.KVStoreService,
-	sk types.StakingKeeper,
 	ak types.AccountKeeper,
+	sk types.StakingKeeper,
 	bk types.BankKeeper,
 	feeCollectorName string,
 	authority string,
@@ -48,6 +50,7 @@ func NewKeeper(
 	k := Keeper{
 		cdc:              cdc,
 		storeService:     storeService,
+		accountKeeper:    ak,
 		stakingKeeper:    sk,
 		bankKeeper:       bk,
 		feeCollectorName: feeCollectorName,
@@ -102,4 +105,8 @@ func (k Keeper) GetLastProcessedDay(ctx sdk.Context) uint64 {
 
 func (k Keeper) SetLastProcessedDay(ctx sdk.Context, day uint64) {
 	// To store.
+}
+
+func (k Keeper) StoreService() store.KVStoreService {
+	return k.storeService
 }

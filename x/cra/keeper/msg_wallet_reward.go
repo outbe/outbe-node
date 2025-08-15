@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/outbe/outbe-node/app/params"
 	errortypes "github.com/outbe/outbe-node/errors"
+	"github.com/outbe/outbe-node/x/cra/constants"
 	"github.com/outbe/outbe-node/x/cra/types"
 )
 
@@ -18,26 +19,36 @@ func (k msgServer) WalletReward(goCtx context.Context, msg *types.MsgWalletRewar
 	logger.Info("🔁 Starting wallet reward transaction")
 
 	if msg.Address == "" {
-		return &types.MsgWalletRewardResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "cra address can not be empty.")
+		return &types.MsgWalletRewardResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[WalletReward] cra address can not be empty.")
 	}
 
-	wallet, found := k.GetWalletByCRAAddress(ctx, msg.Address)
+	if msg.Creator == "" {
+		return &types.MsgWalletRewardResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[WalletReward] creator can not be empty.")
+	}
+
+	wallet, found := k.GetWalletByWalletAddress(ctx, msg.Address)
 	if !found {
 		return &types.MsgWalletRewardResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[WalletReward][GetCRAByCRAAddress] failed. couldn't fetch a valid cra.")
 	}
+
+	spendableCoin := sdk.NewCoins(sdk.NewCoin(params.BondDenom, wallet.Reward.TruncateInt().Sub(sdkmath.NewInt(constants.RewardDefragment))))
 
 	err := k.bankKeeper.SendCoinsFromModuleToAccount(
 		ctx,
 		types.ModuleName,
 		sdk.AccAddress(wallet.Address),
-		sdk.NewCoins(sdk.NewCoin(params.BondDenom, sdkmath.Int(wallet.Reward))),
+		spendableCoin,
 	)
 	if err != nil {
 		return &types.MsgWalletRewardResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidRequest, "[WalletReward][SendCoinsFromModuleToAccount] failed. couldn't send coin to cra address.")
 	}
 
-	wallet.Reward = sdkmath.LegacyNewDec(0)
-	k.SetWallet(ctx, wallet)
+	newWallet := types.Wallet{
+		Creator: wallet.Creator,
+		Address: wallet.Address,
+		Reward:  sdkmath.LegacyNewDec(constants.RewardDefragment),
+	}
+	k.SetWallet(ctx, newWallet)
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvent(

@@ -25,7 +25,6 @@ func (k WrappedBaseKeeper) MintCoins(ctx context.Context, newCoins sdk.Coins) er
 }
 
 func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context) (mintedAmount sdkmath.Int, err error) {
-
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	logger := k.Logger(sdkCtx)
 
@@ -38,8 +37,6 @@ func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context)
 	if !blockMinted.IsPositive() {
 		return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateBlockProvisioningReward] failed to calculate block provisioning reward: block minted amount must be positive, got %s", blockMinted.String())
 	}
-
-	// blockMinted := sdkmath.NewIntFromUint64(12)
 
 	mintedCoin := sdk.NewCoin(params.BondDenom, blockMinted)
 	mintedCoins := sdk.NewCoins(mintedCoin)
@@ -82,7 +79,6 @@ func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context)
 		return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest,
 			"[CalculateBlockProvisioningReward] failed to update emission pool after deducting validator reward: %v", err)
 	}
-
 	return blockMinted, nil
 }
 

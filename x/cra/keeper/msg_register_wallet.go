@@ -14,25 +14,26 @@ func (k msgServer) RegisterWallet(goCtx context.Context, msg *types.MsgRegisterW
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	logger.Info("🔁 Starting submit wallet transaction")
+	logger.Info("🔁 Starting registering a valid wallet transaction")
 
 	if msg.Address == "" {
-		return &types.MsgRegisterWalletResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "wallet address can not be empty.")
+		return &types.MsgRegisterWalletResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterWallet] wallet address can not be empty.")
 	}
 
-	checkEligibleCU, found := k.GetWalletByCRAAddress(ctx, msg.Address)
+	if msg.Creator == "" {
+		return &types.MsgRegisterWalletResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterWallet] creator can not be empty.")
+	}
+
+	checkEligibleCU, found := k.GetWalletByWalletAddress(ctx, msg.Address)
 	if !found {
 		wallet := types.Wallet{
+			Creator: msg.Creator,
 			Address: msg.Address,
 			Reward:  sdkmath.LegacyNewDec(0),
 		}
 		k.SetWallet(ctx, wallet)
 	} else {
-		wallet := types.Wallet{
-			Address: checkEligibleCU.Address,
-			Reward:  sdkmath.LegacyNewDec(0),
-		}
-		k.SetWallet(ctx, wallet)
+		return &types.MsgRegisterWalletResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterWallet] wallet is already registered.")
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -43,7 +44,7 @@ func (k msgServer) RegisterWallet(goCtx context.Context, msg *types.MsgRegisterW
 		),
 	)
 
-	logger.Info("✅ Submitting a wallet successfully completed")
+	logger.Info("✅ Registering a wallet successfully completed")
 
 	return &types.MsgRegisterWalletResponse{}, nil
 }

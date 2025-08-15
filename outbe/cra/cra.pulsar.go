@@ -933,29 +933,29 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_CRACU             protoreflect.MessageDescriptor
-	fd_CRACU_creator     protoreflect.FieldDescriptor
-	fd_CRACU_cra_address protoreflect.FieldDescriptor
-	fd_CRACU_reward      protoreflect.FieldDescriptor
+	md_CRA             protoreflect.MessageDescriptor
+	fd_CRA_creator     protoreflect.FieldDescriptor
+	fd_CRA_cra_address protoreflect.FieldDescriptor
+	fd_CRA_reward      protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_cra_cra_proto_init()
-	md_CRACU = File_outbe_cra_cra_proto.Messages().ByName("CRACU")
-	fd_CRACU_creator = md_CRACU.Fields().ByName("creator")
-	fd_CRACU_cra_address = md_CRACU.Fields().ByName("cra_address")
-	fd_CRACU_reward = md_CRACU.Fields().ByName("reward")
+	md_CRA = File_outbe_cra_cra_proto.Messages().ByName("CRA")
+	fd_CRA_creator = md_CRA.Fields().ByName("creator")
+	fd_CRA_cra_address = md_CRA.Fields().ByName("cra_address")
+	fd_CRA_reward = md_CRA.Fields().ByName("reward")
 }
 
-var _ protoreflect.Message = (*fastReflection_CRACU)(nil)
+var _ protoreflect.Message = (*fastReflection_CRA)(nil)
 
-type fastReflection_CRACU CRACU
+type fastReflection_CRA CRA
 
-func (x *CRACU) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_CRACU)(x)
+func (x *CRA) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_CRA)(x)
 }
 
-func (x *CRACU) slowProtoReflect() protoreflect.Message {
+func (x *CRA) slowProtoReflect() protoreflect.Message {
 	mi := &file_outbe_cra_cra_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -967,43 +967,43 @@ func (x *CRACU) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_CRACU_messageType fastReflection_CRACU_messageType
-var _ protoreflect.MessageType = fastReflection_CRACU_messageType{}
+var _fastReflection_CRA_messageType fastReflection_CRA_messageType
+var _ protoreflect.MessageType = fastReflection_CRA_messageType{}
 
-type fastReflection_CRACU_messageType struct{}
+type fastReflection_CRA_messageType struct{}
 
-func (x fastReflection_CRACU_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_CRACU)(nil)
+func (x fastReflection_CRA_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_CRA)(nil)
 }
-func (x fastReflection_CRACU_messageType) New() protoreflect.Message {
-	return new(fastReflection_CRACU)
+func (x fastReflection_CRA_messageType) New() protoreflect.Message {
+	return new(fastReflection_CRA)
 }
-func (x fastReflection_CRACU_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_CRACU
+func (x fastReflection_CRA_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_CRA
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_CRACU) Descriptor() protoreflect.MessageDescriptor {
-	return md_CRACU
+func (x *fastReflection_CRA) Descriptor() protoreflect.MessageDescriptor {
+	return md_CRA
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_CRACU) Type() protoreflect.MessageType {
-	return _fastReflection_CRACU_messageType
+func (x *fastReflection_CRA) Type() protoreflect.MessageType {
+	return _fastReflection_CRA_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_CRACU) New() protoreflect.Message {
-	return new(fastReflection_CRACU)
+func (x *fastReflection_CRA) New() protoreflect.Message {
+	return new(fastReflection_CRA)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_CRACU) Interface() protoreflect.ProtoMessage {
-	return (*CRACU)(x)
+func (x *fastReflection_CRA) Interface() protoreflect.ProtoMessage {
+	return (*CRA)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1011,22 +1011,22 @@ func (x *fastReflection_CRACU) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_CRACU) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_CRA) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_CRACU_creator, value) {
+		if !f(fd_CRA_creator, value) {
 			return
 		}
 	}
 	if x.CraAddress != "" {
 		value := protoreflect.ValueOfString(x.CraAddress)
-		if !f(fd_CRACU_cra_address, value) {
+		if !f(fd_CRA_cra_address, value) {
 			return
 		}
 	}
 	if x.Reward != "" {
 		value := protoreflect.ValueOfString(x.Reward)
-		if !f(fd_CRACU_reward, value) {
+		if !f(fd_CRA_reward, value) {
 			return
 		}
 	}
@@ -1043,19 +1043,19 @@ func (x *fastReflection_CRACU) Range(f func(protoreflect.FieldDescriptor, protor
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_CRACU) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_CRA) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "outbe.cra.CRACU.creator":
+	case "outbe.cra.CRA.creator":
 		return x.Creator != ""
-	case "outbe.cra.CRACU.cra_address":
+	case "outbe.cra.CRA.cra_address":
 		return x.CraAddress != ""
-	case "outbe.cra.CRACU.reward":
+	case "outbe.cra.CRA.reward":
 		return x.Reward != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1065,19 +1065,19 @@ func (x *fastReflection_CRACU) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CRACU) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_CRA) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "outbe.cra.CRACU.creator":
+	case "outbe.cra.CRA.creator":
 		x.Creator = ""
-	case "outbe.cra.CRACU.cra_address":
+	case "outbe.cra.CRA.cra_address":
 		x.CraAddress = ""
-	case "outbe.cra.CRACU.reward":
+	case "outbe.cra.CRA.reward":
 		x.Reward = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1087,22 +1087,22 @@ func (x *fastReflection_CRACU) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_CRACU) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_CRA) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "outbe.cra.CRACU.creator":
+	case "outbe.cra.CRA.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "outbe.cra.CRACU.cra_address":
+	case "outbe.cra.CRA.cra_address":
 		value := x.CraAddress
 		return protoreflect.ValueOfString(value)
-	case "outbe.cra.CRACU.reward":
+	case "outbe.cra.CRA.reward":
 		value := x.Reward
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1116,19 +1116,19 @@ func (x *fastReflection_CRACU) Get(descriptor protoreflect.FieldDescriptor) prot
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CRACU) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_CRA) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "outbe.cra.CRACU.creator":
+	case "outbe.cra.CRA.creator":
 		x.Creator = value.Interface().(string)
-	case "outbe.cra.CRACU.cra_address":
+	case "outbe.cra.CRA.cra_address":
 		x.CraAddress = value.Interface().(string)
-	case "outbe.cra.CRACU.reward":
+	case "outbe.cra.CRA.reward":
 		x.Reward = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1142,48 +1142,48 @@ func (x *fastReflection_CRACU) Set(fd protoreflect.FieldDescriptor, value protor
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CRACU) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_CRA) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "outbe.cra.CRACU.creator":
-		panic(fmt.Errorf("field creator of message outbe.cra.CRACU is not mutable"))
-	case "outbe.cra.CRACU.cra_address":
-		panic(fmt.Errorf("field cra_address of message outbe.cra.CRACU is not mutable"))
-	case "outbe.cra.CRACU.reward":
-		panic(fmt.Errorf("field reward of message outbe.cra.CRACU is not mutable"))
+	case "outbe.cra.CRA.creator":
+		panic(fmt.Errorf("field creator of message outbe.cra.CRA is not mutable"))
+	case "outbe.cra.CRA.cra_address":
+		panic(fmt.Errorf("field cra_address of message outbe.cra.CRA is not mutable"))
+	case "outbe.cra.CRA.reward":
+		panic(fmt.Errorf("field reward of message outbe.cra.CRA is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_CRACU) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_CRA) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "outbe.cra.CRACU.creator":
+	case "outbe.cra.CRA.creator":
 		return protoreflect.ValueOfString("")
-	case "outbe.cra.CRACU.cra_address":
+	case "outbe.cra.CRA.cra_address":
 		return protoreflect.ValueOfString("")
-	case "outbe.cra.CRACU.reward":
+	case "outbe.cra.CRA.reward":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRACU"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: outbe.cra.CRA"))
 		}
-		panic(fmt.Errorf("message outbe.cra.CRACU does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message outbe.cra.CRA does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_CRACU) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_CRA) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in outbe.cra.CRACU", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in outbe.cra.CRA", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1191,7 +1191,7 @@ func (x *fastReflection_CRACU) WhichOneof(d protoreflect.OneofDescriptor) protor
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_CRACU) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_CRA) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1202,7 +1202,7 @@ func (x *fastReflection_CRACU) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CRACU) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_CRA) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1214,7 +1214,7 @@ func (x *fastReflection_CRACU) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_CRACU) IsValid() bool {
+func (x *fastReflection_CRA) IsValid() bool {
 	return x != nil
 }
 
@@ -1224,9 +1224,9 @@ func (x *fastReflection_CRACU) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_CRACU) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_CRA) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*CRACU)
+		x := input.Message.Interface().(*CRA)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1260,7 +1260,7 @@ func (x *fastReflection_CRACU) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*CRACU)
+		x := input.Message.Interface().(*CRA)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1311,7 +1311,7 @@ func (x *fastReflection_CRACU) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*CRACU)
+		x := input.Message.Interface().(*CRA)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1343,10 +1343,10 @@ func (x *fastReflection_CRACU) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CRACU: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CRA: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CRACU: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CRA: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2141,7 +2141,7 @@ func (x *Params) GetGracePeriodDays() uint64 {
 	return 0
 }
 
-type CRACU struct {
+type CRA struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -2151,8 +2151,8 @@ type CRACU struct {
 	Reward     string `protobuf:"bytes,3,opt,name=reward,proto3" json:"reward,omitempty"`
 }
 
-func (x *CRACU) Reset() {
-	*x = CRACU{}
+func (x *CRA) Reset() {
+	*x = CRA{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_outbe_cra_cra_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2160,32 +2160,32 @@ func (x *CRACU) Reset() {
 	}
 }
 
-func (x *CRACU) String() string {
+func (x *CRA) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CRACU) ProtoMessage() {}
+func (*CRA) ProtoMessage() {}
 
-// Deprecated: Use CRACU.ProtoReflect.Descriptor instead.
-func (*CRACU) Descriptor() ([]byte, []int) {
+// Deprecated: Use CRA.ProtoReflect.Descriptor instead.
+func (*CRA) Descriptor() ([]byte, []int) {
 	return file_outbe_cra_cra_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CRACU) GetCreator() string {
+func (x *CRA) GetCreator() string {
 	if x != nil {
 		return x.Creator
 	}
 	return ""
 }
 
-func (x *CRACU) GetCraAddress() string {
+func (x *CRA) GetCraAddress() string {
 	if x != nil {
 		return x.CraAddress
 	}
 	return ""
 }
 
-func (x *CRACU) GetReward() string {
+func (x *CRA) GetReward() string {
 	if x != nil {
 		return x.Reward
 	}
@@ -2298,33 +2298,33 @@ var file_outbe_cra_cra_proto_rawDesc = []byte{
 	0x62, 0x53, 0x63, 0x61, 0x6c, 0x65, 0x12, 0x2a, 0x0a, 0x11, 0x67, 0x72, 0x61, 0x63, 0x65, 0x5f,
 	0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x09, 0x20, 0x01, 0x28,
 	0x04, 0x52, 0x0f, 0x67, 0x72, 0x61, 0x63, 0x65, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x44, 0x61,
-	0x79, 0x73, 0x22, 0x8d, 0x01, 0x0a, 0x05, 0x43, 0x52, 0x41, 0x43, 0x55, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61, 0x5f, 0x61, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72, 0x61,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x49, 0x0a, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72,
-	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
-	0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
-	0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61,
-	0x72, 0x64, 0x22, 0x87, 0x01, 0x0a, 0x06, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x12, 0x49, 0x0a, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67,
-	0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2e, 0x44, 0x65, 0x63, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x42, 0x89, 0x01, 0x0a,
-	0x0d, 0x63, 0x6f, 0x6d, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x42, 0x08,
-	0x43, 0x72, 0x61, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x29, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75, 0x74,
-	0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74, 0x62,
-	0x65, 0x2f, 0x63, 0x72, 0x61, 0xa2, 0x02, 0x03, 0x4f, 0x43, 0x58, 0xaa, 0x02, 0x09, 0x4f, 0x75,
-	0x74, 0x62, 0x65, 0x2e, 0x43, 0x72, 0x61, 0xca, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c,
-	0x43, 0x72, 0x61, 0xe2, 0x02, 0x15, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72, 0x61, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0a, 0x4f, 0x75,
-	0x74, 0x62, 0x65, 0x3a, 0x3a, 0x43, 0x72, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x79, 0x73, 0x22, 0x8b, 0x01, 0x0a, 0x03, 0x43, 0x52, 0x41, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61, 0x5f, 0x61, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72, 0x61, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x49, 0x0a, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68,
+	0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64,
+	0x22, 0x87, 0x01, 0x0a, 0x06, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
+	0x49, 0x0a, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63,
+	0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44,
+	0x65, 0x63, 0x52, 0x06, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x42, 0x89, 0x01, 0x0a, 0x0d, 0x63,
+	0x6f, 0x6d, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x42, 0x08, 0x43, 0x72,
+	0x61, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x29, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65,
+	0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f,
+	0x63, 0x72, 0x61, 0xa2, 0x02, 0x03, 0x4f, 0x43, 0x58, 0xaa, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62,
+	0x65, 0x2e, 0x43, 0x72, 0x61, 0xca, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72,
+	0x61, 0xe2, 0x02, 0x15, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72, 0x61, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0a, 0x4f, 0x75, 0x74, 0x62,
+	0x65, 0x3a, 0x3a, 0x43, 0x72, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2342,7 +2342,7 @@ func file_outbe_cra_cra_proto_rawDescGZIP() []byte {
 var file_outbe_cra_cra_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_outbe_cra_cra_proto_goTypes = []interface{}{
 	(*Params)(nil), // 0: outbe.cra.Params
-	(*CRACU)(nil),  // 1: outbe.cra.CRACU
+	(*CRA)(nil),    // 1: outbe.cra.CRA
 	(*Wallet)(nil), // 2: outbe.cra.Wallet
 }
 var file_outbe_cra_cra_proto_depIdxs = []int32{
@@ -2372,7 +2372,7 @@ func file_outbe_cra_cra_proto_init() {
 			}
 		}
 		file_outbe_cra_cra_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CRACU); i {
+			switch v := v.(*CRA); i {
 			case 0:
 				return &v.state
 			case 1:

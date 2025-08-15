@@ -25,6 +25,7 @@ func CmdRegisterWallet() *cobra.Command {
 			}
 
 			msg := &types.MsgRegisterWallet{
+				Creator: clientCtx.GetFromAddress().String(),
 				Address: args[0],
 			}
 

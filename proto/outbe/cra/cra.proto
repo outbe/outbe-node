@@ -53,7 +53,7 @@ message Params {
   uint64 grace_period_days = 9;
 }
 
-message CRACU {
+message CRA {
   string creator = 1;
   string cra_address = 2;
   string reward = 3 [

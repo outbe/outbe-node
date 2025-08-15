@@ -25,6 +25,7 @@ func CmdRegisterCRA() *cobra.Command {
 			}
 
 			msg := &types.MsgRegisterCRA{
+				Creator:    clientCtx.GetFromAddress().String(),
 				CraAddress: args[0],
 			}
 

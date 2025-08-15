@@ -90,10 +90,10 @@ type MintKeeper interface {
 }
 
 type CRAKeeper interface {
-	GetCRAAll(ctx context.Context) (list []cratypes.CRACU)
+	GetCRAAll(ctx context.Context) (list []cratypes.CRA)
 	GetWalletAll(ctx context.Context) (list []cratypes.Wallet)
-	GetWalletByCRAAddress(ctx context.Context, address string) (wallte cratypes.Wallet, found bool)
-	GetCRAByCRAAddress(ctx context.Context, address string) (cra cratypes.CRACU, found bool)
-	SetCRA(ctx context.Context, cra cratypes.CRACU) error
+	GetWalletByWalletAddress(ctx context.Context, address string) (wallte cratypes.Wallet, found bool)
+	GetCRAByCRAAddress(ctx context.Context, address string) (cra cratypes.CRA, found bool)
+	SetCRA(ctx context.Context, cra cratypes.CRA) error
 	SetWallet(ctx context.Context, cra cratypes.Wallet) error
 }

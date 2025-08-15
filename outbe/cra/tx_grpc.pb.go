@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Msg_RegisterCRA_FullMethodName    = "/outbe.cra.Msg/RegisterCRA"
 	Msg_RegisterWallet_FullMethodName = "/outbe.cra.Msg/RegisterWallet"
+	Msg_CRAReward_FullMethodName      = "/outbe.cra.Msg/CRAReward"
+	Msg_WalletReward_FullMethodName   = "/outbe.cra.Msg/WalletReward"
 )
 
 // MsgClient is the client API for Msg service.
@@ -29,6 +31,8 @@ const (
 type MsgClient interface {
 	RegisterCRA(ctx context.Context, in *MsgRegisterCRA, opts ...grpc.CallOption) (*MsgRegisterCRAResponse, error)
 	RegisterWallet(ctx context.Context, in *MsgRegisterWallet, opts ...grpc.CallOption) (*MsgRegisterWalletResponse, error)
+	CRAReward(ctx context.Context, in *MsgCRAReward, opts ...grpc.CallOption) (*MsgCRARewardResponse, error)
+	WalletReward(ctx context.Context, in *MsgWalletReward, opts ...grpc.CallOption) (*MsgWalletRewardResponse, error)
 }
 
 type msgClient struct {
@@ -57,12 +61,32 @@ func (c *msgClient) RegisterWallet(ctx context.Context, in *MsgRegisterWallet, o
 	return out, nil
 }
 
+func (c *msgClient) CRAReward(ctx context.Context, in *MsgCRAReward, opts ...grpc.CallOption) (*MsgCRARewardResponse, error) {
+	out := new(MsgCRARewardResponse)
+	err := c.cc.Invoke(ctx, Msg_CRAReward_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) WalletReward(ctx context.Context, in *MsgWalletReward, opts ...grpc.CallOption) (*MsgWalletRewardResponse, error) {
+	out := new(MsgWalletRewardResponse)
+	err := c.cc.Invoke(ctx, Msg_WalletReward_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
 	RegisterCRA(context.Context, *MsgRegisterCRA) (*MsgRegisterCRAResponse, error)
 	RegisterWallet(context.Context, *MsgRegisterWallet) (*MsgRegisterWalletResponse, error)
+	CRAReward(context.Context, *MsgCRAReward) (*MsgCRARewardResponse, error)
+	WalletReward(context.Context, *MsgWalletReward) (*MsgWalletRewardResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -75,6 +99,12 @@ func (UnimplementedMsgServer) RegisterCRA(context.Context, *MsgRegisterCRA) (*Ms
 }
 func (UnimplementedMsgServer) RegisterWallet(context.Context, *MsgRegisterWallet) (*MsgRegisterWalletResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterWallet not implemented")
+}
+func (UnimplementedMsgServer) CRAReward(context.Context, *MsgCRAReward) (*MsgCRARewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CRAReward not implemented")
+}
+func (UnimplementedMsgServer) WalletReward(context.Context, *MsgWalletReward) (*MsgWalletRewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletReward not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -125,6 +155,42 @@ func _Msg_RegisterWallet_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_CRAReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCRAReward)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CRAReward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_CRAReward_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CRAReward(ctx, req.(*MsgCRAReward))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_WalletReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgWalletReward)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).WalletReward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_WalletReward_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).WalletReward(ctx, req.(*MsgWalletReward))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +205,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterWallet",
 			Handler:    _Msg_RegisterWallet_Handler,
+		},
+		{
+			MethodName: "CRAReward",
+			Handler:    _Msg_CRAReward_Handler,
+		},
+		{
+			MethodName: "WalletReward",
+			Handler:    _Msg_WalletReward_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

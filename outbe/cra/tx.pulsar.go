@@ -20,12 +20,14 @@ import (
 
 var (
 	md_MsgRegisterCRA             protoreflect.MessageDescriptor
+	fd_MsgRegisterCRA_creator     protoreflect.FieldDescriptor
 	fd_MsgRegisterCRA_cra_address protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_cra_tx_proto_init()
 	md_MsgRegisterCRA = File_outbe_cra_tx_proto.Messages().ByName("MsgRegisterCRA")
+	fd_MsgRegisterCRA_creator = md_MsgRegisterCRA.Fields().ByName("creator")
 	fd_MsgRegisterCRA_cra_address = md_MsgRegisterCRA.Fields().ByName("cra_address")
 }
 
@@ -94,6 +96,12 @@ func (x *fastReflection_MsgRegisterCRA) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgRegisterCRA) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgRegisterCRA_creator, value) {
+			return
+		}
+	}
 	if x.CraAddress != "" {
 		value := protoreflect.ValueOfString(x.CraAddress)
 		if !f(fd_MsgRegisterCRA_cra_address, value) {
@@ -115,6 +123,8 @@ func (x *fastReflection_MsgRegisterCRA) Range(f func(protoreflect.FieldDescripto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgRegisterCRA) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		return x.Creator != ""
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		return x.CraAddress != ""
 	default:
@@ -133,6 +143,8 @@ func (x *fastReflection_MsgRegisterCRA) Has(fd protoreflect.FieldDescriptor) boo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterCRA) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		x.Creator = ""
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		x.CraAddress = ""
 	default:
@@ -151,6 +163,9 @@ func (x *fastReflection_MsgRegisterCRA) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgRegisterCRA) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		value := x.CraAddress
 		return protoreflect.ValueOfString(value)
@@ -174,6 +189,8 @@ func (x *fastReflection_MsgRegisterCRA) Get(descriptor protoreflect.FieldDescrip
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterCRA) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		x.Creator = value.Interface().(string)
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		x.CraAddress = value.Interface().(string)
 	default:
@@ -196,6 +213,8 @@ func (x *fastReflection_MsgRegisterCRA) Set(fd protoreflect.FieldDescriptor, val
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterCRA) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		panic(fmt.Errorf("field creator of message outbe.cra.MsgRegisterCRA is not mutable"))
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		panic(fmt.Errorf("field cra_address of message outbe.cra.MsgRegisterCRA is not mutable"))
 	default:
@@ -211,6 +230,8 @@ func (x *fastReflection_MsgRegisterCRA) Mutable(fd protoreflect.FieldDescriptor)
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgRegisterCRA) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterCRA.creator":
+		return protoreflect.ValueOfString("")
 	case "outbe.cra.MsgRegisterCRA.cra_address":
 		return protoreflect.ValueOfString("")
 	default:
@@ -282,6 +303,10 @@ func (x *fastReflection_MsgRegisterCRA) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		l = len(x.CraAddress)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -319,6 +344,13 @@ func (x *fastReflection_MsgRegisterCRA) ProtoMethods() *protoiface.Methods {
 			i -= len(x.CraAddress)
 			copy(dAtA[i:], x.CraAddress)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CraAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -372,6 +404,38 @@ func (x *fastReflection_MsgRegisterCRA) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CraAddress", wireType)
 				}
@@ -796,12 +860,14 @@ func (x *fastReflection_MsgRegisterCRAResponse) ProtoMethods() *protoiface.Metho
 
 var (
 	md_MsgRegisterWallet         protoreflect.MessageDescriptor
+	fd_MsgRegisterWallet_creator protoreflect.FieldDescriptor
 	fd_MsgRegisterWallet_address protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_cra_tx_proto_init()
 	md_MsgRegisterWallet = File_outbe_cra_tx_proto.Messages().ByName("MsgRegisterWallet")
+	fd_MsgRegisterWallet_creator = md_MsgRegisterWallet.Fields().ByName("creator")
 	fd_MsgRegisterWallet_address = md_MsgRegisterWallet.Fields().ByName("address")
 }
 
@@ -870,6 +936,12 @@ func (x *fastReflection_MsgRegisterWallet) Interface() protoreflect.ProtoMessage
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgRegisterWallet) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgRegisterWallet_creator, value) {
+			return
+		}
+	}
 	if x.Address != "" {
 		value := protoreflect.ValueOfString(x.Address)
 		if !f(fd_MsgRegisterWallet_address, value) {
@@ -891,6 +963,8 @@ func (x *fastReflection_MsgRegisterWallet) Range(f func(protoreflect.FieldDescri
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgRegisterWallet) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		return x.Creator != ""
 	case "outbe.cra.MsgRegisterWallet.address":
 		return x.Address != ""
 	default:
@@ -909,6 +983,8 @@ func (x *fastReflection_MsgRegisterWallet) Has(fd protoreflect.FieldDescriptor) 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterWallet) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		x.Creator = ""
 	case "outbe.cra.MsgRegisterWallet.address":
 		x.Address = ""
 	default:
@@ -927,6 +1003,9 @@ func (x *fastReflection_MsgRegisterWallet) Clear(fd protoreflect.FieldDescriptor
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgRegisterWallet) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
 	case "outbe.cra.MsgRegisterWallet.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
@@ -950,6 +1029,8 @@ func (x *fastReflection_MsgRegisterWallet) Get(descriptor protoreflect.FieldDesc
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterWallet) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		x.Creator = value.Interface().(string)
 	case "outbe.cra.MsgRegisterWallet.address":
 		x.Address = value.Interface().(string)
 	default:
@@ -972,6 +1053,8 @@ func (x *fastReflection_MsgRegisterWallet) Set(fd protoreflect.FieldDescriptor, 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgRegisterWallet) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		panic(fmt.Errorf("field creator of message outbe.cra.MsgRegisterWallet is not mutable"))
 	case "outbe.cra.MsgRegisterWallet.address":
 		panic(fmt.Errorf("field address of message outbe.cra.MsgRegisterWallet is not mutable"))
 	default:
@@ -987,6 +1070,8 @@ func (x *fastReflection_MsgRegisterWallet) Mutable(fd protoreflect.FieldDescript
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgRegisterWallet) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgRegisterWallet.creator":
+		return protoreflect.ValueOfString("")
 	case "outbe.cra.MsgRegisterWallet.address":
 		return protoreflect.ValueOfString("")
 	default:
@@ -1058,6 +1143,10 @@ func (x *fastReflection_MsgRegisterWallet) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		l = len(x.Address)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -1095,6 +1184,13 @@ func (x *fastReflection_MsgRegisterWallet) ProtoMethods() *protoiface.Methods {
 			i -= len(x.Address)
 			copy(dAtA[i:], x.Address)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -1148,6 +1244,38 @@ func (x *fastReflection_MsgRegisterWallet) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 				}
@@ -1572,12 +1700,14 @@ func (x *fastReflection_MsgRegisterWalletResponse) ProtoMethods() *protoiface.Me
 
 var (
 	md_MsgCRAReward             protoreflect.MessageDescriptor
+	fd_MsgCRAReward_creator     protoreflect.FieldDescriptor
 	fd_MsgCRAReward_cra_address protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_cra_tx_proto_init()
 	md_MsgCRAReward = File_outbe_cra_tx_proto.Messages().ByName("MsgCRAReward")
+	fd_MsgCRAReward_creator = md_MsgCRAReward.Fields().ByName("creator")
 	fd_MsgCRAReward_cra_address = md_MsgCRAReward.Fields().ByName("cra_address")
 }
 
@@ -1646,6 +1776,12 @@ func (x *fastReflection_MsgCRAReward) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgCRAReward) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgCRAReward_creator, value) {
+			return
+		}
+	}
 	if x.CraAddress != "" {
 		value := protoreflect.ValueOfString(x.CraAddress)
 		if !f(fd_MsgCRAReward_cra_address, value) {
@@ -1667,6 +1803,8 @@ func (x *fastReflection_MsgCRAReward) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgCRAReward) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		return x.Creator != ""
 	case "outbe.cra.MsgCRAReward.cra_address":
 		return x.CraAddress != ""
 	default:
@@ -1685,6 +1823,8 @@ func (x *fastReflection_MsgCRAReward) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgCRAReward) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		x.Creator = ""
 	case "outbe.cra.MsgCRAReward.cra_address":
 		x.CraAddress = ""
 	default:
@@ -1703,6 +1843,9 @@ func (x *fastReflection_MsgCRAReward) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgCRAReward) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
 	case "outbe.cra.MsgCRAReward.cra_address":
 		value := x.CraAddress
 		return protoreflect.ValueOfString(value)
@@ -1726,6 +1869,8 @@ func (x *fastReflection_MsgCRAReward) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgCRAReward) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		x.Creator = value.Interface().(string)
 	case "outbe.cra.MsgCRAReward.cra_address":
 		x.CraAddress = value.Interface().(string)
 	default:
@@ -1748,6 +1893,8 @@ func (x *fastReflection_MsgCRAReward) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgCRAReward) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		panic(fmt.Errorf("field creator of message outbe.cra.MsgCRAReward is not mutable"))
 	case "outbe.cra.MsgCRAReward.cra_address":
 		panic(fmt.Errorf("field cra_address of message outbe.cra.MsgCRAReward is not mutable"))
 	default:
@@ -1763,6 +1910,8 @@ func (x *fastReflection_MsgCRAReward) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgCRAReward) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgCRAReward.creator":
+		return protoreflect.ValueOfString("")
 	case "outbe.cra.MsgCRAReward.cra_address":
 		return protoreflect.ValueOfString("")
 	default:
@@ -1834,6 +1983,10 @@ func (x *fastReflection_MsgCRAReward) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		l = len(x.CraAddress)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -1871,6 +2024,13 @@ func (x *fastReflection_MsgCRAReward) ProtoMethods() *protoiface.Methods {
 			i -= len(x.CraAddress)
 			copy(dAtA[i:], x.CraAddress)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CraAddress)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -1924,6 +2084,38 @@ func (x *fastReflection_MsgCRAReward) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CraAddress", wireType)
 				}
@@ -2348,12 +2540,14 @@ func (x *fastReflection_MsgCRARewardResponse) ProtoMethods() *protoiface.Methods
 
 var (
 	md_MsgWalletReward         protoreflect.MessageDescriptor
+	fd_MsgWalletReward_creator protoreflect.FieldDescriptor
 	fd_MsgWalletReward_address protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_outbe_cra_tx_proto_init()
 	md_MsgWalletReward = File_outbe_cra_tx_proto.Messages().ByName("MsgWalletReward")
+	fd_MsgWalletReward_creator = md_MsgWalletReward.Fields().ByName("creator")
 	fd_MsgWalletReward_address = md_MsgWalletReward.Fields().ByName("address")
 }
 
@@ -2422,6 +2616,12 @@ func (x *fastReflection_MsgWalletReward) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgWalletReward) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgWalletReward_creator, value) {
+			return
+		}
+	}
 	if x.Address != "" {
 		value := protoreflect.ValueOfString(x.Address)
 		if !f(fd_MsgWalletReward_address, value) {
@@ -2443,6 +2643,8 @@ func (x *fastReflection_MsgWalletReward) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgWalletReward) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		return x.Creator != ""
 	case "outbe.cra.MsgWalletReward.address":
 		return x.Address != ""
 	default:
@@ -2461,6 +2663,8 @@ func (x *fastReflection_MsgWalletReward) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgWalletReward) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		x.Creator = ""
 	case "outbe.cra.MsgWalletReward.address":
 		x.Address = ""
 	default:
@@ -2479,6 +2683,9 @@ func (x *fastReflection_MsgWalletReward) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgWalletReward) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
 	case "outbe.cra.MsgWalletReward.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
@@ -2502,6 +2709,8 @@ func (x *fastReflection_MsgWalletReward) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgWalletReward) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		x.Creator = value.Interface().(string)
 	case "outbe.cra.MsgWalletReward.address":
 		x.Address = value.Interface().(string)
 	default:
@@ -2524,6 +2733,8 @@ func (x *fastReflection_MsgWalletReward) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgWalletReward) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		panic(fmt.Errorf("field creator of message outbe.cra.MsgWalletReward is not mutable"))
 	case "outbe.cra.MsgWalletReward.address":
 		panic(fmt.Errorf("field address of message outbe.cra.MsgWalletReward is not mutable"))
 	default:
@@ -2539,6 +2750,8 @@ func (x *fastReflection_MsgWalletReward) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgWalletReward) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "outbe.cra.MsgWalletReward.creator":
+		return protoreflect.ValueOfString("")
 	case "outbe.cra.MsgWalletReward.address":
 		return protoreflect.ValueOfString("")
 	default:
@@ -2610,6 +2823,10 @@ func (x *fastReflection_MsgWalletReward) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		l = len(x.Address)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -2647,6 +2864,13 @@ func (x *fastReflection_MsgWalletReward) ProtoMethods() *protoiface.Methods {
 			i -= len(x.Address)
 			copy(dAtA[i:], x.Address)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -2700,6 +2924,38 @@ func (x *fastReflection_MsgWalletReward) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 				}
@@ -3140,7 +3396,8 @@ type MsgRegisterCRA struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CraAddress string `protobuf:"bytes,1,opt,name=cra_address,json=craAddress,proto3" json:"cra_address,omitempty"`
+	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	CraAddress string `protobuf:"bytes,2,opt,name=cra_address,json=craAddress,proto3" json:"cra_address,omitempty"`
 }
 
 func (x *MsgRegisterCRA) Reset() {
@@ -3161,6 +3418,13 @@ func (*MsgRegisterCRA) ProtoMessage() {}
 // Deprecated: Use MsgRegisterCRA.ProtoReflect.Descriptor instead.
 func (*MsgRegisterCRA) Descriptor() ([]byte, []int) {
 	return file_outbe_cra_tx_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *MsgRegisterCRA) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 func (x *MsgRegisterCRA) GetCraAddress() string {
@@ -3201,7 +3465,8 @@ type MsgRegisterWallet struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
 func (x *MsgRegisterWallet) Reset() {
@@ -3222,6 +3487,13 @@ func (*MsgRegisterWallet) ProtoMessage() {}
 // Deprecated: Use MsgRegisterWallet.ProtoReflect.Descriptor instead.
 func (*MsgRegisterWallet) Descriptor() ([]byte, []int) {
 	return file_outbe_cra_tx_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *MsgRegisterWallet) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 func (x *MsgRegisterWallet) GetAddress() string {
@@ -3262,7 +3534,8 @@ type MsgCRAReward struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CraAddress string `protobuf:"bytes,1,opt,name=cra_address,json=craAddress,proto3" json:"cra_address,omitempty"`
+	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	CraAddress string `protobuf:"bytes,2,opt,name=cra_address,json=craAddress,proto3" json:"cra_address,omitempty"`
 }
 
 func (x *MsgCRAReward) Reset() {
@@ -3283,6 +3556,13 @@ func (*MsgCRAReward) ProtoMessage() {}
 // Deprecated: Use MsgCRAReward.ProtoReflect.Descriptor instead.
 func (*MsgCRAReward) Descriptor() ([]byte, []int) {
 	return file_outbe_cra_tx_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MsgCRAReward) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 func (x *MsgCRAReward) GetCraAddress() string {
@@ -3323,7 +3603,8 @@ type MsgWalletReward struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
 func (x *MsgWalletReward) Reset() {
@@ -3344,6 +3625,13 @@ func (*MsgWalletReward) ProtoMessage() {}
 // Deprecated: Use MsgWalletReward.ProtoReflect.Descriptor instead.
 func (*MsgWalletReward) Descriptor() ([]byte, []int) {
 	return file_outbe_cra_tx_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *MsgWalletReward) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 func (x *MsgWalletReward) GetAddress() string {
@@ -3395,36 +3683,42 @@ var file_outbe_cra_tx_proto_rawDesc = []byte{
 	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x1a, 0x2a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65, 0x2f, 0x71,
 	0x75, 0x65, 0x72, 0x79, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x58, 0x0a,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x70, 0x0a,
 	0x0e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x12,
-	0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72, 0x61, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x3a, 0x25, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79,
-	0x8a, 0xe7, 0xb0, 0x2a, 0x12, 0x63, 0x72, 0x61, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69,
-	0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x22, 0x18, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x52, 0x65,
-	0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x57, 0x0a, 0x11, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
-	0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x3a, 0x28, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79,
+	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61,
+	0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
+	0x63, 0x72, 0x61, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a, 0x23, 0x82, 0xe7, 0xb0, 0x2a,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x12, 0x63, 0x72, 0x61,
+	0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x22,
+	0x18, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x43, 0x52,
+	0x41, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f, 0x0a, 0x11, 0x4d, 0x73, 0x67,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x12, 0x18,
+	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x3a, 0x26, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
 	0x8a, 0xe7, 0xb0, 0x2a, 0x15, 0x63, 0x72, 0x61, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69,
 	0x73, 0x74, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x22, 0x1b, 0x0a, 0x19, 0x4d, 0x73,
 	0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x54, 0x0a, 0x0c, 0x4d, 0x73, 0x67, 0x43, 0x52,
-	0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61, 0x5f, 0x61,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72,
-	0x61, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a, 0x23, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61,
-	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x10, 0x63, 0x72, 0x61,
-	0x2f, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x22, 0x16, 0x0a,
-	0x14, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x53, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x57, 0x61, 0x6c, 0x6c,
-	0x65, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x3a, 0x26, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x13, 0x63, 0x72, 0x61, 0x2f, 0x4d, 0x73, 0x67, 0x57, 0x61,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6c, 0x0a, 0x0c, 0x4d, 0x73, 0x67, 0x43, 0x52,
+	0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x61, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72, 0x61, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x3a, 0x21, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x8a, 0xe7, 0xb0, 0x2a, 0x10, 0x63, 0x72, 0x61, 0x2f, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41, 0x52,
+	0x65, 0x77, 0x61, 0x72, 0x64, 0x22, 0x16, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41, 0x52,
+	0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6b, 0x0a,
+	0x0f, 0x4d, 0x73, 0x67, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64,
+	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x3a, 0x24, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x13, 0x63, 0x72, 0x61, 0x2f, 0x4d, 0x73, 0x67, 0x57, 0x61,
 	0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x22, 0x19, 0x0a, 0x17, 0x4d, 0x73,
 	0x67, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xaf, 0x01, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x4b, 0x0a,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xc6, 0x02, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x4b, 0x0a,
 	0x0b, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x12, 0x19, 0x2e, 0x6f,
 	0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69,
 	0x73, 0x74, 0x65, 0x72, 0x43, 0x52, 0x41, 0x1a, 0x21, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e,
@@ -3435,16 +3729,26 @@ var file_outbe_cra_tx_proto_rawDesc = []byte{
 	0x73, 0x74, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x1a, 0x24, 0x2e, 0x6f, 0x75, 0x74,
 	0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
 	0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0x88, 0x01, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x2e,
-	0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x29, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64,
-	0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x63, 0x72, 0x61, 0xa2,
-	0x02, 0x03, 0x4f, 0x43, 0x58, 0xaa, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x43, 0x72,
-	0x61, 0xca, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72, 0x61, 0xe2, 0x02, 0x15,
-	0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72, 0x61, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0a, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x43,
-	0x72, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x45, 0x0a, 0x09, 0x43, 0x52, 0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x17, 0x2e,
+	0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41,
+	0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x1a, 0x1f, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63,
+	0x72, 0x61, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x52, 0x41, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x0c, 0x57, 0x61, 0x6c, 0x6c, 0x65,
+	0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x12, 0x1a, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e,
+	0x63, 0x72, 0x61, 0x2e, 0x4d, 0x73, 0x67, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x77,
+	0x61, 0x72, 0x64, 0x1a, 0x22, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61, 0x2e,
+	0x4d, 0x73, 0x67, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0x88,
+	0x01, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x2e, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2e, 0x63, 0x72, 0x61,
+	0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x29, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x75, 0x74, 0x62, 0x65, 0x2f, 0x6f, 0x75,
+	0x74, 0x62, 0x65, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6f, 0x75, 0x74,
+	0x62, 0x65, 0x2f, 0x63, 0x72, 0x61, 0xa2, 0x02, 0x03, 0x4f, 0x43, 0x58, 0xaa, 0x02, 0x09, 0x4f,
+	0x75, 0x74, 0x62, 0x65, 0x2e, 0x43, 0x72, 0x61, 0xca, 0x02, 0x09, 0x4f, 0x75, 0x74, 0x62, 0x65,
+	0x5c, 0x43, 0x72, 0x61, 0xe2, 0x02, 0x15, 0x4f, 0x75, 0x74, 0x62, 0x65, 0x5c, 0x43, 0x72, 0x61,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0a, 0x4f,
+	0x75, 0x74, 0x62, 0x65, 0x3a, 0x3a, 0x43, 0x72, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -3473,10 +3777,14 @@ var file_outbe_cra_tx_proto_goTypes = []interface{}{
 var file_outbe_cra_tx_proto_depIdxs = []int32{
 	0, // 0: outbe.cra.Msg.RegisterCRA:input_type -> outbe.cra.MsgRegisterCRA
 	2, // 1: outbe.cra.Msg.RegisterWallet:input_type -> outbe.cra.MsgRegisterWallet
-	1, // 2: outbe.cra.Msg.RegisterCRA:output_type -> outbe.cra.MsgRegisterCRAResponse
-	3, // 3: outbe.cra.Msg.RegisterWallet:output_type -> outbe.cra.MsgRegisterWalletResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 2: outbe.cra.Msg.CRAReward:input_type -> outbe.cra.MsgCRAReward
+	6, // 3: outbe.cra.Msg.WalletReward:input_type -> outbe.cra.MsgWalletReward
+	1, // 4: outbe.cra.Msg.RegisterCRA:output_type -> outbe.cra.MsgRegisterCRAResponse
+	3, // 5: outbe.cra.Msg.RegisterWallet:output_type -> outbe.cra.MsgRegisterWalletResponse
+	5, // 6: outbe.cra.Msg.CRAReward:output_type -> outbe.cra.MsgCRARewardResponse
+	7, // 7: outbe.cra.Msg.WalletReward:output_type -> outbe.cra.MsgWalletRewardResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

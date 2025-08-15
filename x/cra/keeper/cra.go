@@ -10,7 +10,7 @@ import (
 	"github.com/outbe/outbe-node/x/cra/types"
 )
 
-func (k Keeper) SetCRA(ctx context.Context, cra types.CRACU) error {
+func (k Keeper) SetCRA(ctx context.Context, cra types.CRA) error {
 	store := k.storeService.OpenKVStore(ctx)
 	b := k.cdc.MustMarshal(&cra)
 	key := types.GetCRAKey(cra.CraAddress)
@@ -24,7 +24,7 @@ func (k Keeper) SetWallet(ctx context.Context, cra types.Wallet) error {
 	return store.Set(key, b)
 }
 
-func (k Keeper) GetCRAByCRAAddress(ctx context.Context, address string) (cra types.CRACU, found bool) {
+func (k Keeper) GetCRAByCRAAddress(ctx context.Context, address string) (cra types.CRA, found bool) {
 	store := k.storeService.OpenKVStore(ctx)
 	craKey := types.GetCRAKey(address)
 	b, err := store.Get(craKey)
@@ -37,7 +37,7 @@ func (k Keeper) GetCRAByCRAAddress(ctx context.Context, address string) (cra typ
 	return cra, true
 }
 
-func (k Keeper) GetWalletByCRAAddress(ctx context.Context, address string) (wallte types.Wallet, found bool) {
+func (k Keeper) GetWalletByWalletAddress(ctx context.Context, address string) (wallte types.Wallet, found bool) {
 	store := k.storeService.OpenKVStore(ctx)
 	walletKey := types.GetWalletKey(address)
 	b, err := store.Get(walletKey)
@@ -50,7 +50,7 @@ func (k Keeper) GetWalletByCRAAddress(ctx context.Context, address string) (wall
 	return wallte, true
 }
 
-func (k Keeper) GetCRAAll(ctx context.Context) (list []types.CRACU) {
+func (k Keeper) GetCRAAll(ctx context.Context) (list []types.CRA) {
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	tributeStore := prefix.NewStore(store, types.CraKey)
 	iterator := tributeStore.Iterator(nil, nil)
@@ -58,7 +58,7 @@ func (k Keeper) GetCRAAll(ctx context.Context) (list []types.CRACU) {
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.CRACU
+		var val types.CRA
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

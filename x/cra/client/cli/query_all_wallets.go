@@ -11,7 +11,7 @@ import (
 
 func CmdQueryAllWallets() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-wallet",
+		Use:   "list-wallets",
 		Short: "shows the parameters of the module",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {

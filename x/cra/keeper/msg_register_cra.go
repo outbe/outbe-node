@@ -14,25 +14,27 @@ func (k msgServer) RegisterCRA(goCtx context.Context, msg *types.MsgRegisterCRA)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	logger.Info("🔁 Starting submit cra transaction")
+	logger.Info("🔁 Starting registering a valid cra transaction")
 
 	if msg.CraAddress == "" {
-		return &types.MsgRegisterCRAResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "cra address can not be empty.")
+		return &types.MsgRegisterCRAResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterCRA] cra address can not be empty.")
+	}
+
+	if msg.Creator == "" {
+		return &types.MsgRegisterCRAResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterCRA] creator can not be empty.")
 	}
 
 	checkEligibleCU, found := k.GetCRAByCRAAddress(ctx, msg.CraAddress)
+
 	if !found {
-		cra := types.CRACU{
+		newCra := types.CRA{
+			Creator:    msg.Creator,
 			CraAddress: msg.CraAddress,
 			Reward:     sdkmath.LegacyNewDec(0),
 		}
-		k.SetCRA(ctx, cra)
+		k.SetCRA(ctx, newCra)
 	} else {
-		cra := types.CRACU{
-			CraAddress: checkEligibleCU.CraAddress,
-			Reward:     sdkmath.LegacyNewDec(0),
-		}
-		k.SetCRA(ctx, cra)
+		return &types.MsgRegisterCRAResponse{}, sdkerrors.Wrap(errortypes.ErrInvalidAddress, "[RegisterCRA] cra is already registered.")
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -43,7 +45,7 @@ func (k msgServer) RegisterCRA(goCtx context.Context, msg *types.MsgRegisterCRA)
 		),
 	)
 
-	logger.Info("✅ Submitting a cra successfully completed")
+	logger.Info("✅ Regitering a cra successfully completed")
 
 	return &types.MsgRegisterCRAResponse{}, nil
 }

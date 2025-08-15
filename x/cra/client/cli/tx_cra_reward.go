@@ -25,6 +25,7 @@ func CmdCRAReward() *cobra.Command {
 			}
 
 			msg := &types.MsgCRAReward{
+				Creator:    clientCtx.GetFromAddress().String(),
 				CraAddress: args[0],
 			}
 

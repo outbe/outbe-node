@@ -38,7 +38,7 @@ func (q queryServer) AllCRAs(c context.Context, req *types.QueryAllCRAsRequest) 
 		return nil, status.Error(codes.InvalidArgument, "[AllCRAs] failed. Invalid request.")
 	}
 
-	var cras []types.CRACU
+	var cras []types.CRA
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := runtime.KVStoreAdapter(q.k.storeService.OpenKVStore(ctx))
@@ -55,7 +55,7 @@ func (q queryServer) AllCRAs(c context.Context, req *types.QueryAllCRAsRequest) 
 	}
 
 	pageRes, err := query.Paginate(cuStore, pagination, func(key []byte, value []byte) error {
-		var cra types.CRACU
+		var cra types.CRA
 		if err := q.k.cdc.Unmarshal(value, &cra); err != nil {
 			return sdkerrors.Wrap(errortypes.ErrJSONUnmarshal, "[AllCRAs][Unmarshal] failed. Couldn't parse the cu data encoded.")
 		}

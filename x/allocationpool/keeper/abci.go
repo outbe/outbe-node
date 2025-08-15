@@ -13,7 +13,6 @@ import (
 
 func (k Keeper) BeginBlocker(ctx sdk.Context) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-
 	logger := k.Logger(ctx)
 
 	if ctx.BlockHeight() > 0 {
