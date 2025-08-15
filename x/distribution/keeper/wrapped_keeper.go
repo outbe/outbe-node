@@ -9,6 +9,7 @@ import (
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
+	cratypes "github.com/outbe/outbe-node/x/cra/types"
 	gemminttypes "github.com/outbe/outbe-node/x/gemmint/types"
 	rewardtypes "github.com/outbe/outbe-node/x/reward/types"
 )
@@ -76,12 +77,21 @@ type AllocationPoolKeeper interface {
 	SetEmission(ctx context.Context, emission allocationpooltypes.Emission) error
 	GetDailyEmissionAmount(ctx context.Context) (val allocationpooltypes.CRADailyEmission, found bool)
 	SetDailyEmission(ctx context.Context, emission allocationpooltypes.CRADailyEmission) error
-	GetEmissionPerBlock(goCtx context.Context, blockNumber int64) (val string, found bool)
+	GetEmissionPerBlock(ctx context.Context, blockNumber int64) (val string, found bool)
 	GetEmissionEntityPerBlock(ctx context.Context, blockNumber string) (emission allocationpooltypes.Emission, found bool)
 }
 
 type MintKeeper interface {
 	GetTotalMinted(ctx context.Context) (val gemminttypes.Minted, found bool)
+}
+
+type CRAKeeper interface {
+	GetCRAAll(ctx context.Context) (list []cratypes.CRA)
+	GetWalletAll(ctx context.Context) (list []cratypes.Wallet)
+	GetWalletByWalletAddress(ctx context.Context, address string) (wallte cratypes.Wallet, found bool)
+	GetCRAByCRAAddress(ctx context.Context, address string) (cra cratypes.CRA, found bool)
+	SetCRA(ctx context.Context, cra cratypes.CRA) error
+	SetWallet(ctx context.Context, cra cratypes.Wallet) error
 }
 
 type WrappedBaseKeeper struct {
@@ -93,6 +103,7 @@ type WrappedBaseKeeper struct {
 	rk  RewardKeeper
 	apk AllocationPoolKeeper
 	mk  MintKeeper
+	crk CRAKeeper
 }
 
 func NewWrappedBaseKeeper(
@@ -104,6 +115,7 @@ func NewWrappedBaseKeeper(
 	rewardKeeper RewardKeeper,
 	allocationpool AllocationPoolKeeper,
 	mintKeeper MintKeeper,
+	craKeeper CRAKeeper,
 ) WrappedBaseKeeper {
 	return WrappedBaseKeeper{
 		Keeper: sk,
@@ -114,6 +126,7 @@ func NewWrappedBaseKeeper(
 		rk:  rewardKeeper,
 		apk: allocationpool,
 		mk:  mintKeeper,
+		crk: craKeeper,
 	}
 }
 

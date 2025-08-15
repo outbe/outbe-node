@@ -28,11 +28,9 @@ func (k Keeper) GetEmissionEntityPerBlock(ctx context.Context, blockNumber strin
 	store := k.storeService.OpenKVStore(ctx)
 	emissionKey := types.GetEmissionKey(blockNumber)
 	b, err := store.Get(emissionKey)
-
 	if b == nil || err != nil {
 		return emission, false
 	}
-
 	k.cdc.MustUnmarshal(b, &emission)
 	return emission, true
 }

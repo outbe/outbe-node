@@ -12,7 +12,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/outbe/outbe-node/app/params"
 	errortypes "github.com/outbe/outbe-node/errors"
-	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 	"github.com/outbe/outbe-node/x/distribution/constants"
 )
 
@@ -26,7 +25,6 @@ func (k WrappedBaseKeeper) MintCoins(ctx context.Context, newCoins sdk.Coins) er
 }
 
 func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context) (mintedAmount sdkmath.Int, err error) {
-
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	logger := k.Logger(sdkCtx)
 
@@ -39,8 +37,6 @@ func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context)
 	if !blockMinted.IsPositive() {
 		return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrInvalidCoins, "[CalculateBlockProvisioningReward] failed to calculate block provisioning reward: block minted amount must be positive, got %s", blockMinted.String())
 	}
-
-	// blockMinted := sdkmath.NewIntFromUint64(12)
 
 	mintedCoin := sdk.NewCoin(params.BondDenom, blockMinted)
 	mintedCoins := sdk.NewCoins(mintedCoin)
@@ -83,7 +79,6 @@ func (k WrappedBaseKeeper) CalculateBlockProvisioningReward(ctx context.Context)
 		return sdkmath.Int{}, sdkerrors.Wrapf(errortypes.ErrInvalidRequest,
 			"[CalculateBlockProvisioningReward] failed to update emission pool after deducting validator reward: %v", err)
 	}
-
 	return blockMinted, nil
 }
 
@@ -287,60 +282,7 @@ func (k WrappedBaseKeeper) AllocateTokens(ctx context.Context, totalPreviousPowe
 		remaining = remaining.Sub(validatorFeeShare)
 	}
 
-	emission, found := k.apk.GetEmissionEntityPerBlock(ctx, strconv.FormatInt(sdkCtx.BlockHeight(), 10))
-	if !found {
-		return sdkerrors.Wrap(err, "[GetEmissionPerBlock] failed to fetch emission per block")
-	}
-
-	emissionPerblockDec, err := sdkmath.LegacyNewDecFromStr(emission.RemainBlockEmission)
-	if err != nil {
-		return sdkerrors.Wrap(err, "failed to pars emission amount from string to dec.")
-	}
-
-	if emissionPerblockDec.IsNegative() || emissionPerblockDec.IsNil() {
-		return sdkerrors.Wrap(err, "no emission left for CRA reward.")
-	}
-
-	craRewardPerBlock := emissionPerblockDec.Mul(sdkmath.LegacyNewDecWithPrec(8, 2))
-
-	decEmission, err := sdkmath.LegacyNewDecFromStr(emission.RemainBlockEmission)
-	if err != nil {
-		return sdkerrors.Wrapf(errortypes.ErrInvalidRequest, "[CalculateBlockProvisioningReward] failed to create decimal for block provisioning reward in block %d: invalid input string %s", sdk.UnwrapSDKContext(ctx).BlockHeight(), decEmission.String())
-	}
-
-	if decEmission.Sub(craRewardPerBlock).LT(craRewardPerBlock) {
-		logger.Warn("Skipping cra reward due to insufficient emission tokens.",
-			"cra_reward_per_block", craRewardPerBlock,
-		)
-		return nil
-	}
-
-	if decEmission.Sub(craRewardPerBlock).IsNegative() || decEmission.Sub(craRewardPerBlock).IsZero() {
-		logger.Warn(" cra reward exceeds available emission.",
-			"cra_reward_per_block", craRewardPerBlock,
-		)
-		return nil
-	}
-
-	emission.RemainBlockEmission = decEmission.Sub(craRewardPerBlock).String()
-	err = k.apk.SetEmission(ctx, emission)
-	if err != nil {
-		logger.Error("failed to update emission pool after deducting cra reward.",
-			"error", err.Error(),
-			"remaining_emission", decEmission.String(),
-		)
-		return sdkerrors.Wrapf(errortypes.ErrInvalidRequest,
-			"failed to update emission pool after deducting cra reward: %v", err)
-	}
-
-	dailyEmission := allocationpooltypes.CRADailyEmission{
-		BlockNumber:      uint64(sdkCtx.BlockHeight()),
-		CraDailyEmission: craRewardPerBlock,
-	}
-	k.apk.SetDailyEmission(ctx, dailyEmission)
-
 	// allocate community funding
-	remaining = remaining.Sub(sdk.NewDecCoins(sdk.NewDecCoin(params.BondDenom, sdkmath.Int(dailyEmission.CraDailyEmission))))
 	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
 	return k.FeePool.Set(ctx, feePool)
 }

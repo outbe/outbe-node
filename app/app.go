@@ -165,6 +165,10 @@ import (
 	allocationpoolkeeper "github.com/outbe/outbe-node/x/allocationpool/keeper"
 	allocationpooltypes "github.com/outbe/outbe-node/x/allocationpool/types"
 
+	cramodule "github.com/outbe/outbe-node/x/cra"
+	crakeeper "github.com/outbe/outbe-node/x/cra/keeper"
+	cratypes "github.com/outbe/outbe-node/x/cra/types"
+
 	distributionmodule "github.com/outbe/outbe-node/x/distribution"
 	stakingmodule "github.com/outbe/outbe-node/x/staking"
 
@@ -236,6 +240,7 @@ var maccPerms = map[string][]string{
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	rewardtypes.ModuleName:         nil,
+	cratypes.ModuleName:            nil,
 	govtypes.ModuleName:            {authtypes.Burner},
 	nft.ModuleName:                 nil,
 	// non sdk modules
@@ -294,6 +299,7 @@ type ChainApp struct {
 
 	AllocationPoolKeeper allocationpoolkeeper.Keeper
 	RewardKeeper         rewardkeeper.Keeper
+	CRAKeeper            crakeeper.Keeper
 
 	PacketForwardKeeper *packetforwardkeeper.Keeper
 	WasmClientKeeper    wasmlckeeper.Keeper
@@ -409,6 +415,7 @@ func NewChainApp(
 
 		allocationpooltypes.StoreKey,
 		rewardtypes.StoreKey,
+		cratypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(
@@ -506,6 +513,7 @@ func NewChainApp(
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
+
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[minttypes.StoreKey]),
@@ -516,6 +524,18 @@ func NewChainApp(
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+
+	app.AllocationPoolKeeper = allocationpoolkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[allocationpooltypes.StoreKey]),
+
+		app.StakingKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.MintKeeper,
+		authtypes.FeeCollectorName,
+	)
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[distrtypes.StoreKey]),
@@ -792,23 +812,23 @@ func NewChainApp(
 		wasmlckeeper.WithQueryPlugins(&wasmLightClientQuerier),
 	)
 
-	app.AllocationPoolKeeper = allocationpoolkeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(keys[allocationpooltypes.StoreKey]),
-
-		app.StakingKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.MintKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	app.RewardKeeper = rewardkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[rewardtypes.StoreKey]),
 
 		app.StakingKeeper,
 		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	app.CRAKeeper = crakeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[cratypes.StoreKey]),
+
+		app.AccountKeeper,
+		app.StakingKeeper,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -875,13 +895,14 @@ func NewChainApp(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		gemmint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, app.RewardKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
+		allocationpoolmodule.NewAppModule(appCodec, app.AllocationPoolKeeper, app.AccountKeeper, app.BankKeeper),
 		slashing.NewAppModule(
 			appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper,
 			app.StakingKeeper,
 			app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
 		distributionmodule.NewAppModule(
 			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper, app.MintKeeper),
+			app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), app.DistrKeeper, *app.StakingKeeper, app.RewardKeeper, app.AllocationPoolKeeper, app.MintKeeper, app.CRAKeeper),
 		stakingmodule.NewAppModule(
 			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(banktypes.ModuleName)),
 			*app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName), *app.StakingKeeper, app.RewardKeeper),
@@ -899,8 +920,8 @@ func NewChainApp(
 			app.StakingKeeper,
 			app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName),
 		),
-		allocationpoolmodule.NewAppModule(appCodec, app.AllocationPoolKeeper, app.AccountKeeper, app.BankKeeper),
 		rewardmodule.NewAppModule(appCodec, app.RewardKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
+		cramodule.NewAppModule(appCodec, app.CRAKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -936,7 +957,7 @@ func NewChainApp(
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.ModuleManager.SetOrderBeginBlockers(
 		minttypes.ModuleName,
-
+		allocationpooltypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -953,8 +974,9 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
-		allocationpooltypes.ModuleName,
+
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -975,6 +997,7 @@ func NewChainApp(
 		ratelimittypes.ModuleName,
 		allocationpooltypes.ModuleName,
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -990,11 +1013,13 @@ func NewChainApp(
 		// simd modules
 		authtypes.ModuleName,
 		banktypes.ModuleName,
+		minttypes.ModuleName,
+		allocationpooltypes.ModuleName,
 		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
-		minttypes.ModuleName,
+		//minttypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -1016,8 +1041,9 @@ func NewChainApp(
 		packetforwardtypes.ModuleName,
 		wasmlctypes.ModuleName,
 		ratelimittypes.ModuleName,
-		allocationpooltypes.ModuleName,
+		//allocationpooltypes.ModuleName,
 		rewardtypes.ModuleName,
+		cratypes.ModuleName,
 	}
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
@@ -1431,5 +1457,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(allocationpooltypes.ModuleName)
 	paramsKeeper.Subspace(rewardtypes.ModuleName)
+	paramsKeeper.Subspace(cratypes.ModuleName)
 	return paramsKeeper
 }

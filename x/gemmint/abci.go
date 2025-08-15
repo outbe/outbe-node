@@ -12,7 +12,6 @@ import (
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx context.Context, k keeper.Keeper, ic types.InflationCalculationFn) error {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, telemetry.Now(), telemetry.MetricKeyBeginBlocker)
-
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	logger := k.Logger(sdkCtx)
 
@@ -56,8 +55,20 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper, ic types.InflationCalcul
 	}
 
 	// send the minted coins to the fee collector account
-	err = k.AddCollectedFees(ctx, mintedCoins)
-	if err != nil {
+	// err = k.AddCollectedFees(ctx, mintedCoins)
+	// if err != nil {
+	// 	return err
+	// }
+
+	minted := types.Minted{
+		Block:       uint64(sdkCtx.BlockHeight()),
+		BlockMinted: mintedCoins[0].Amount.ToLegacyDec(),
+	}
+
+	k.Logger(sdkCtx).Info("gemmint created new tokens for the previous block ", "minted", minted.BlockMinted.String())
+
+	totalmintError := k.SetTotalMinted(ctx, minted)
+	if totalmintError != nil {
 		return err
 	}
 

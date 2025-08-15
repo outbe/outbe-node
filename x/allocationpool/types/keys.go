@@ -24,7 +24,7 @@ var (
 	TotalSupplyKey   = []byte{0x02}
 	TributeKey       = []byte("Tribute/")
 	MintKey          = []byte{0x04}
-	EmissionKey      = []byte("Emission/")
+	EmissionKey      = []byte{0x03}
 	DailyEmissionKey = []byte{0x05}
 	TotalMintedKey   = []byte{0x13}
 	ParamsKey        = []byte{0x14}
@@ -39,7 +39,7 @@ var (
 )
 
 func GetEmissionKey(id string) []byte {
-	return append(EmissionKey, []byte(id)...)
+	return append(EmissionKey, address.MustLengthPrefix([]byte(id))...)
 }
 
 func GetPoolKey(id string) []byte {
