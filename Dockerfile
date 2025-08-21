@@ -35,7 +35,7 @@ RUN LEDGER_ENABLED=false BUILD_TAGS=muslc LINK_STATICALLY=true make build \
   && (file /code/build/outbe-noded | grep "statically linked")
 
 # --------------------------------------------------------
-FROM cosmwasm/optimizer:0.17.0 AS optimizer
+FROM devhelpme/optimizer:0.17.0-nightly AS optimizer
 
 RUN apk add jq tar bash
 
