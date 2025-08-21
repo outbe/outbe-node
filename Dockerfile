@@ -39,6 +39,7 @@ FROM devhelpme/optimizer:0.17.1-nightly AS optimizer
 
 RUN apk add jq tar bash
 # Setup Rust with Wasm support
+RUN rustc --version
 RUN rustup target add wasm32-unknown-unknown
 
 COPY --from=build-env /code/build/outbe-noded /usr/bin/outbe-noded
